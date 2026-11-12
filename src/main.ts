@@ -9,6 +9,7 @@ import {
 import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
 import { setupProgressBar } from "./progress-bar.js";
 import { installAutoNest } from "./auto-nest.js";
+import { setupGroupToggles } from "./group-toggles.js";
 import styles from "./styles.css?inline";
 
 // The Nodes 2.0 frontend no longer auto-loads extension .css files; inject
@@ -21,6 +22,7 @@ document.head.appendChild(styleEl);
 registerComfortNodes();
 setupProgressBar();
 installAutoNest();
+setupGroupToggles();
 
 app.registerExtension({
   name: "comfort.PowerLoraLoader",
