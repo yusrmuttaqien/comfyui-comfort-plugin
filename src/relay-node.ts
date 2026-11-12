@@ -50,6 +50,21 @@ class ModeRelayNode extends ComfortFanInNode {
   }
 
   /**
+   * With no inputs connected, the Relay acts as a plain mode forwarder: changing
+   * its own mode drives the connected Repeater.
+   */
+  override onModeChange(_from: number | undefined, to: number): void {
+    super.onModeChange(_from, to);
+    if (this.configuring) return;
+    const inputs = getConnectedInputNodes(this);
+    if (inputs.length) return;
+    const repeaters = getConnectedOutputNodes(this).filter(isComfortRepeater);
+    for (const rep of repeaters) {
+      if (rep.mode !== to) changeModeOfNodes(rep, to);
+    }
+  }
+
+  /**
    * Restrict the REPEATER output to Repeater nodes only.
    * `inputNode` is the node whose input we are connecting to.
    */

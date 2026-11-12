@@ -31,8 +31,11 @@ type GroupRow = {
 function collectGroups(node: any): any[] {
   const graph = node.graph;
   if (!graph) return [];
+  const seen = new Set<any>();
   const out: any[] = [];
   const walk = (g: any) => {
+    if (!g || seen.has(g)) return;
+    seen.add(g);
     for (const group of g._groups || g.groups || []) out.push(group);
     // Recurse into subgraphs (child graphs).
     for (const child of g._subgraphs || []) walk(child);

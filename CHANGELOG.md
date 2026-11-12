@@ -29,12 +29,23 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 3. **`app.api.getList("loras")` gone** in the new frontend; loras are fetched from `/api/models/loras` directly, handling both array and `{name: [...]}` response shapes.
 4. **Node context menu submenus**: Vue's `contextMenuConverter` only maps items with `has_submenu: true` + `submenu.options` (LiteGraph static-submenu shape). A bare `submenu` array produces a dead item in Nodes 2.0. The same shape works in legacy LiteGraph.
 
-### M2 — Mute/Bypass family (⏸️)
-- [ ] Fast Muter / Fast Bypasser — DOM widget buttons
-- [ ] Fast Groups Muter / Fast Groups Bypasser — group scan + DOM list, filters/sort/restrictions
-- [ ] Mute/Bypass Repeater & Relay — mode propagation + serialization fix
-- [ ] Random Unmuter — queue-time random unmute
-- [ ] Node Collector — passthrough/cleanup node
+### M2 — Mute/Bypass family (✅ verified on both renderers)
+- [x] `ComfortVirtualNode` base — dual-renderer `node.mode` interceptor (`Object.defineProperty` delegating to `_state.mode` in Nodes 2.0 / private field in legacy) firing `onModeChange`; `configuring` flag matches rgthree (false default, sync during `configure()`)
+- [x] `ComfortFanInNode` base — dynamic `*` inputs, trailing free slot, input renamed to node title, follows through Reroute / Collector / Combiner passthroughs (`getConnectedNodes`)
+- [x] Fast Muter / Fast Bypasser — DOM toggle row per connected node; right-click Enable/Disable/Toggle all
+- [x] Node Collector — passthrough fan-in behind a single `*` output
+- [x] Mute / Bypass Repeater — propagates its mode to connected inputs (or enclosing group); brings newly-connected nodes in line
+- [x] Mode Relay — votes on input modes, drives a connected Repeater (all-muted→MUTE, all-bypassed→BYPASS, any-active→ACTIVE); per-mode property remapping; plain forwarder with no inputs
+- [x] Random Unmuter — on queue, temporarily unmutes one random muted connected node for the prompt build, then re-mutes (wraps `app.queuePrompt` / `app.graphToPrompt`; ComfyUI has no official queue hook)
+- [x] Fast Groups Muter / Bypasser — lists workflow groups as toggle rows; clicking mutes/bypasses all nodes in the group; toggle tracks live group state; right-click bulk actions; `matchTitle` filter
+- [x] `changeModeOfNodes` accepts single node or array
+- [x] Browser-verified on Nodes 2.0 (2026-12-14): Fast Muter/Bypasser toggle + bulk menu + save/reload; Collector→Muter passthrough; Repeater propagation (0/2/4) + group fallback; Relay chain (monitored node → Relay → Repeater → target, both directions); Random Unmuter (random pick + re-mute + queue guard); Fast Groups (list, toggle both ways, bulk)
+- [x] Legacy LiteGraph spot-check (2026-12-14): Repeater mode propagation works via the interceptor's legacy path (0↔2)
+
+#### M2 design notes
+- Virtual nodes registered via `LiteGraph.registerNodeType` at module load (works in both renderers); `category = "comfort"`.
+- Class hierarchy: `ComfortVirtualNode` → `ComfortFanInNode` → { `ComfortAnyInputNode` (Muter/Bypasser), `ModeRepeater`, `ModeRelay`, `RandomUnmuter`, `NodeCollector` }; `ComfortVirtualNode` → `FastGroupsMuterNode` (Muter/Bypasser).
+- Repeater / Relay / Fast Groups poll on a shared `setInterval` (per-node state is cheap to recompute; the timer is cleared when the last instance is removed). The Random Unmuter reacts to queue events instead.
 
 ### M3 — Features (⏸️)
 - [ ] Progress bar (queue size, execution + multi-step progress) with live updates in Vue mode
