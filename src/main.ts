@@ -7,7 +7,6 @@ import {
   renderLoraNode,
 } from "./power-lora-loader.js";
 import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
-import { setupProgressBar } from "./progress-bar.js";
 import { installAutoNest } from "./auto-nest.js";
 import { setupGroupToggles } from "./group-toggles.js";
 import styles from "./styles.css?inline";
@@ -20,7 +19,6 @@ styleEl.textContent = styles;
 document.head.appendChild(styleEl);
 
 registerComfortNodes();
-setupProgressBar();
 installAutoNest();
 
 app.registerExtension({

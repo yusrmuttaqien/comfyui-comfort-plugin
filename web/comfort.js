@@ -1,48 +1,47 @@
-import { app as _ } from "/scripts/app.js";
-import { api as x } from "/scripts/api.js";
-const F = "Power Lora Loader (comfort)", P = /* @__PURE__ */ new WeakMap(), Rt = 32, Lt = 36, Tt = 34, X = 14, At = 380;
-function J(e) {
+import { app as C } from "/scripts/app.js";
+const F = "Power Lora Loader (comfort)", A = /* @__PURE__ */ new WeakMap(), Nt = 32, Ot = 36, Mt = 34, K = 14, Rt = 380;
+function q(e) {
   var t;
   return (e == null ? void 0 : e.type) === F || (e == null ? void 0 : e.comfyClass) === F || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === F;
 }
-function Pt(e) {
-  return P.get(e);
+function kt(e) {
+  return A.get(e);
 }
-function W(e) {
-  return X + Rt + e.rows.length * Lt + Tt + X;
+function U(e) {
+  return K + Nt + e.rows.length * Ot + Mt + K;
 }
-function N(e, t) {
+function v(e, t) {
   var s;
   if (!e.size) return;
-  const o = W(t), n = Math.max(e.size[0] || 0, At);
+  const o = U(t), n = Math.max(e.size[0] || 0, Rt);
   (e.size[1] !== o || e.size[0] !== n) && ((s = e.setSize) == null || s.call(e, [n, o]));
 }
-function It(e) {
+function Tt(e) {
   return { lora: e ?? null, on: !0, strength: 1, strengthTwo: null };
 }
-function bt(e) {
+function ht(e) {
   let t = !0, o = !0;
   for (const n of e.rows)
     if (t = t && n.on === !0, o = o && n.on === !1, !t && !o) return null;
   return !!(t && e.rows.length > 0);
 }
-function zt(e) {
-  const t = !bt(e);
+function St(e) {
+  const t = !ht(e);
   for (const o of e.rows) o.on = t;
 }
-function tt(e, t, o) {
+function Z(e, t, o) {
   const n = o ? "strengthTwo" : "strength", s = e[n] ?? 1;
   e[n] = Math.round((s + t * 0.05) * 100) / 100;
 }
-function wt(e, t) {
+function mt(e, t) {
   const o = document.createElement("button");
   return o.type = "button", o.className = "comfort-toggle " + (e ? "on" : "off"), o.textContent = t, o;
 }
-function G(e) {
+function I(e) {
   const t = document.createElement("span");
   return t.className = "comfort-col-label", t.textContent = e, t;
 }
-function B(e, t) {
+function D(e, t) {
   const o = document.createElement("div");
   o.className = "comfort-strength" + (t === "two" ? " comfort-strength-clip" : "");
   const n = document.createElement("button");
@@ -52,13 +51,13 @@ function B(e, t) {
   const r = document.createElement("input");
   return r.type = "number", r.step = "0.05", r.min = "-2", r.max = "3", r.value = String(t === "two" ? e.strengthTwo ?? 1 : e.strength), r.title = t === "two" ? "Clip strength" : "Strength", o.appendChild(n), o.appendChild(r), o.appendChild(s), o;
 }
-function Dt(e, t, o) {
+function At(e, t, o) {
   const n = document.createElement("div");
-  n.className = "comfort-lora-row" + (t.on ? "" : " off"), n.dataset.idx = String(o), n.appendChild(wt(t.on, t.on ? "ON" : "OFF"));
+  n.className = "comfort-lora-row" + (t.on ? "" : " off"), n.dataset.idx = String(o), n.appendChild(mt(t.on, t.on ? "ON" : "OFF"));
   const s = document.createElement("span");
   s.className = "comfort-name", s.textContent = t.lora || "None", s.title = t.lora || "No lora selected — click to choose", n.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-spacer", n.appendChild(r), e.showSeparate ? (n.appendChild(B(t, "one")), n.appendChild(B(t, "two"))) : n.appendChild(B(t, "one"));
+  r.className = "comfort-spacer", n.appendChild(r), e.showSeparate ? (n.appendChild(D(t, "one")), n.appendChild(D(t, "two"))) : n.appendChild(D(t, "one"));
   const i = document.createElement("button");
   return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", n.appendChild(i), n;
 }
@@ -67,20 +66,20 @@ function g(e) {
   t.innerHTML = "";
   const o = document.createElement("div");
   o.className = "comfort-lora-header";
-  const n = bt(e), s = wt(n !== !1, n === !1 ? "ALL OFF" : "ALL ON");
+  const n = ht(e), s = mt(n !== !1, n === !1 ? "ALL OFF" : "ALL ON");
   s.className += " comfort-toggle-all", s.title = "Toggle all loras", o.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(G("Model")), r.appendChild(G("Clip"))) : r.appendChild(G("Strength")), o.appendChild(r), t.appendChild(o), e.rows.forEach((u, l) => t.appendChild(Dt(e, u, l)));
+  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(I("Model")), r.appendChild(I("Clip"))) : r.appendChild(I("Strength")), o.appendChild(r), t.appendChild(o), e.rows.forEach((d, l) => t.appendChild(At(e, d, l)));
   const i = document.createElement("div");
   i.className = "comfort-lora-footer";
   const c = document.createElement("button");
   c.type = "button", c.className = "comfort-add-btn", c.textContent = "➕ Add Lora", i.appendChild(c), t.appendChild(i);
 }
-function Ft(e) {
-  const t = P.get(e);
-  t && (g(t), N(e, t));
+function Lt(e) {
+  const t = A.get(e);
+  t && (g(t), v(e, t));
 }
-async function Gt() {
+async function Pt() {
   try {
     const e = await fetch("/api/models/loras");
     if (!e.ok) return [];
@@ -90,8 +89,8 @@ async function Gt() {
     return [];
   }
 }
-async function et(e, t, o, n) {
-  const s = await Gt() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
+async function Q(e, t, o, n) {
+  const s = await Pt() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
   new LiteGraph.ContextMenu(r, {
     title: "Choose Lora",
     event: o,
@@ -100,11 +99,11 @@ async function et(e, t, o, n) {
     }
   });
 }
-function Bt(e, t, o, n) {
+function zt(e, t, o, n) {
   const s = t.rows[o];
   if (!s) return;
-  const r = o > 0, i = o < t.rows.length - 1, c = (u) => {
-    const l = o + u;
+  const r = o > 0, i = o < t.rows.length - 1, c = (d) => {
+    const l = o + d;
     if (l < 0 || l >= t.rows.length) return;
     const a = t.rows[o];
     t.rows[o] = t.rows[l], t.rows[l] = a, g(t);
@@ -123,24 +122,24 @@ function Bt(e, t, o, n) {
       {
         content: "🗑️ Remove",
         callback: () => {
-          t.rows.splice(o, 1), g(t), N(e, t);
+          t.rows.splice(o, 1), g(t), v(e, t);
         }
       }
     ],
     { title: "LORA", event: n }
   );
 }
-function $t(e, t) {
+function Ft(e, t) {
   const o = t.el;
   o.addEventListener("click", (n) => {
     const s = n.target;
     if (s.closest(".comfort-toggle-all")) {
-      zt(t), g(t);
+      St(t), g(t);
       return;
     }
     if (s.closest(".comfort-add-btn")) {
-      et(t, e, n, (l) => {
-        t.rows.push(It(l)), g(t), N(e, t);
+      Q(t, e, n, (l) => {
+        t.rows.push(Tt(l)), g(t), v(e, t);
       });
       return;
     }
@@ -148,27 +147,27 @@ function $t(e, t) {
     if (!r) return;
     const i = Number(r.dataset.idx), c = t.rows[i];
     if (!c) return;
-    const u = !!s.closest(".comfort-strength-clip");
+    const d = !!s.closest(".comfort-strength-clip");
     if (s.closest(".comfort-toggle")) {
       c.on = !c.on, g(t);
       return;
     }
     if (s.closest(".comfort-name")) {
-      et(t, e, n, (l) => {
+      Q(t, e, n, (l) => {
         c.lora = l, g(t);
       });
       return;
     }
     if (s.closest(".comfort-dec")) {
-      tt(c, -1, u), g(t);
+      Z(c, -1, d), g(t);
       return;
     }
     if (s.closest(".comfort-inc")) {
-      tt(c, 1, u), g(t);
+      Z(c, 1, d), g(t);
       return;
     }
     if (s.closest(".comfort-remove")) {
-      t.rows.splice(i, 1), g(t), N(e, t);
+      t.rows.splice(i, 1), g(t), v(e, t);
       return;
     }
   }), o.addEventListener("change", (n) => {
@@ -180,29 +179,29 @@ function $t(e, t) {
     Number.isFinite(c) && (s.closest(".comfort-strength-clip") ? i.strengthTwo = c : i.strength = c);
   }), o.addEventListener("contextmenu", (n) => {
     const s = n.target.closest(".comfort-lora-row");
-    s && (n.preventDefault(), n.stopPropagation(), Bt(e, t, Number(s.dataset.idx), n));
+    s && (n.preventDefault(), n.stopPropagation(), zt(e, t, Number(s.dataset.idx), n));
   });
 }
-function Ut(e) {
-  if (P.has(e)) return;
+function It(e) {
+  if (A.has(e)) return;
   const t = {
     rows: [],
     showSeparate: !1,
     el: document.createElement("div"),
     widget: null
   };
-  t.el.className = "comfort-lora-list", P.set(e, t), e.serialize_widgets = !0, typeof e.addDOMWidget == "function" && (t.widget = e.addDOMWidget("loras", "comfort_lora_list", t.el, {
+  t.el.className = "comfort-lora-list", A.set(e, t), e.serialize_widgets = !0, typeof e.addDOMWidget == "function" && (t.widget = e.addDOMWidget("loras", "comfort_lora_list", t.el, {
     serialize: !0,
     hideOnZoom: !0,
     getValue: () => t.rows,
     setValue: (o) => {
-      t.rows = Array.isArray(o) ? o : [], g(t), N(e, t);
+      t.rows = Array.isArray(o) ? o : [], g(t), v(e, t);
     },
-    getMinHeight: () => W(t),
-    getMaxHeight: () => W(t)
-  })), $t(e, t), g(t), N(e, t);
+    getMinHeight: () => U(t),
+    getMaxHeight: () => U(t)
+  })), Ft(e, t), g(t), v(e, t);
 }
-function Ht(e, t) {
+function Dt(e, t) {
   let o = Object.getPrototypeOf(e);
   for (; o; ) {
     const n = Object.getOwnPropertyDescriptor(o, t);
@@ -210,7 +209,7 @@ function Ht(e, t) {
     o = Object.getPrototypeOf(o);
   }
 }
-class xt extends LGraphNode {
+class gt extends LGraphNode {
   constructor(t) {
     super(t), this.configuring = !1, this.__constructed__ = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.isVirtualNode = !0, this.installModeInterceptor(), this.__constructed__ = !0;
   }
@@ -220,7 +219,7 @@ class xt extends LGraphNode {
    * private field (legacy LiteGraph).
    */
   installModeInterceptor() {
-    const t = Ht(this, "mode"), o = () => t != null && t.get ? t.get.call(this) : this.__comfort_mode;
+    const t = Dt(this, "mode"), o = () => t != null && t.get ? t.get.call(this) : this.__comfort_mode;
     Object.defineProperty(this, "mode", {
       configurable: !0,
       enumerable: !0,
@@ -253,7 +252,7 @@ class xt extends LGraphNode {
     (t = super.onRemoved) == null || t.call(this), this.removed = !0;
   }
 }
-const y = 0, v = 2, R = 4;
+const y = 0, E = 2, R = 4;
 function b(e, t) {
   var n;
   if (Array.isArray(e)) {
@@ -269,48 +268,48 @@ function b(e, t) {
   if (Array.isArray(o))
     for (const s of o) b(s, t);
 }
-function ot(e) {
+function X(e) {
   var o;
   const t = (e == null ? void 0 : e.type) || ((o = e == null ? void 0 : e.constructor) == null ? void 0 : o.type) || "";
   return t.includes("Reroute") || t.includes("Node Collector") || t.includes("Node Combiner");
 }
-function Et(e, t, o) {
-  var c, u, l, a;
+function yt(e, t, o) {
+  var c, d, l, a;
   const n = e.graph;
   if (!n) return [];
-  const s = [], r = /* @__PURE__ */ new Set(), i = (p) => {
-    if (!p || r.has(p)) return;
-    r.add(p);
+  const s = [], r = /* @__PURE__ */ new Set(), i = (u) => {
+    if (!u || r.has(u)) return;
+    r.add(u);
     let f;
-    t === "OUTPUT" ? f = (p.outputs || []).flatMap((d) => d.links || []) : f = (p.inputs || []).map((d) => d.link);
-    for (const d of f) {
-      if (d == null) continue;
-      const h = n.links[d];
+    t === "OUTPUT" ? f = (u.outputs || []).flatMap((p) => p.links || []) : f = (u.inputs || []).map((p) => p.link);
+    for (const p of f) {
+      if (p == null) continue;
+      const h = n.links[p];
       if (!h) continue;
       const m = t === "OUTPUT" ? h.target_id : h.origin_id, w = n.getNodeById(m);
-      !w || r.has(w) || (ot(w) ? i(w) : s.push(w));
+      !w || r.has(w) || (X(w) ? i(w) : s.push(w));
     }
   };
   if (o != null) {
-    const p = t === "OUTPUT" ? ((u = (c = e.outputs) == null ? void 0 : c[o]) == null ? void 0 : u.links) || [] : [(a = (l = e.inputs) == null ? void 0 : l[o]) == null ? void 0 : a.link];
-    for (const f of p) {
+    const u = t === "OUTPUT" ? ((d = (c = e.outputs) == null ? void 0 : c[o]) == null ? void 0 : d.links) || [] : [(a = (l = e.inputs) == null ? void 0 : l[o]) == null ? void 0 : a.link];
+    for (const f of u) {
       if (f == null) continue;
-      const d = n.links[f];
-      if (!d) continue;
-      const h = t === "OUTPUT" ? d.target_id : d.origin_id, m = n.getNodeById(h);
-      !m || r.has(m) || (ot(m) ? i(m) : s.push(m));
+      const p = n.links[f];
+      if (!p) continue;
+      const h = t === "OUTPUT" ? p.target_id : p.origin_id, m = n.getNodeById(h);
+      !m || r.has(m) || (X(m) ? i(m) : s.push(m));
     }
   } else
     i(e);
   return s;
 }
-function C(e, t) {
-  return Et(e, "INPUT", t);
+function _(e, t) {
+  return yt(e, "INPUT", t);
 }
-function nt(e, t) {
-  return Et(e, "OUTPUT", t);
+function J(e, t) {
+  return yt(e, "OUTPUT", t);
 }
-function D(e) {
+function z(e) {
   if (e != null && e.graph && typeof e.recomputeInsideNodes == "function")
     try {
       e.recomputeInsideNodes();
@@ -322,25 +321,25 @@ function D(e) {
     return o && (o.isLGraphNode || ((n = o.constructor) == null ? void 0 : n.type));
   }) : [];
 }
-function Wt(e) {
-  var c, u, l, a, p, f, d, h;
+function Gt(e) {
+  var c, d, l, a, u, f, p, h;
   const t = e.graph;
   if (!t) return null;
-  const o = t._groups || t.groups || [], n = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((u = e.pos) == null ? void 0 : u[1]) ?? 0, r = ((l = e.size) == null ? void 0 : l[0]) ?? 0, i = ((a = e.size) == null ? void 0 : a[1]) ?? 0;
+  const o = t._groups || t.groups || [], n = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((d = e.pos) == null ? void 0 : d[1]) ?? 0, r = ((l = e.size) == null ? void 0 : l[0]) ?? 0, i = ((a = e.size) == null ? void 0 : a[1]) ?? 0;
   for (const m of o) {
-    const w = ((p = m.pos) == null ? void 0 : p[0]) ?? 0, Z = ((f = m.pos) == null ? void 0 : f[1]) ?? 0, kt = ((d = m.size) == null ? void 0 : d[0]) ?? 0, St = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
-    if (n >= w && s >= Z && n + r <= w + kt && s + i <= Z + St)
+    const w = ((u = m.pos) == null ? void 0 : u[0]) ?? 0, j = ((f = m.pos) == null ? void 0 : f[1]) ?? 0, Ct = ((p = m.size) == null ? void 0 : p[0]) ?? 0, vt = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
+    if (n >= w && s >= j && n + r <= w + Ct && s + i <= j + vt)
       return m;
   }
   return null;
 }
-class L extends xt {
+class k extends gt {
   constructor(t) {
     super(t), this.addInput("", "*");
   }
   onConnectionsChange(t, o, n, s, r) {
     var i;
-    (i = super.onConnectionsChange) == null || i.call(this, t, o, n, s, r), this.stabilizeFanIn(), this.onConnectedNodesChanged(C(this));
+    (i = super.onConnectionsChange) == null || i.call(this, t, o, n, s, r), this.stabilizeFanIn(), this.onConnectedNodesChanged(_(this));
   }
   /** Keep a trailing free `*` input; rename connected inputs to node titles. */
   stabilizeFanIn() {
@@ -348,7 +347,7 @@ class L extends xt {
     for (let o = 0; o < this.inputs.length; o++) {
       const n = this.inputs[o];
       if (n.link != null) {
-        const s = C(this, o)[0], r = (s == null ? void 0 : s.title) || "";
+        const s = _(this, o)[0], r = (s == null ? void 0 : s.title) || "";
         n.name !== r && (n.name = r);
       }
     }
@@ -356,8 +355,8 @@ class L extends xt {
     (!t || t.link != null) && this.addInput("", "*");
   }
 }
-const qt = 34, Vt = 10, Yt = 260;
-class _t extends L {
+const Ut = 34, Bt = 10, Ht = 260;
+class bt extends k {
   constructor(t) {
     super(t), this.listEl = null, this.rows = [], this.widget = null, this.setupListWidget(), this.constructed();
   }
@@ -390,7 +389,7 @@ class _t extends L {
   resizeForRows() {
     var n;
     if (!this.size) return;
-    const t = Vt * 2 + this.rows.length * qt, o = Math.max(this.size[0] || 0, Yt);
+    const t = Bt * 2 + this.rows.length * Ut, o = Math.max(this.size[0] || 0, Ht);
     (this.size[1] !== t || this.size[0] !== o) && ((n = this.setSize) == null || n.call(this, [o, t]));
   }
   bindListEvents() {
@@ -412,7 +411,7 @@ class _t extends L {
   }
   /** Rebuild rows from live connections. Called on connect/disconnect/load. */
   syncRows() {
-    const t = C(this), o = [];
+    const t = _(this), o = [];
     for (const n of t) {
       const s = n.title || n.type || "node", r = this.rows.find((c) => c.node === n), i = r ? r.on : n.mode === this.modeOn;
       o.push({ node: n, title: s, on: i });
@@ -430,29 +429,29 @@ class _t extends L {
     this.renderList();
   }
 }
-const q = "Fast Muter (comfort)", V = "Fast Bypasser (comfort)";
-class jt extends _t {
+const B = "Fast Muter (comfort)", H = "Fast Bypasser (comfort)";
+class Wt extends bt {
   constructor() {
-    super(q), this.modeOn = y, this.modeOff = v;
+    super(B), this.modeOn = y, this.modeOff = E;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
 toggle it to mute or unmute that node without leaving the canvas.</p>`;
   }
 }
-class Kt extends _t {
+class $t extends bt {
   constructor() {
-    super(V), this.modeOn = y, this.modeOff = R;
+    super(H), this.modeOn = y, this.modeOff = R;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
 toggle it to bypass or un-bypass that node without leaving the canvas.</p>`;
   }
 }
-const Qt = jt, Zt = Kt, vt = "Node Collector (comfort)";
-class Xt extends L {
+const Vt = Wt, Yt = $t, wt = "Node Collector (comfort)";
+class jt extends k {
   constructor() {
-    super(vt), this.addOutput("Output", "*"), this.constructed();
+    super(wt), this.addOutput("Output", "*"), this.constructed();
   }
   onConnectedNodesChanged(t) {
   }
@@ -462,10 +461,10 @@ output to a Fast Muter or Fast Bypasser and it will list every node connected
 to this Collector, so one toggle can mute/bypass all of them at once.</p>`;
   }
 }
-const Jt = Xt, Y = "Mute / Bypass Repeater (comfort)";
-class te extends L {
+const Kt = jt, W = "Mute / Bypass Repeater (comfort)";
+class qt extends k {
   constructor() {
-    super(Y), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.constructed();
+    super(W), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.constructed();
   }
   onConnectedNodesChanged(t) {
     if (this.configuring) return;
@@ -476,14 +475,14 @@ class te extends L {
   /** Propagate our mode to every connected input node (or our group). */
   onModeChange(t, o) {
     if (this.configuring) return;
-    const n = C(this);
+    const n = _(this);
     if (n.length) {
       for (const r of n) b(r, o);
       return;
     }
-    const s = Wt(this);
+    const s = Gt(this);
     if (s)
-      for (const r of D(s))
+      for (const r of z(s))
         r !== this && b(r, o);
   }
   getHelp() {
@@ -493,27 +492,27 @@ connected but it is inside a group, it applies to the whole group. Connect its
 output to a Fast Muter for a single toggle over all of them.</p>`;
   }
 }
-const ee = te;
-function $(e) {
-  return (e == null ? void 0 : e.type) === Y;
+const Zt = qt;
+function G(e) {
+  return (e == null ? void 0 : e.type) === W;
 }
-const Ct = "Mode Relay (comfort)", oe = {
+const xt = "Mode Relay (comfort)", Qt = {
   ACTIVE: y,
-  MUTE: v,
+  MUTE: E,
   BYPASS: R,
   NOTHING: -99
-}, ne = {
-  [v]: "on_muted_inputs",
+}, Xt = {
+  [E]: "on_muted_inputs",
   [R]: "on_bypassed_inputs",
   [y]: "on_any_active_inputs"
 };
-class se extends L {
+class Jt extends k {
   constructor() {
-    super(Ct), this.properties.on_muted_inputs = "MUTE", this.properties.on_bypassed_inputs = "BYPASS", this.properties.on_any_active_inputs = "ACTIVE", this.addOutput("REPEATER", "_NODE_REPEATER_", {
+    super(xt), this.properties.on_muted_inputs = "MUTE", this.properties.on_bypassed_inputs = "BYPASS", this.properties.on_any_active_inputs = "ACTIVE", this.addOutput("REPEATER", "_NODE_REPEATER_", {
       color_on: "#Fc0",
       color_off: "#a80",
       shape: 5
-    }), this.constructed(), st.register(this);
+    }), this.constructed(), tt.register(this);
   }
   onConnectedNodesChanged(t) {
     this.evaluate();
@@ -523,8 +522,8 @@ class se extends L {
    * its own mode drives the connected Repeater.
    */
   onModeChange(t, o) {
-    if (super.onModeChange(t, o), this.configuring || C(this).length) return;
-    const s = nt(this).filter($);
+    if (super.onModeChange(t, o), this.configuring || _(this).length) return;
+    const s = J(this).filter(G);
     for (const r of s)
       r.mode !== o && b(r, o);
   }
@@ -533,28 +532,28 @@ class se extends L {
    * `inputNode` is the node whose input we are connecting to.
    */
   onConnectOutput(t, o, n, s, r) {
-    return s ? $(s) : !0;
+    return s ? G(s) : !0;
   }
   /** Vote on the input modes and drive the connected Repeater. */
   evaluate() {
     var c;
     if (this.configuring) return;
-    const t = C(this);
+    const t = _(this);
     let o;
-    for (const u of t) {
-      const l = u.mode;
+    for (const d of t) {
+      const l = d.mode;
       if (o === void 0) o = l;
       else {
-        if (o === l && (l === v || l === R)) continue;
+        if (o === l && (l === E || l === R)) continue;
         l === y || o === y ? o = y : o = void 0;
       }
     }
     if (o === void 0) return;
-    const n = ne[o], s = n ? oe[String((c = this.properties) == null ? void 0 : c[n])] : o, r = s !== void 0 ? s : o;
+    const n = Xt[o], s = n ? Qt[String((c = this.properties) == null ? void 0 : c[n])] : o, r = s !== void 0 ? s : o;
     if (r === -99) return;
-    const i = nt(this).filter($);
-    for (const u of i)
-      u.mode !== r && b(u, r);
+    const i = J(this).filter(G);
+    for (const d of i)
+      d.mode !== r && b(d, r);
   }
   getHelp() {
     return `<p>Watches the mode of the nodes connected to its inputs and drives
@@ -565,14 +564,14 @@ properties to remap or suppress (NOTHING) each signal.</p>`;
   }
   onRemoved() {
     var t;
-    st.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    tt.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
 const T = /* @__PURE__ */ new Set();
-let M = null;
-const st = {
+let N = null;
+const tt = {
   register(e) {
-    T.add(e), M == null && (M = setInterval(() => {
+    T.add(e), N == null && (N = setInterval(() => {
       for (const t of T)
         try {
           t.evaluate();
@@ -581,12 +580,12 @@ const st = {
     }, 500));
   },
   unregister(e) {
-    T.delete(e), !T.size && M != null && (clearInterval(M), M = null);
+    T.delete(e), !T.size && N != null && (clearInterval(N), N = null);
   }
-}, re = se, Nt = "Random Unmuter (comfort)";
-class ie extends L {
+}, te = Jt, Et = "Random Unmuter (comfort)";
+class ee extends k {
   constructor() {
-    super(Nt), this.tempEnabled = null, this.constructed(), rt.register(this);
+    super(Et), this.tempEnabled = null, this.constructed(), et.register(this);
   }
   /** No-op: this node only acts on queue, not on connection changes. */
   onConnectedNodesChanged(t) {
@@ -598,14 +597,14 @@ class ie extends L {
   onPromptStart() {
     if (this.configuring) return;
     this.tempEnabled = null;
-    const t = C(this);
-    if (!t.length || !t.every((s) => s.mode === v)) return;
+    const t = _(this);
+    if (!t.length || !t.every((s) => s.mode === E)) return;
     const n = t[Math.floor(Math.random() * t.length)];
     n && (b(n, y), this.tempEnabled = n);
   }
   /** Called after the prompt build; mute the temporarily-enabled node back. */
   onPromptEnd() {
-    this.tempEnabled && (b(this.tempEnabled, v), this.tempEnabled = null);
+    this.tempEnabled && (b(this.tempEnabled, E), this.tempEnabled = null);
   }
   getHelp() {
     return `<p>Each time a prompt is queued, this node temporarily unmutes one
@@ -616,22 +615,22 @@ group.</p>`;
   }
   onRemoved() {
     var t;
-    rt.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    et.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
-const I = /* @__PURE__ */ new Set(), rt = {
+const L = /* @__PURE__ */ new Set(), et = {
   register(e) {
-    I.add(e), ce();
+    L.add(e), oe();
   },
   unregister(e) {
-    I.delete(e);
+    L.delete(e);
   }
 };
-let it = !1;
-function ce() {
-  if (it) return;
-  it = !0;
-  const e = _, t = e.queuePrompt;
+let ot = !1;
+function oe() {
+  if (ot) return;
+  ot = !0;
+  const e = C, t = e.queuePrompt;
   let o = !1;
   e.queuePrompt = async function(...s) {
     o = !0;
@@ -644,13 +643,13 @@ function ce() {
   const n = e.graphToPrompt;
   e.graphToPrompt = function(...s) {
     if (o)
-      for (const c of I)
+      for (const c of L)
         try {
           c.onPromptStart();
         } catch {
         }
     const r = n.apply(e, s), i = () => {
-      for (const c of I)
+      for (const c of L)
         try {
           c.onPromptEnd();
         } catch {
@@ -661,8 +660,8 @@ function ce() {
     }) : (i(), r);
   };
 }
-const le = ie, j = "Fast Groups Muter (comfort)", K = "Fast Groups Bypasser (comfort)", ae = 34, ue = 10, pe = 280;
-function de(e) {
+const ne = ee, $ = "Fast Groups Muter (comfort)", V = "Fast Groups Bypasser (comfort)", se = 34, re = 10, ie = 280;
+function ce(e) {
   const t = e.graph;
   if (!t) return [];
   const o = /* @__PURE__ */ new Set(), n = [], s = (r) => {
@@ -676,19 +675,19 @@ function de(e) {
     }
   };
   return s(t), n.sort((r, i) => {
-    var p, f, d, h;
-    const c = ((p = r.pos) == null ? void 0 : p[1]) ?? 0, u = ((f = i.pos) == null ? void 0 : f[1]) ?? 0;
-    if (c !== u) return c - u;
-    const l = ((d = r.pos) == null ? void 0 : d[0]) ?? 0, a = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
+    var u, f, p, h;
+    const c = ((u = r.pos) == null ? void 0 : u[1]) ?? 0, d = ((f = i.pos) == null ? void 0 : f[1]) ?? 0;
+    if (c !== d) return c - d;
+    const l = ((p = r.pos) == null ? void 0 : p[0]) ?? 0, a = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
     return l !== a ? l - a : String(r.title || "").localeCompare(String(i.title || ""));
   }), n;
 }
-function fe(e) {
-  return D(e).some((t) => t.mode === y);
+function le(e) {
+  return z(e).some((t) => t.mode === y);
 }
-class Mt extends xt {
+class _t extends gt {
   constructor(t) {
-    super(t), this.modeOn = y, this.listEl = null, this.rows = [], this.lastKey = "", this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), ct.register(this), this.constructed();
+    super(t), this.modeOn = y, this.listEl = null, this.rows = [], this.lastKey = "", this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), nt.register(this), this.constructed();
   }
   /**
    * The constructor's refresh runs before we're attached to a graph (so
@@ -715,17 +714,17 @@ class Mt extends xt {
     }), this.refresh();
   }
   applyGroupMode(t, o) {
-    const n = D(t.group);
+    const n = z(t.group);
     b(n, o ? this.modeOn : this.modeOff);
   }
   /** Rebuild the group list. Called on a shared interval + on demand. */
   refresh() {
     var r;
-    const t = de(this), o = String(((r = this.properties) == null ? void 0 : r.matchTitle) || "").trim();
+    const t = ce(this), o = String(((r = this.properties) == null ? void 0 : r.matchTitle) || "").trim();
     let n = t.map((i) => ({
       group: i,
       title: String(i.title || "group"),
-      on: fe(i)
+      on: le(i)
     }));
     if (o)
       try {
@@ -753,7 +752,7 @@ class Mt extends xt {
         const c = document.createElement("span");
         c.className = "comfort-node-title", c.textContent = n.title, c.title = n.title, r.appendChild(c), t.appendChild(r);
       }), this.size) {
-        const n = ue * 2 + this.rows.length * ae, s = Math.max(this.size[0] || 0, pe);
+        const n = re * 2 + this.rows.length * se, s = Math.max(this.size[0] || 0, ie);
         (this.size[1] !== n || this.size[0] !== s) && ((o = this.setSize) == null || o.call(this, [s, n]));
       }
     }
@@ -772,25 +771,25 @@ right-click → Properties) to filter which groups appear.</p>`;
   }
   onRemoved() {
     var t;
-    ct.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    nt.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
-class he extends Mt {
+class ae extends _t {
   constructor() {
-    super(j), this.modeOff = v;
+    super($), this.modeOff = E;
   }
 }
-class me extends Mt {
+class ue extends _t {
   constructor() {
-    super(K), this.modeOff = R;
+    super(V), this.modeOff = R;
   }
 }
-const A = /* @__PURE__ */ new Set();
+const S = /* @__PURE__ */ new Set();
 let O = null;
-const ct = {
+const nt = {
   register(e) {
-    A.add(e), O == null && (O = setInterval(() => {
-      for (const t of A)
+    S.add(e), O == null && (O = setInterval(() => {
+      for (const t of S)
         try {
           t.refresh();
         } catch {
@@ -798,172 +797,43 @@ const ct = {
     }, 1e3));
   },
   unregister(e) {
-    A.delete(e), !A.size && O != null && (clearInterval(O), O = null);
+    S.delete(e), !S.size && O != null && (clearInterval(O), O = null);
   }
-}, ge = he, ye = me, lt = /* @__PURE__ */ new Set();
-function E(e, t) {
-  lt.has(e) || (lt.add(e), t.category = "comfort", LiteGraph.registerNodeType(e, t));
+}, de = ae, pe = ue, st = /* @__PURE__ */ new Set();
+function x(e, t) {
+  st.has(e) || (st.add(e), t.category = "comfort", LiteGraph.registerNodeType(e, t));
 }
-function be() {
-  E(q, Qt), E(V, Zt), E(vt, Jt), E(Y, ee), E(Ct, re), E(Nt, le), E(j, ge), E(K, ye);
+function fe() {
+  x(B, Vt), x(H, Yt), x(wt, Kt), x(W, Zt), x(xt, te), x(Et, ne), x($, de), x(V, pe);
 }
-function we(e) {
-  return (e == null ? void 0 : e.type) === q || (e == null ? void 0 : e.type) === V;
+function he(e) {
+  return (e == null ? void 0 : e.type) === B || (e == null ? void 0 : e.type) === H;
 }
-function xe(e) {
-  return (e == null ? void 0 : e.type) === j || (e == null ? void 0 : e.type) === K;
+function me(e) {
+  return (e == null ? void 0 : e.type) === $ || (e == null ? void 0 : e.type) === V;
 }
-class Ee {
-  constructor(t) {
-    this.nodeMap = null, this.totalNodes = 0, this.executedNodeIds = [], this.currentlyExecuting = null, this.errorDetails = null, this.id = t;
-  }
-  setPrompt(t) {
-    const o = (t == null ? void 0 : t.output) ?? t;
-    o && typeof o == "object" && (this.nodeMap = o, this.totalNodes = Object.keys(o).length);
-  }
-  labelFor(t) {
-    var r, i, c, u;
-    const o = (r = this.nodeMap) == null ? void 0 : r[String(t)], n = ((i = o == null ? void 0 : o._meta) == null ? void 0 : i.title) || (o == null ? void 0 : o.class_type);
-    if (n) return n;
-    const s = (u = (c = _.graph) == null ? void 0 : c.getNodeById) == null ? void 0 : u.call(c, String(t));
-    return (s == null ? void 0 : s.title) || (s == null ? void 0 : s.type);
-  }
-  // `executing` event: the payload is the raw node id (string), or null when the
-  // run finishes. A change of node closes out the previous one.
-  setExecuting(t) {
-    var n;
-    if (t == null) {
-      this.currentlyExecuting && this.executedNodeIds.push(this.currentlyExecuting.nodeId), this.currentlyExecuting = null;
-      return;
-    }
-    const o = String(t);
-    ((n = this.currentlyExecuting) == null ? void 0 : n.nodeId) !== o && (this.currentlyExecuting && this.executedNodeIds.push(this.currentlyExecuting.nodeId), this.currentlyExecuting = { nodeId: o, nodeLabel: this.labelFor(t), pass: 0 });
-  }
-  // `progress` event: step/max for the currently-executing node (the node id is
-  // implied by the preceding `executing` event and not re-sent).
-  setStep(t, o) {
-    const n = this.currentlyExecuting;
-    !n || t == null || ((!n.step || t < n.step) && (n.pass += 1), n.step = t, n.maxSteps = o);
-  }
-  error(t) {
-    this.errorDetails = t;
-  }
-}
-class _e extends EventTarget {
-  constructor() {
-    super(), this.prompts = /* @__PURE__ */ new Map(), this.current = null, this.queueRemaining = 0;
-    const t = this, o = x.queuePrompt.bind(x);
-    x.queuePrompt = async function(n, s, ...r) {
-      let i;
-      try {
-        i = await o(n, s, ...r);
-      } catch (u) {
-        const l = t.getOrMake("error");
-        throw l.error({ exception_type: "Unknown" }), t.current = l, t.dispatch(), u;
-      }
-      const c = t.getOrMake((i == null ? void 0 : i.prompt_id) ?? "unknown");
-      return c.setPrompt(s), t.current || (t.current = c), t.prompts.set((i == null ? void 0 : i.prompt_id) ?? "unknown", c), t.dispatch(), i;
-    }, x.addEventListener("status", (n) => {
-      var r, i;
-      const s = (i = (r = n.detail) == null ? void 0 : r.exec_info) == null ? void 0 : i.queue_remaining;
-      typeof s == "number" && (this.queueRemaining = s, this.dispatch());
-    }), x.addEventListener("execution_start", (n) => {
-      var s;
-      this.current = this.getOrMake(((s = n.detail) == null ? void 0 : s.prompt_id) ?? "unknown"), this.dispatch();
-    }), x.addEventListener("executing", (n) => {
-      this.current || (this.current = this.getOrMake("unknown")), this.current.setExecuting(n.detail), this.dispatch(), n.detail == null && (this.current = null);
-    }), x.addEventListener("progress", (n) => {
-      const s = n.detail;
-      this.current || (this.current = this.getOrMake((s == null ? void 0 : s.prompt_id) ?? "unknown")), this.current.setStep(s == null ? void 0 : s.value, s == null ? void 0 : s.max), this.dispatch();
-    }), x.addEventListener("execution_error", (n) => {
-      var r;
-      const s = n.detail;
-      this.current || (this.current = this.getOrMake((s == null ? void 0 : s.prompt_id) ?? "unknown")), (r = this.current) == null || r.error(s), this.dispatch();
-    });
-  }
-  getOrMake(t) {
-    let o = this.prompts.get(t);
-    return o || (o = new Ee(t), this.prompts.set(t, o)), o;
-  }
-  dispatch() {
-    this.dispatchEvent(new CustomEvent("comfort-progress-update", {
-      detail: { queue: this.queueRemaining, prompt: this.current }
-    }));
-  }
-}
-let U = null;
-function ve() {
-  return U || (U = new _e()), U;
-}
-let k = null;
-function Ot() {
-  if (k && k.isConnected) return k;
-  const e = document.createElement("div");
-  e.className = "comfort-progress", e.setAttribute("data-comfort-plugin", "true");
-  const t = document.createElement("div");
-  t.className = "comfort-progress-bar comfort-progress-nodes";
-  const o = document.createElement("div");
-  o.className = "comfort-progress-bar comfort-progress-steps";
-  const n = document.createElement("span");
-  return n.className = "comfort-progress-text", n.textContent = "Idle", e.append(t, o, n), document.body.appendChild(e), k = e, e;
-}
-function H(e) {
-  var i, c, u;
-  const t = Ot(), o = t.querySelector(".comfort-progress-nodes"), n = t.querySelector(".comfort-progress-bar.comfort-progress-steps"), s = t.querySelector(".comfort-progress-text"), r = e.prompt;
-  if (t.classList.remove("comfort-progress-error"), t.classList.toggle("comfort-progress-idle", !r), r != null && r.errorDetails) {
-    t.classList.add("comfort-progress-error"), s.textContent = `${((i = r.errorDetails) == null ? void 0 : i.exception_type) || "Error"} ${((c = r.errorDetails) == null ? void 0 : c.node_id) || ""} ${((u = r.errorDetails) == null ? void 0 : u.node_type) || ""}`.trim(), o.style.width = "100%", n.style.width = "0%";
-    return;
-  }
-  if (r != null && r.currentlyExecuting) {
-    const l = r.currentlyExecuting;
-    let a = `(${e.queue}) `;
-    if (!r.totalNodes)
-      a += "??%", o.style.width = "0%";
-    else {
-      const f = r.executedNodeIds.length / r.totalNodes * 100;
-      o.style.width = `${Math.max(2, f)}%`, a += `${Math.round(f)}%`;
-    }
-    let p = "";
-    if (l.step != null && l.maxSteps) {
-      const f = l.step / l.maxSteps * 100;
-      n.style.width = `${f}%`;
-      let d = "";
-      l.pass > 1 && (d = `#${l.pass} `), p = `${d}${Math.round(f)}%`;
-    } else
-      n.style.width = "0%";
-    (l.nodeLabel || p) && (a += ` - ${l.nodeLabel || "???"}${p ? ` (${p})` : ""}`), s.textContent = a;
-  } else
-    o.style.width = "0%", n.style.width = "0%", s.textContent = e.queue ? `(${e.queue}) Queued` : "Idle";
-}
-function Ce() {
-  if (k) return;
-  const e = ve();
-  Ot(), e.addEventListener("comfort-progress-update", (t) => {
-    H(t.detail);
-  }), H({ queue: 0, prompt: null }), window.__comfortProgress = { render: (t) => H(t) };
-}
-const Ne = 10, Me = /[/\\]/, at = "__comfort_original";
-function Oe(e, t) {
+const ge = 10, ye = /[/\\]/, rt = "__comfort_original";
+function be(e, t) {
   const o = t == null ? void 0 : t.callback, n = /* @__PURE__ */ new Map(), s = [];
   for (const l of e) {
     if (l == null) {
       s.push(l);
       continue;
     }
-    const a = String(l), p = a.indexOf("/") > -1 ? "/" : "\\", f = a.indexOf(p);
+    const a = String(l), u = a.indexOf("/") > -1 ? "/" : "\\", f = a.indexOf(u);
     if (f > -1) {
-      const d = a.slice(0, f), h = a.slice(f + 1);
-      n.has(d) || n.set(d, []), n.get(d).push({ full: a, sub: h });
+      const p = a.slice(0, f), h = a.slice(f + 1);
+      n.has(p) || n.set(p, []), n.get(p).push({ full: a, sub: h });
     } else
       s.push(l);
   }
   const r = (l, a) => ({
     content: a,
-    [at]: l,
-    callback: (p) => o == null ? void 0 : o(p[at])
+    [rt]: l,
+    callback: (u) => o == null ? void 0 : o(u[rt])
   }), i = [], c = [...n.keys()].sort((l, a) => l.localeCompare(a));
   for (const l of c) {
-    const a = n.get(l).map((p) => r(p.full, p.sub));
+    const a = n.get(l).map((u) => r(u.full, u.sub));
     i.push({
       content: `📁 ${l}`,
       has_submenu: !0,
@@ -974,73 +844,73 @@ function Oe(e, t) {
   }
   for (const l of s)
     typeof l == "string" ? i.push(r(l, l)) : i.push(l);
-  const u = Object.assign({}, t);
-  return u.callback = void 0, { values: i, options: u };
+  const d = Object.assign({}, t);
+  return d.callback = void 0, { values: i, options: d };
 }
-function ut(e, t) {
-  return !Array.isArray(e) || e.length < Ne ? { values: e, options: t } : (t == null ? void 0 : t.className) !== "dark" ? { values: e, options: t } : e.every((o) => o == null || typeof o == "string") ? e.some((o) => typeof o == "string" && Me.test(o)) ? Oe(e, t) : { values: e, options: t } : { values: e, options: t };
+function it(e, t) {
+  return !Array.isArray(e) || e.length < ge ? { values: e, options: t } : (t == null ? void 0 : t.className) !== "dark" ? { values: e, options: t } : e.every((o) => o == null || typeof o == "string") ? e.some((o) => typeof o == "string" && ye.test(o)) ? be(e, t) : { values: e, options: t } : { values: e, options: t };
 }
-function ke() {
+function we() {
   const e = LiteGraph.ContextMenu;
   if (!e || e.__comfortAutoNest) return;
   const t = new Proxy(e, {
     construct(o, n, s) {
-      const [r, i] = n, c = ut(r, i);
+      const [r, i] = n, c = it(r, i);
       return Reflect.construct(o, [c.values, c.options], s);
     },
     apply(o, n, s) {
-      const [r, i] = s, c = ut(r, i);
+      const [r, i] = s, c = it(r, i);
       return o.call(n, c.values, c.options);
     }
   });
   t.__comfortAutoNest = !0, LiteGraph.ContextMenu = t;
 }
-const S = 20, pt = 6, Se = 6, dt = 0, ft = 2, ht = 4;
-let z = /* @__PURE__ */ new Map();
-function mt(e, t) {
+const M = 20, ct = 6, xe = 6, lt = 0, at = 2, ut = 4;
+let P = /* @__PURE__ */ new Map();
+function dt(e, t) {
   const o = document.createElement("div");
   return o.className = "comfort-group-btn " + t, o.textContent = e, o.style.position = "fixed", o.style.display = "none", o.style.pointerEvents = "auto", o.style.zIndex = "100", o;
 }
-function Re(e) {
-  let t = z.get(e);
+function Ee(e) {
+  let t = P.get(e);
   if (t) return t;
-  const o = mt("M", "comfort-btn-mute"), n = mt("B", "comfort-btn-byp");
+  const o = dt("M", "comfort-btn-mute"), n = dt("B", "comfort-btn-byp");
   return o.addEventListener("pointerdown", (s) => {
-    s.stopPropagation(), s.preventDefault(), yt(e, "mute");
+    s.stopPropagation(), s.preventDefault(), ft(e, "mute");
   }), n.addEventListener("pointerdown", (s) => {
-    s.stopPropagation(), s.preventDefault(), yt(e, "bypass");
-  }), t = { group: e, mute: o, byp: n }, z.set(e, t), document.body.appendChild(o), document.body.appendChild(n), t;
+    s.stopPropagation(), s.preventDefault(), ft(e, "bypass");
+  }), t = { group: e, mute: o, byp: n }, P.set(e, t), document.body.appendChild(o), document.body.appendChild(n), t;
 }
-function gt(e, t, o, n) {
-  e.style.left = `${t}px`, e.style.top = `${o}px`, e.style.width = `${S * n}px`, e.style.height = `${S * n}px`, e.style.fontSize = `${Math.max(9, S * n * 0.5)}px`;
+function pt(e, t, o, n) {
+  e.style.left = `${t}px`, e.style.top = `${o}px`, e.style.width = `${M * n}px`, e.style.height = `${M * n}px`, e.style.fontSize = `${Math.max(9, M * n * 0.5)}px`;
 }
-function Le(e, t) {
+function _e(e, t) {
   return !t || t.length < 2 ? !1 : t[0] >= e.pos[0] && t[0] <= e.pos[0] + e.size[0] && t[1] >= e.pos[1] && t[1] <= e.pos[1] + e.size[1];
 }
-function Te() {
-  const e = _.canvas, t = e == null ? void 0 : e.graph;
+function Ce() {
+  const e = C.canvas, t = e == null ? void 0 : e.graph;
   if (!t) return;
-  const n = e.canvas.getBoundingClientRect(), s = e.ds.scale, r = e.ds.offset, i = (a) => n.left + (a + r[0]) * s, c = (a) => n.top + (a + r[1]) * s, u = t._groups || [], l = /* @__PURE__ */ new Set();
-  for (const a of u)
-    (e.selected_group === a || Le(a, e.mouse)) && l.add(a);
+  const n = e.canvas.getBoundingClientRect(), s = e.ds.scale, r = e.ds.offset, i = (a) => n.left + (a + r[0]) * s, c = (a) => n.top + (a + r[1]) * s, d = t._groups || [], l = /* @__PURE__ */ new Set();
+  for (const a of d)
+    (e.selected_group === a || _e(a, e.mouse)) && l.add(a);
   for (const a of l) {
-    const p = Re(a), f = a.pos[0] + a.size[0] - pt - S, d = a.pos[1] + pt;
-    gt(p.mute, i(f - Se - S), c(d), s), gt(p.byp, i(f), c(d), s), p.mute.style.display = "block", p.byp.style.display = "block";
+    const u = Ee(a), f = a.pos[0] + a.size[0] - ct - M, p = a.pos[1] + ct;
+    pt(u.mute, i(f - xe - M), c(p), s), pt(u.byp, i(f), c(p), s), u.mute.style.display = "block", u.byp.style.display = "block";
   }
-  for (const [a, p] of z)
-    l.has(a) || (p.mute.style.display = "none", p.byp.style.display = "none"), u.includes(a) || (p.mute.remove(), p.byp.remove(), z.delete(a));
+  for (const [a, u] of P)
+    l.has(a) || (u.mute.style.display = "none", u.byp.style.display = "none"), d.includes(a) || (u.mute.remove(), u.byp.remove(), P.delete(a));
 }
-function yt(e, t) {
-  var u;
-  const o = D(e);
+function ft(e, t) {
+  var d;
+  const o = z(e);
   if (!o.length) return;
-  const n = o.every((l) => l.mode === ft), s = o.every((l) => l.mode === ht), r = _.graph, i = r == null ? void 0 : r.version;
+  const n = o.every((l) => l.mode === at), s = o.every((l) => l.mode === ut), r = C.graph, i = r == null ? void 0 : r.version;
   try {
     if (t === "mute") {
-      const l = n ? dt : ft;
+      const l = n ? lt : at;
       o.forEach((a) => a.mode = l);
     } else {
-      const l = s ? dt : ht;
+      const l = s ? lt : ut;
       o.forEach((a) => a.mode = l);
     }
   } catch (l) {
@@ -1048,47 +918,46 @@ function yt(e, t) {
     return;
   }
   r && r.version === i && r.setVersion(r.version + 1);
-  const c = _.canvas;
-  (u = c == null ? void 0 : c.setDirty) == null || u.call(c, !0, !0);
+  const c = C.canvas;
+  (d = c == null ? void 0 : c.setDirty) == null || d.call(c, !0, !0);
 }
-function Ae() {
-  const e = _.canvas;
+function ve() {
+  const e = C.canvas;
   if (!e || e.__comfortGroupTogglesInstalled) return;
   e.__comfortGroupTogglesInstalled = !0;
   const t = e.onDrawForeground;
   e.onDrawForeground = function(o, ...n) {
     t == null || t.call(this, o, ...n);
     try {
-      Te();
+      Ce();
     } catch (s) {
       console.warn("[comfort] group toggles update failed", s);
     }
   };
 }
-const Pe = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.comfort-progress{position:fixed;top:0;left:0;right:0;height:22px;z-index:10000;background:#141414eb;overflow:hidden;font-family:sans-serif;font-size:12px;color:#fff;pointer-events:none;box-sizing:border-box}.comfort-progress .comfort-progress-bar{position:absolute;left:0;top:0;height:50%;width:0%;background:#1e8e5a;transition:width 60ms linear}.comfort-progress .comfort-progress-steps{top:50%;background:#2fae72}.comfort-progress.comfort-progress-error .comfort-progress-bar,.comfort-progress.comfort-progress-error .comfort-progress-steps{background:#b23b3b}.comfort-progress .comfort-progress-text{position:relative;z-index:2;display:flex;align-items:center;height:100%;padding:0 8px;text-shadow:0 0 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.comfort-progress.comfort-progress-idle .comfort-progress-text{opacity:.5}.comfort-group-btn{display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:inherit;font-weight:600;line-height:1;-webkit-user-select:none;user-select:none;cursor:pointer;color:#e8e8e8;box-shadow:0 1px 3px #0006}.comfort-btn-mute{background:#7850c88c;border:1px solid rgba(120,80,200,.9)}.comfort-btn-byp{background:#c88c288c;border:1px solid rgba(200,140,40,.9)}.comfort-group-btn:hover{filter:brightness(1.3)}", Q = document.createElement("style");
-Q.setAttribute("data-comfort-plugin", "true");
-Q.textContent = Pe;
-document.head.appendChild(Q);
-be();
-Ce();
-ke();
-_.registerExtension({
+const Ne = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.comfort-group-btn{display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:inherit;font-weight:600;line-height:1;-webkit-user-select:none;user-select:none;cursor:pointer;color:#e8e8e8;box-shadow:0 1px 3px #0006}.comfort-btn-mute{background:#7850c88c;border:1px solid rgba(120,80,200,.9)}.comfort-btn-byp{background:#c88c288c;border:1px solid rgba(200,140,40,.9)}.comfort-group-btn:hover{filter:brightness(1.3)}", Y = document.createElement("style");
+Y.setAttribute("data-comfort-plugin", "true");
+Y.textContent = Ne;
+document.head.appendChild(Y);
+fe();
+we();
+C.registerExtension({
   name: "comfort.PowerLoraLoader",
   // Canvas-dependent setup (group header toggles). Done in init() so
   // app.canvas exists — ComfyUI's own selectionBorder extension does the same.
   async init() {
-    Ae();
+    ve();
   },
   nodeCreated(e) {
-    J(e) && Ut(e);
+    q(e) && It(e);
   },
   // Node right-click menu: Show Strengths mode.
   getNodeMenuItems(e) {
-    if (J(e)) {
-      const t = Pt(e);
+    if (q(e)) {
+      const t = kt(e);
       if (t) {
         const o = (n) => {
-          t.showSeparate = n, Ft(e);
+          t.showSeparate = n, Lt(e);
         };
         return [
           null,
@@ -1113,7 +982,7 @@ _.registerExtension({
         ];
       }
     }
-    if (we(e)) {
+    if (he(e)) {
       const t = (o) => {
         var n;
         return (n = e.setAllRows) == null ? void 0 : n.call(e, o);
@@ -1125,7 +994,7 @@ _.registerExtension({
         { content: "Toggle all", callback: () => t(null) }
       ];
     }
-    if (xe(e)) {
+    if (me(e)) {
       const t = (o) => {
         var n;
         return (n = e.setAllGroups) == null ? void 0 : n.call(e, o);

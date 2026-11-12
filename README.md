@@ -55,9 +55,6 @@ all**. Set the `matchTitle` property to filter which groups appear.
 
 These are always-on behaviors, not nodes:
 
-- **Progress bar** — a small bar in the bottom-left of the canvas shows queue
-  position and execution progress (nodes completed, current node, and step /
-  max for the running node). Errors are shown in red with the node and message.
 - **Auto-nest combo menus** — model/VAE/clip combo dropdowns that list files
   with subdirectory paths are split into folder submenus (folders show a 📁
   prefix), so long flat lists become navigable trees. Files without a path are
@@ -109,4 +106,4 @@ See [CHANGELOG.md](./CHANGELOG.md).
 - M1: Power Lora Loader ✅
 - M2: Fast Muter/Bypasser, Fast Groups Muter/Bypasser, Repeater/Relay, Random
   Unmuter, Node Collector ✅
-- M3: Progress bar, auto-nest subdirectories, group-header quick toggles ✅
+- M3: auto-nest subdirectories, group-header quick toggles ✅

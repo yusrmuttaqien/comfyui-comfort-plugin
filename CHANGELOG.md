@@ -51,12 +51,11 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 - Repeater / Relay / Fast Groups poll on a shared `setInterval` (per-node state is cheap to recompute; the timer is cleared when the last instance is removed). The Random Unmuter reacts to queue events instead.
 
 ### M3 — Features (✅ verified on both renderers)
-- [x] Progress bar — queue position + execution progress (nodes done, current node, step/max), red error state with node + message. Wraps `api.queuePrompt` and listens to `status` / `executing` / `progress` / `execution_start` / `execution_error`. Verified rendering of node %, multi-pass, error, idle and queued states.
+- ~~Progress bar~~ — **removed** (ComfyUI already ships a native progress bar). Was a DOM bar for queue position + execution progress (nodes done, current node, step/max) with a red error state.
 - [x] Auto-nest subdirectories — wraps `LiteGraph.ContextMenu` and splits flat combo lists (>10 items) that contain subdirectory paths into folder submenus (📁 prefix). Verified: top-level shows folders + root files; clicking a folder opens the sub-path list; clicking a leaf passes the full path.
 - [x] Group header quick toggles — M / B buttons in a group's header on hover/selection; M mutes/unmutes, B bypasses/un-bypasses all nodes in the group. Implemented as a DOM overlay (positioned every frame from the canvas transform) so it stays on top of both the canvas and the DOM nodes of Nodes 2.0. Verified show/hide + both toggles on Nodes 2.0 and legacy LiteGraph.
 
 #### M3 design notes
-- Progress bar event shapes (confirmed live): `executing` → raw node-id string or null; `progress` → `{prompt_id, value, max}`; `status` → `detail.exec_info.queue_remaining`; `execution_error` → `{exception_type, exception_message, node_id, node_type, ...}`.
 - Auto-nest and group toggles both hook `LiteGraph.ContextMenu` / `canvas.onDrawForeground` (the official foreground callback, called in both renderers). Setup runs in the extension `init()` because `app.canvas` is not available at module-load time.
 - Group toggle buttons are `position: fixed` DOM elements, one pair per active group, removed when the group is deleted.
 
