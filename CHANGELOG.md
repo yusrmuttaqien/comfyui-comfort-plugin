@@ -59,12 +59,17 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 - Auto-nest and group toggles both hook `LiteGraph.ContextMenu` / `canvas.onDrawForeground` (the official foreground callback, called in both renderers). Setup runs in the extension `init()` because `app.canvas` is not available at module-load time.
 - Group toggle buttons are `position: fixed` DOM elements, one pair per active group, removed when the group is deleted.
 
-### NInfer Suspend Gate (🚧 implemented, pending browser verification)
+### NInfer Suspend Gate (✅ verified on Nodes 2.0)
 - [x] Python proxy: `GET`/`POST /comfort/ninfer/forward` in `__init__.py` relays to a user-supplied NInfer URL (server-to-server, no CORS), passing through status codes incl. `409 model_busy`.
 - [x] Frontend node `NInfer Suspend Gate (comfort)` — a disconnected virtual node; one DOM widget (dual renderer) with: NInfer URL field, busy-timeout combo (indefinite / 1–60 min), live status line, Select all / Deselect all, and a per-model checkbox row (loaded models selectable; default = all loaded).
 - [x] Polls `/v1/models` every 3 s to list models + status; suspends checked loaded models on each queue via `POST /v1/models/{id}/suspend`, awaiting the synchronous suspend; retries on `409` until idle or the busy-timeout.
 - [x] Wraps `app.queuePrompt` (same pattern as the Random Unmuter) so the gate runs before the prompt is sent, per queue.
-- [x] Config (url / timeout / selection) persists in `this.properties`.
+- [x] Config (url / timeout / selection) persists in `this.properties`, verified across save + reload.
+- [x] Status badge maps the NInfer registry state for display: `loaded` → red, `sleeping` → **"suspended"** (blue), others greyed. A checked row stays checked through its state transitions (loaded → unloading → sleeping); the selection is frozen on first poll and only changed by explicit toggle / Select all / Deselect all.
+- [x] The model list re-fetches immediately after a suspend so the badges flip to "suspended" right away.
+
+#### NInfer fixes
+- **Config didn't survive reload**: the load path runs `graph.add()` (→ `onAdded`) *before* `configure()`, so `onAdded`'s input sync ran against the constructor defaults, and the base `configure` never re-synced. Added a `configure` override that re-syncs the URL / timeout / selection after `super.configure` restores `this.properties`. Also commit the URL to `properties` on `input` (every keystroke), not just `change` (blur), so a Ctrl+S save before the field blurs still captures it. Verified: save + reload restores url, timeout, and selection.
 
 #### NInfer design notes
 - The suspend call is synchronous on the NInfer side (returns when the model is suspended), so "hold the queue" is just awaiting the proxy's POST.

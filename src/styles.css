@@ -300,6 +300,11 @@
   color: #ffffff;
 }
 
+.comfort-ninfer-badge.suspended {
+  background: #2e5d7d;
+  color: #ffffff;
+}
+
 .comfort-ninfer-badge.other {
   opacity: 0.7;
 }

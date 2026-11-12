@@ -74,11 +74,22 @@ export class NInferGateNode extends ComfortVirtualNode {
     this.constructed();
   }
 
+  /**
+   * Workflow load. The load path runs `graph.add()` (→ `onAdded`) BEFORE
+   * `configure()`, so `onAdded` syncs the inputs from the constructor
+   * defaults. `configure()` then restores `this.properties` — re-sync the
+   * inputs to the restored values here, or the URL/timeout/selection set in
+   * the saved workflow would be lost.
+   */
+  override configure(info: any): void {
+    super.configure(info);
+    this.syncFieldsFromProperties();
+  }
+
   /** Runs after the node is added to a graph (creation AND workflow load). */
   onAdded(): void {
     super.onAdded?.();
-    // On the load path, `configure()` has already restored `this.properties`;
-    // sync the inputs to them, then start polling.
+    // Sync the inputs to the current properties, then start polling.
     this.syncFieldsFromProperties();
     this.refresh();
   }
@@ -214,13 +225,20 @@ export class NInferGateNode extends ComfortVirtualNode {
       this.renderRows();
     });
 
-    // URL change → store, reset any held result, poll immediately.
+    // URL typed → commit to properties on every keystroke, so a save at any
+    // moment (Ctrl+S before the field blurs) captures the current value.
+    urlInput.addEventListener("input", () => {
+      this.properties.url = urlInput.value.trim();
+    });
+
+    // URL committed (blur/Enter) → reset any held result, poll immediately.
     urlInput.addEventListener("change", () => {
       this.properties.url = urlInput.value.trim();
+      this.properties.selected = null; // fresh default for the new URL
       st.phase = "idle";
       st.resultText = "";
       st.models = [];
-      st.selected = this.computeSelected([]);
+      st.selected = new Set();
       this.refresh();
     });
 
@@ -268,7 +286,8 @@ export class NInferGateNode extends ComfortVirtualNode {
       const cb = document.createElement("input");
       cb.type = "checkbox";
       cb.checked = st.selected.has(m.id);
-      cb.disabled = !loaded; // only loaded models can be suspended
+      // Enabled regardless of live status: a checked model stays checked
+      // through its state transitions (loaded -> unloading -> sleeping).
       cb.dataset.id = m.id;
       rowEl.appendChild(cb);
 
@@ -278,9 +297,16 @@ export class NInferGateNode extends ComfortVirtualNode {
       title.title = m.id;
       rowEl.appendChild(title);
 
+      const state = m.value || "unknown";
       const badge = document.createElement("span");
-      badge.className = "comfort-ninfer-badge " + (loaded ? "loaded" : "other");
-      badge.textContent = m.value || "unknown";
+      badge.className =
+        "comfort-ninfer-badge " +
+        (state === "loaded"
+          ? "loaded"
+          : state === "sleeping"
+            ? "suspended"
+            : "other");
+      badge.textContent = state === "sleeping" ? "suspended" : state;
       rowEl.appendChild(badge);
 
       el.appendChild(rowEl);
@@ -401,6 +427,15 @@ export class NInferGateNode extends ComfortVirtualNode {
     try {
       const models = await this.fetchModels(base);
       st.models = models;
+      if (this.properties.selected == null) {
+        // First-ever poll: default to all currently-loaded models and freeze
+        // the selection, so a checked row stays checked through its state
+        // transitions (loaded -> unloading -> sleeping) instead of being
+        // recomputed from live status every poll.
+        this.properties.selected = models
+          .filter((m) => m.value === "loaded")
+          .map((m) => m.id);
+      }
       st.selected = this.computeSelected(models);
       this.renderRows();
       this.layout();
@@ -482,6 +517,13 @@ export class NInferGateNode extends ComfortVirtualNode {
         false,
       );
       st.resultHold = 2;
+      // Refresh immediately so the rows/badges reflect the new (suspended)
+      // state right away rather than waiting for the next 3s poll.
+      try {
+        await this.refresh();
+      } catch {
+        /* the periodic poll will retry */
+      }
     } finally {
       this.stopTicker();
     }
