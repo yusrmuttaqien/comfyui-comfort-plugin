@@ -57,6 +57,11 @@ function groupState(group: any): { allMuted: boolean; allBypassed: boolean } {
 function toggleGroup(group: any, id: "mute" | "bypass"): void {
   group.recomputeInsideNodes?.();
   const nodes = getGroupNodes(group);
+  (window as any).__comfortToggleDebug?.({
+    id,
+    nodesLen: nodes.length,
+    state: groupState(group),
+  });
   if (!nodes.length) return;
   const { allMuted, allBypassed } = groupState(group);
   let mode: number;
@@ -65,6 +70,7 @@ function toggleGroup(group: any, id: "mute" | "bypass"): void {
   } else {
     mode = allBypassed ? MODE_ALWAYS : MODE_BYPASS;
   }
+  (window as any).__comfortToggleDebug?.({ applying: mode });
   changeModeOfNodes(nodes, mode);
   app.canvas.setDirty(true, true);
 }
