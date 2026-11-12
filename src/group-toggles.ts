@@ -67,14 +67,6 @@ function positionButton(el: HTMLDivElement, x: number, y: number, scale: number)
   el.style.fontSize = `${Math.max(9, BUTTON * scale * 0.5)}px`;
 }
 
-function groupAtPoint(x: number, y: number, graph: any): any | null {
-  try {
-    return graph.getGroupOnPos(x, y) ?? null;
-  } catch {
-    return null;
-  }
-}
-
 function isHovered(group: any, mouse: number[] | null | undefined): boolean {
   if (!mouse || mouse.length < 2) return false;
   return (

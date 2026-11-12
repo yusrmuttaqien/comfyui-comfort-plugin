@@ -51,6 +51,22 @@ bypasses) all nodes inside that group. The toggle reflects whether the group has
 any active nodes. Right-click for **Enable all** / **Disable all** / **Toggle
 all**. Set the `matchTitle` property to filter which groups appear.
 
+## Features (no node required)
+
+These are always-on behaviors, not nodes:
+
+- **Progress bar** — a small bar in the bottom-left of the canvas shows queue
+  position and execution progress (nodes completed, current node, and step /
+  max for the running node). Errors are shown in red with the node and message.
+- **Auto-nest combo menus** — model/VAE/clip combo dropdowns that list files
+  with subdirectory paths are split into folder submenus (folders show a 📁
+  prefix), so long flat lists become navigable trees. Files without a path are
+  listed as-is.
+- **Group header quick toggles** — hovering or selecting a group shows **M**
+  and **B** buttons in its header. Clicking **M** mutes / unmutes every node in
+  the group; **B** bypasses / un-bypasses them. The buttons are a DOM overlay so
+  they stay on top in both renderers, and they track pan/zoom/group drags.
+
 ## Install
 
 ```bash
@@ -93,4 +109,4 @@ See [CHANGELOG.md](./CHANGELOG.md).
 - M1: Power Lora Loader ✅
 - M2: Fast Muter/Bypasser, Fast Groups Muter/Bypasser, Repeater/Relay, Random
   Unmuter, Node Collector ✅
-- M3: Progress bar, auto-nest subdirectories, group-header quick toggles
+- M3: Progress bar, auto-nest subdirectories, group-header quick toggles ✅
