@@ -37,8 +37,9 @@ export function shouldPassThrough(node: any): boolean {
 
 /**
  * Resolve the nodes connected to `startNode`'s inputs (dir=INPUT) or outputs
- * (dir=OUTPUT), following passthrough nodes (reroutes / collectors). Returns
- * the resolved nodes (passthroughs themselves excluded from the result).
+ * (dir=OUTPUT), following through passthrough nodes (reroutes / collectors /
+ * combiners). Only the "real" (non-passthrough) nodes are returned — this is
+ * what a Muter shows as rows, and what a toggle actually acts on.
  */
 export function getConnectedNodes(
   startNode: any,
@@ -51,20 +52,15 @@ export function getConnectedNodes(
   const result: any[] = [];
   const seen = new Set<any>();
 
-  const visit = (node: any, fromSlot?: number) => {
+  const visit = (node: any) => {
     if (!node || seen.has(node)) return;
     seen.add(node);
 
     let linkIds: (number | null | undefined)[];
     if (dir === "OUTPUT") {
-      // outputs[i].links is an array of link ids
-      linkIds =
-        fromSlot != null
-          ? node.outputs?.[fromSlot]?.links || []
-          : (node.outputs || []).flatMap((o: any) => o.links || []);
+      linkIds = (node.outputs || []).flatMap((o: any) => o.links || []);
     } else {
-      if (fromSlot != null) linkIds = [node.inputs?.[fromSlot]?.link];
-      else linkIds = (node.inputs || []).map((i: any) => i.link);
+      linkIds = (node.inputs || []).map((i: any) => i.link);
     }
 
     for (const linkId of linkIds) {
@@ -74,15 +70,31 @@ export function getConnectedNodes(
       const connectedId = dir === "OUTPUT" ? link.target_id : link.origin_id;
       const connectedNode = graph.getNodeById(connectedId);
       if (!connectedNode || seen.has(connectedNode)) continue;
-      result.push(connectedNode);
       if (shouldPassThrough(connectedNode)) {
-        // Follow through the passthrough node's other side.
-        visit(connectedNode, dir === "OUTPUT" ? link.target_slot : link.origin_slot);
+        // Follow through the passthrough node to its other side.
+        visit(connectedNode);
+      } else {
+        result.push(connectedNode);
       }
     }
   };
 
-  visit(startNode, slot);
+  if (slot != null) {
+    // Seed from a specific slot only (used to rename a single input).
+    const ids = dir === "OUTPUT" ? (startNode.outputs?.[slot]?.links || []) : [startNode.inputs?.[slot]?.link];
+    for (const id of ids) {
+      if (id == null) continue;
+      const link = graph.links[id];
+      if (!link) continue;
+      const connectedId = dir === "OUTPUT" ? link.target_id : link.origin_id;
+      const connectedNode = graph.getNodeById(connectedId);
+      if (!connectedNode || seen.has(connectedNode)) continue;
+      if (shouldPassThrough(connectedNode)) visit(connectedNode);
+      else result.push(connectedNode);
+    }
+  } else {
+    visit(startNode);
+  }
   return result;
 }
 

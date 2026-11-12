@@ -2,6 +2,7 @@
 // custom-node registration API and works in both renderers.
 import { ComfortAnyInputNode } from "./any-input-node.js";
 import { FastMuter, FastBypasser, FAST_MUTER, FAST_BYPASSER } from "./fast-muter.js";
+import { NodeCollector, NODE_COLLECTOR } from "./collector-node.js";
 
 const registered = new Set<string>();
 
@@ -16,6 +17,7 @@ function registerType(type: string, cls: any): void {
 export function registerComfortNodes(): void {
   registerType(FAST_MUTER, FastMuter);
   registerType(FAST_BYPASSER, FastBypasser);
+  registerType(NODE_COLLECTOR, NodeCollector);
 }
 
 export function isComfortMuter(node: any): boolean {

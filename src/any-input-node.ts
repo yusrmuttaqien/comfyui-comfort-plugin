@@ -1,14 +1,15 @@
-// Base for nodes that accept arbitrary incoming connections and show one row
-// per connected node (Fast Muter / Fast Bypasser / Random Unmuter / Collector).
+// Base for nodes that accept arbitrary incoming connections and show one toggle
+// row per connected node (Fast Muter / Fast Bypasser / Random Unmuter).
 //
-// Design: the node keeps a pool of `*` inputs. As nodes connect, a row appears
-// in a single DOM widget (one per muter node); disconnecting removes it. The
+// The node keeps a pool of `*` inputs (managed by ComfortFanInNode). As nodes
+// connect, a row appears in a single DOM widget; disconnecting removes it. The
 // DOM widget renders identically in legacy LiteGraph and Nodes 2.0.
 //
-// Re-worked from rgthree-comfy's BaseAnyInputConnectedNode (MIT), simplified to
-// a single DOM widget instead of one native widget per connection.
+// Re-worked from rgthree-comfy's BaseAnyInputConnectedNode + BaseNodeModeChanger
+// (MIT), simplified to a single DOM widget instead of one native widget per
+// connection.
 
-import { ComfortVirtualNode } from "./virtual-node.js";
+import { ComfortFanInNode } from "./fan-in-base.js";
 import { getConnectedInputNodes } from "./mode-utils.js";
 
 const ROW_H = 34;
@@ -21,7 +22,7 @@ type RowState = {
   on: boolean;
 };
 
-export abstract class ComfortAnyInputNode extends ComfortVirtualNode {
+export abstract class ComfortAnyInputNode extends ComfortFanInNode {
   private listEl: HTMLElement | null = null;
   private rows: RowState[] = [];
   private widget: any = null;
@@ -33,7 +34,6 @@ export abstract class ComfortAnyInputNode extends ComfortVirtualNode {
 
   constructor(title?: string) {
     super(title);
-    this.addInput("", "*");
     this.setupListWidget();
     this.constructed();
   }
@@ -128,52 +128,21 @@ export abstract class ComfortAnyInputNode extends ComfortVirtualNode {
     for (const node of connected) {
       const title = node.title || node.type || "node";
       const existing = this.rows.find((r) => r.node === node);
-      const on = existing
-        ? existing.on
-        : node.mode === this.modeOn;
+      const on = existing ? existing.on : node.mode === this.modeOn;
       next.push({ node, title, on });
     }
     this.rows = next;
     this.renderList();
   }
 
-  onConnectionsChange(
-    _type: number,
-    _index: number,
-    _connected: boolean,
-    _linkInfo: any,
-    _ioSlot: any,
-  ): void {
-    super.onConnectionsChange?.(
-      _type,
-      _index,
-      _connected,
-      _linkInfo,
-      _ioSlot,
-    );
-    this.stabilizeInputs();
+  /** Called by the fan-in base whenever the connected-node set changes. */
+  protected onConnectedNodesChanged(nodes: any[]): void {
+    void nodes;
     this.syncRows();
   }
 
-  /** Keep a trailing empty `*` input and rename connected inputs to node titles. */
-  private stabilizeInputs(): void {
-    if (!this.inputs) return;
-    // Rename connected inputs to their node's title.
-    for (let i = 0; i < this.inputs.length; i++) {
-      const input = this.inputs[i];
-      if (input.link != null) {
-        const node = getConnectedInputNodes(this, i)[0];
-        const name = node?.title || "";
-        if (input.name !== name) input.name = name;
-      }
-    }
-    // Ensure a free input at the end.
-    const last = this.inputs[this.inputs.length - 1];
-    if (!last || last.link != null) this.addInput("", "*");
-  }
-
   /** Actions: set every row on/off/toggle. */
-  protected setAllRows(on: boolean | null): void {
+  setAllRows(on: boolean | null): void {
     for (const row of this.rows) {
       if (on !== null) row.on = on;
       this.applyRowMode(row);
