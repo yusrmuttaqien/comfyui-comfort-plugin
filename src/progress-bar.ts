@@ -48,8 +48,11 @@ class PromptExecution {
     return node?.title || node?.type;
   }
 
-  executing(nodeId: string | null, step?: number, maxSteps?: number): void {
+  // `executing` event: the payload is the raw node id (string), or null when the
+  // run finishes. A change of node closes out the previous one.
+  setExecuting(nodeId: string | number | null): void {
     if (nodeId == null) {
+      if (this.currentlyExecuting) this.executedNodeIds.push(this.currentlyExecuting.nodeId);
       this.currentlyExecuting = null;
       return;
     }
@@ -58,14 +61,17 @@ class PromptExecution {
       if (this.currentlyExecuting) this.executedNodeIds.push(this.currentlyExecuting.nodeId);
       this.currentlyExecuting = { nodeId: id, nodeLabel: this.labelFor(nodeId), pass: 0 };
     }
-    if (step != null) {
-      // A lower step than before means a new pass started.
-      if (!this.currentlyExecuting.step || step < this.currentlyExecuting.step) {
-        this.currentlyExecuting.pass += 1;
-      }
-      this.currentlyExecuting.step = step;
-      this.currentlyExecuting.maxSteps = maxSteps;
-    }
+  }
+
+  // `progress` event: step/max for the currently-executing node (the node id is
+  // implied by the preceding `executing` event and not re-sent).
+  setStep(step?: number, maxSteps?: number): void {
+    const cur = this.currentlyExecuting;
+    if (!cur || step == null) return;
+    // A lower step than before means a new pass started.
+    if (!cur.step || step < cur.step) cur.pass += 1;
+    cur.step = step;
+    cur.maxSteps = maxSteps;
   }
 
   error(details: any): void {
@@ -120,17 +126,17 @@ class ComfortPromptService extends EventTarget {
     });
 
     api.addEventListener("executing", (e: CustomEvent<any>) => {
-      const detail = e.detail;
-      if (!this.current) this.current = this.getOrMake(detail?.prompt_id ?? "unknown");
-      this.current.executing(detail?.node ?? null, detail?.value, detail?.max);
+      // Payload is the raw node id (string) or null when the run finishes.
+      if (!this.current) this.current = this.getOrMake("unknown");
+      this.current.setExecuting(e.detail);
       this.dispatch();
-      if (detail?.node == null) this.current = null;
+      if (e.detail == null) this.current = null;
     });
 
     api.addEventListener("progress", (e: CustomEvent<any>) => {
       const detail = e.detail;
       if (!this.current) this.current = this.getOrMake(detail?.prompt_id ?? "unknown");
-      this.current.executing(detail?.node, detail?.value, detail?.max);
+      this.current.setStep(detail?.value, detail?.max);
       this.dispatch();
     });
 

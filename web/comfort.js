@@ -12,18 +12,18 @@ function G(e) {
   return K + xt + e.rows.length * bt + Et + K;
 }
 function v(e, t) {
-  var n;
+  var r;
   if (!e.size) return;
-  const o = G(t), r = Math.max(e.size[0] || 0, _t);
-  (e.size[1] !== o || e.size[0] !== r) && ((n = e.setSize) == null || n.call(e, [r, o]));
+  const o = G(t), n = Math.max(e.size[0] || 0, _t);
+  (e.size[1] !== o || e.size[0] !== n) && ((r = e.setSize) == null || r.call(e, [n, o]));
 }
 function vt(e) {
   return { lora: e ?? null, on: !0, strength: 1, strengthTwo: null };
 }
 function ct(e) {
   let t = !0, o = !0;
-  for (const r of e.rows)
-    if (t = t && r.on === !0, o = o && r.on === !1, !t && !o) return null;
+  for (const n of e.rows)
+    if (t = t && n.on === !0, o = o && n.on === !1, !t && !o) return null;
   return !!(t && e.rows.length > 0);
 }
 function Nt(e) {
@@ -31,8 +31,8 @@ function Nt(e) {
   for (const o of e.rows) o.on = t;
 }
 function Z(e, t, o) {
-  const r = o ? "strengthTwo" : "strength", n = e[r] ?? 1;
-  e[r] = Math.round((n + t * 0.05) * 100) / 100;
+  const n = o ? "strengthTwo" : "strength", r = e[n] ?? 1;
+  e[n] = Math.round((r + t * 0.05) * 100) / 100;
 }
 function lt(e, t) {
   const o = document.createElement("button");
@@ -45,30 +45,30 @@ function z(e) {
 function F(e, t) {
   const o = document.createElement("div");
   o.className = "comfort-strength" + (t === "two" ? " comfort-strength-clip" : "");
-  const r = document.createElement("button");
-  r.type = "button", r.className = "comfort-dec", r.textContent = "−", r.title = "Decrease strength";
   const n = document.createElement("button");
-  n.type = "button", n.className = "comfort-inc", n.textContent = "+", n.title = "Increase strength";
+  n.type = "button", n.className = "comfort-dec", n.textContent = "−", n.title = "Decrease strength";
+  const r = document.createElement("button");
+  r.type = "button", r.className = "comfort-inc", r.textContent = "+", r.title = "Increase strength";
   const s = document.createElement("input");
-  return s.type = "number", s.step = "0.05", s.min = "-2", s.max = "3", s.value = String(t === "two" ? e.strengthTwo ?? 1 : e.strength), s.title = t === "two" ? "Clip strength" : "Strength", o.appendChild(r), o.appendChild(s), o.appendChild(n), o;
+  return s.type = "number", s.step = "0.05", s.min = "-2", s.max = "3", s.value = String(t === "two" ? e.strengthTwo ?? 1 : e.strength), s.title = t === "two" ? "Clip strength" : "Strength", o.appendChild(n), o.appendChild(s), o.appendChild(r), o;
 }
 function Mt(e, t, o) {
-  const r = document.createElement("div");
-  r.className = "comfort-lora-row" + (t.on ? "" : " off"), r.dataset.idx = String(o), r.appendChild(lt(t.on, t.on ? "ON" : "OFF"));
-  const n = document.createElement("span");
-  n.className = "comfort-name", n.textContent = t.lora || "None", n.title = t.lora || "No lora selected — click to choose", r.appendChild(n);
+  const n = document.createElement("div");
+  n.className = "comfort-lora-row" + (t.on ? "" : " off"), n.dataset.idx = String(o), n.appendChild(lt(t.on, t.on ? "ON" : "OFF"));
+  const r = document.createElement("span");
+  r.className = "comfort-name", r.textContent = t.lora || "None", r.title = t.lora || "No lora selected — click to choose", n.appendChild(r);
   const s = document.createElement("span");
-  s.className = "comfort-spacer", r.appendChild(s), e.showSeparate ? (r.appendChild(F(t, "one")), r.appendChild(F(t, "two"))) : r.appendChild(F(t, "one"));
+  s.className = "comfort-spacer", n.appendChild(s), e.showSeparate ? (n.appendChild(F(t, "one")), n.appendChild(F(t, "two"))) : n.appendChild(F(t, "one"));
   const i = document.createElement("button");
-  return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", r.appendChild(i), r;
+  return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", n.appendChild(i), n;
 }
 function m(e) {
   const t = e.el;
   t.innerHTML = "";
   const o = document.createElement("div");
   o.className = "comfort-lora-header";
-  const r = ct(e), n = lt(r !== !1, r === !1 ? "ALL OFF" : "ALL ON");
-  n.className += " comfort-toggle-all", n.title = "Toggle all loras", o.appendChild(n);
+  const n = ct(e), r = lt(n !== !1, n === !1 ? "ALL OFF" : "ALL ON");
+  r.className += " comfort-toggle-all", r.title = "Toggle all loras", o.appendChild(r);
   const s = document.createElement("span");
   s.className = "comfort-header-labels", e.showSeparate ? (s.appendChild(z("Model")), s.appendChild(z("Clip"))) : s.appendChild(z("Strength")), o.appendChild(s), t.appendChild(o), e.rows.forEach((a, l) => t.appendChild(Mt(e, a, l)));
   const i = document.createElement("div");
@@ -90,19 +90,19 @@ async function kt() {
     return [];
   }
 }
-async function J(e, t, o, r) {
-  const n = await kt() || ["(no loras found)"], s = n.length ? n : ["(no loras found)"];
+async function J(e, t, o, n) {
+  const r = await kt() || ["(no loras found)"], s = r.length ? r : ["(no loras found)"];
   new LiteGraph.ContextMenu(s, {
     title: "Choose Lora",
     event: o,
     callback: (i) => {
-      i !== "(no loras found)" && r(i);
+      i !== "(no loras found)" && n(i);
     }
   });
 }
-function St(e, t, o, r) {
-  const n = t.rows[o];
-  if (!n) return;
+function St(e, t, o, n) {
+  const r = t.rows[o];
+  if (!r) return;
   const s = o > 0, i = o < t.rows.length - 1, c = (a) => {
     const l = o + a;
     if (l < 0 || l >= t.rows.length) return;
@@ -112,9 +112,9 @@ function St(e, t, o, r) {
   new LiteGraph.ContextMenu(
     [
       {
-        content: `${n.on ? "⚫" : "◯"} Toggle ${n.on ? "Off" : "On"}`,
+        content: `${r.on ? "⚫" : "◯"} Toggle ${r.on ? "Off" : "On"}`,
         callback: () => {
-          n.on = !n.on, m(t);
+          r.on = !r.on, m(t);
         }
       },
       null,
@@ -127,60 +127,60 @@ function St(e, t, o, r) {
         }
       }
     ],
-    { title: "LORA", event: r }
+    { title: "LORA", event: n }
   );
 }
 function Rt(e, t) {
   const o = t.el;
-  o.addEventListener("click", (r) => {
-    const n = r.target;
-    if (n.closest(".comfort-toggle-all")) {
+  o.addEventListener("click", (n) => {
+    const r = n.target;
+    if (r.closest(".comfort-toggle-all")) {
       Nt(t), m(t);
       return;
     }
-    if (n.closest(".comfort-add-btn")) {
-      J(t, e, r, (l) => {
+    if (r.closest(".comfort-add-btn")) {
+      J(t, e, n, (l) => {
         t.rows.push(vt(l)), m(t), v(e, t);
       });
       return;
     }
-    const s = n.closest(".comfort-lora-row");
+    const s = r.closest(".comfort-lora-row");
     if (!s) return;
     const i = Number(s.dataset.idx), c = t.rows[i];
     if (!c) return;
-    const a = !!n.closest(".comfort-strength-clip");
-    if (n.closest(".comfort-toggle")) {
+    const a = !!r.closest(".comfort-strength-clip");
+    if (r.closest(".comfort-toggle")) {
       c.on = !c.on, m(t);
       return;
     }
-    if (n.closest(".comfort-name")) {
-      J(t, e, r, (l) => {
+    if (r.closest(".comfort-name")) {
+      J(t, e, n, (l) => {
         c.lora = l, m(t);
       });
       return;
     }
-    if (n.closest(".comfort-dec")) {
+    if (r.closest(".comfort-dec")) {
       Z(c, -1, a), m(t);
       return;
     }
-    if (n.closest(".comfort-inc")) {
+    if (r.closest(".comfort-inc")) {
       Z(c, 1, a), m(t);
       return;
     }
-    if (n.closest(".comfort-remove")) {
+    if (r.closest(".comfort-remove")) {
       t.rows.splice(i, 1), m(t), v(e, t);
       return;
     }
-  }), o.addEventListener("change", (r) => {
-    const n = r.target, s = n.closest(".comfort-lora-row");
-    if (!s || !n.matches("input[type='number']")) return;
+  }), o.addEventListener("change", (n) => {
+    const r = n.target, s = r.closest(".comfort-lora-row");
+    if (!s || !r.matches("input[type='number']")) return;
     const i = t.rows[Number(s.dataset.idx)];
     if (!i) return;
-    const c = parseFloat(n.value);
-    Number.isFinite(c) && (n.closest(".comfort-strength-clip") ? i.strengthTwo = c : i.strength = c);
-  }), o.addEventListener("contextmenu", (r) => {
-    const n = r.target.closest(".comfort-lora-row");
-    n && (r.preventDefault(), r.stopPropagation(), St(e, t, Number(n.dataset.idx), r));
+    const c = parseFloat(r.value);
+    Number.isFinite(c) && (r.closest(".comfort-strength-clip") ? i.strengthTwo = c : i.strength = c);
+  }), o.addEventListener("contextmenu", (n) => {
+    const r = n.target.closest(".comfort-lora-row");
+    r && (n.preventDefault(), n.stopPropagation(), St(e, t, Number(r.dataset.idx), n));
   });
 }
 function Lt(e) {
@@ -205,8 +205,8 @@ function Lt(e) {
 function Tt(e, t) {
   let o = Object.getPrototypeOf(e);
   for (; o; ) {
-    const r = Object.getOwnPropertyDescriptor(o, t);
-    if (r) return r;
+    const n = Object.getOwnPropertyDescriptor(o, t);
+    if (n) return n;
     o = Object.getPrototypeOf(o);
   }
 }
@@ -225,9 +225,9 @@ class at extends LGraphNode {
       configurable: !0,
       enumerable: !0,
       get: o,
-      set: (r) => {
-        const n = o();
-        t != null && t.set ? t.set.call(this, r) : this.__comfort_mode = r, n !== r && this.onModeChange(n, r);
+      set: (n) => {
+        const r = o();
+        t != null && t.set ? t.set.call(this, n) : this.__comfort_mode = n, r !== n && this.onModeChange(r, n);
       }
     });
   }
@@ -255,9 +255,9 @@ class at extends LGraphNode {
 }
 const y = 0, _ = 2, k = 4;
 function w(e, t) {
-  var r;
+  var n;
   if (Array.isArray(e)) {
-    for (const n of e) w(n, t);
+    for (const r of e) w(r, t);
     return;
   }
   if (!e) return;
@@ -265,9 +265,9 @@ function w(e, t) {
     e.mode = t;
   } catch {
   }
-  const o = (r = e.subgraph) == null ? void 0 : r.nodes;
+  const o = (n = e.subgraph) == null ? void 0 : n.nodes;
   if (Array.isArray(o))
-    for (const n of o) w(n, t);
+    for (const r of o) w(r, t);
 }
 function X(e) {
   var o;
@@ -276,33 +276,33 @@ function X(e) {
 }
 function ut(e, t, o) {
   var c, a, l, f;
-  const r = e.graph;
-  if (!r) return [];
-  const n = [], s = /* @__PURE__ */ new Set(), i = (p) => {
+  const n = e.graph;
+  if (!n) return [];
+  const r = [], s = /* @__PURE__ */ new Set(), i = (p) => {
     if (!p || s.has(p)) return;
     s.add(p);
     let d;
     t === "OUTPUT" ? d = (p.outputs || []).flatMap((u) => u.links || []) : d = (p.inputs || []).map((u) => u.link);
     for (const u of d) {
       if (u == null) continue;
-      const g = r.links[u];
+      const g = n.links[u];
       if (!g) continue;
-      const h = t === "OUTPUT" ? g.target_id : g.origin_id, x = r.getNodeById(h);
-      !x || s.has(x) || (X(x) ? i(x) : n.push(x));
+      const h = t === "OUTPUT" ? g.target_id : g.origin_id, x = n.getNodeById(h);
+      !x || s.has(x) || (X(x) ? i(x) : r.push(x));
     }
   };
   if (o != null) {
     const p = t === "OUTPUT" ? ((a = (c = e.outputs) == null ? void 0 : c[o]) == null ? void 0 : a.links) || [] : [(f = (l = e.inputs) == null ? void 0 : l[o]) == null ? void 0 : f.link];
     for (const d of p) {
       if (d == null) continue;
-      const u = r.links[d];
+      const u = n.links[d];
       if (!u) continue;
-      const g = t === "OUTPUT" ? u.target_id : u.origin_id, h = r.getNodeById(g);
-      !h || s.has(h) || (X(h) ? i(h) : n.push(h));
+      const g = t === "OUTPUT" ? u.target_id : u.origin_id, h = n.getNodeById(g);
+      !h || s.has(h) || (X(h) ? i(h) : r.push(h));
     }
   } else
     i(e);
-  return n;
+  return r;
 }
 function C(e, t) {
   return ut(e, "INPUT", t);
@@ -313,18 +313,18 @@ function tt(e, t) {
 function U(e) {
   const t = e == null ? void 0 : e._children;
   return t ? Array.from(t).filter((o) => {
-    var r;
-    return o && (o.isLGraphNode || ((r = o.constructor) == null ? void 0 : r.type));
+    var n;
+    return o && (o.isLGraphNode || ((n = o.constructor) == null ? void 0 : n.type));
   }) : [];
 }
 function At(e) {
   var c, a, l, f, p, d, u, g;
   const t = e.graph;
   if (!t) return null;
-  const o = t._groups || t.groups || [], r = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, n = ((a = e.pos) == null ? void 0 : a[1]) ?? 0, s = ((l = e.size) == null ? void 0 : l[0]) ?? 0, i = ((f = e.size) == null ? void 0 : f[1]) ?? 0;
+  const o = t._groups || t.groups || [], n = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, r = ((a = e.pos) == null ? void 0 : a[1]) ?? 0, s = ((l = e.size) == null ? void 0 : l[0]) ?? 0, i = ((f = e.size) == null ? void 0 : f[1]) ?? 0;
   for (const h of o) {
     const x = ((p = h.pos) == null ? void 0 : p[0]) ?? 0, j = ((d = h.pos) == null ? void 0 : d[1]) ?? 0, yt = ((u = h.size) == null ? void 0 : u[0]) ?? 0, wt = ((g = h.size) == null ? void 0 : g[1]) ?? 0;
-    if (r >= x && n >= j && r + s <= x + yt && n + i <= j + wt)
+    if (n >= x && r >= j && n + s <= x + yt && r + i <= j + wt)
       return h;
   }
   return null;
@@ -333,18 +333,18 @@ class S extends at {
   constructor(t) {
     super(t), this.addInput("", "*");
   }
-  onConnectionsChange(t, o, r, n, s) {
+  onConnectionsChange(t, o, n, r, s) {
     var i;
-    (i = super.onConnectionsChange) == null || i.call(this, t, o, r, n, s), this.stabilizeFanIn(), this.onConnectedNodesChanged(C(this));
+    (i = super.onConnectionsChange) == null || i.call(this, t, o, n, r, s), this.stabilizeFanIn(), this.onConnectedNodesChanged(C(this));
   }
   /** Keep a trailing free `*` input; rename connected inputs to node titles. */
   stabilizeFanIn() {
     if (!this.inputs) return;
     for (let o = 0; o < this.inputs.length; o++) {
-      const r = this.inputs[o];
-      if (r.link != null) {
-        const n = C(this, o)[0], s = (n == null ? void 0 : n.title) || "";
-        r.name !== s && (r.name = s);
+      const n = this.inputs[o];
+      if (n.link != null) {
+        const r = C(this, o)[0], s = (r == null ? void 0 : r.title) || "";
+        n.name !== s && (n.name = s);
       }
     }
     const t = this.inputs[this.inputs.length - 1];
@@ -372,28 +372,28 @@ class pt extends S {
         const o = document.createElement("div");
         o.className = "comfort-node-empty", o.textContent = "Connect nodes to control them", t.appendChild(o);
       }
-      this.rows.forEach((o, r) => {
-        const n = document.createElement("div");
-        n.className = "comfort-node-row" + (o.on ? "" : " off"), n.dataset.idx = String(r);
+      this.rows.forEach((o, n) => {
+        const r = document.createElement("div");
+        r.className = "comfort-node-row" + (o.on ? "" : " off"), r.dataset.idx = String(n);
         const s = document.createElement("button");
-        s.type = "button", s.className = "comfort-toggle " + (o.on ? "on" : "off"), s.textContent = o.on ? "ON" : "OFF", n.appendChild(s);
+        s.type = "button", s.className = "comfort-toggle " + (o.on ? "on" : "off"), s.textContent = o.on ? "ON" : "OFF", r.appendChild(s);
         const i = document.createElement("span");
-        i.className = "comfort-node-title", i.textContent = o.title, i.title = o.title, n.appendChild(i), t.appendChild(n);
+        i.className = "comfort-node-title", i.textContent = o.title, i.title = o.title, r.appendChild(i), t.appendChild(r);
       }), this.resizeForRows();
     }
   }
   resizeForRows() {
-    var r;
+    var n;
     if (!this.size) return;
     const t = zt * 2 + this.rows.length * Pt, o = Math.max(this.size[0] || 0, Ft);
-    (this.size[1] !== t || this.size[0] !== o) && ((r = this.setSize) == null || r.call(this, [o, t]));
+    (this.size[1] !== t || this.size[0] !== o) && ((n = this.setSize) == null || n.call(this, [o, t]));
   }
   bindListEvents() {
     const t = this.listEl;
     t && t.addEventListener("click", (o) => {
-      const n = o.target.closest(".comfort-node-row");
-      if (!n) return;
-      const s = Number(n.dataset.idx), i = this.rows[s];
+      const r = o.target.closest(".comfort-node-row");
+      if (!r) return;
+      const s = Number(r.dataset.idx), i = this.rows[s];
       i && (i.on = !i.on, this.applyRowMode(i), this.renderList());
     });
   }
@@ -408,9 +408,9 @@ class pt extends S {
   /** Rebuild rows from live connections. Called on connect/disconnect/load. */
   syncRows() {
     const t = C(this), o = [];
-    for (const r of t) {
-      const n = r.title || r.type || "node", s = this.rows.find((c) => c.node === r), i = s ? s.on : r.mode === this.modeOn;
-      o.push({ node: r, title: n, on: i });
+    for (const n of t) {
+      const r = n.title || n.type || "node", s = this.rows.find((c) => c.node === n), i = s ? s.on : n.mode === this.modeOn;
+      o.push({ node: n, title: r, on: i });
     }
     this.rows = o, this.renderList();
   }
@@ -465,20 +465,20 @@ class Ht extends S {
   onConnectedNodesChanged(t) {
     if (this.configuring) return;
     const o = t;
-    for (const r of o)
-      r.mode !== this.mode && w(r, this.mode);
+    for (const n of o)
+      n.mode !== this.mode && w(n, this.mode);
   }
   /** Propagate our mode to every connected input node (or our group). */
   onModeChange(t, o) {
     if (this.configuring) return;
-    const r = C(this);
-    if (r.length) {
-      for (const s of r) w(s, o);
+    const n = C(this);
+    if (n.length) {
+      for (const s of n) w(s, o);
       return;
     }
-    const n = At(this);
-    if (n)
-      for (const s of U(n))
+    const r = At(this);
+    if (r)
+      for (const s of U(r))
         s !== this && w(s, o);
   }
   getHelp() {
@@ -519,16 +519,16 @@ class Vt extends S {
    */
   onModeChange(t, o) {
     if (super.onModeChange(t, o), this.configuring || C(this).length) return;
-    const n = tt(this).filter(I);
-    for (const s of n)
+    const r = tt(this).filter(I);
+    for (const s of r)
       s.mode !== o && w(s, o);
   }
   /**
    * Restrict the REPEATER output to Repeater nodes only.
    * `inputNode` is the node whose input we are connecting to.
    */
-  onConnectOutput(t, o, r, n, s) {
-    return n ? I(n) : !0;
+  onConnectOutput(t, o, n, r, s) {
+    return r ? I(r) : !0;
   }
   /** Vote on the input modes and drive the connected Repeater. */
   evaluate() {
@@ -545,7 +545,7 @@ class Vt extends S {
       }
     }
     if (o === void 0) return;
-    const r = Yt[o], n = r ? qt[String((c = this.properties) == null ? void 0 : c[r])] : o, s = n !== void 0 ? n : o;
+    const n = Yt[o], r = n ? qt[String((c = this.properties) == null ? void 0 : c[n])] : o, s = r !== void 0 ? r : o;
     if (s === -99) return;
     const i = tt(this).filter(I);
     for (const a of i)
@@ -594,9 +594,9 @@ class Kt extends S {
     if (this.configuring) return;
     this.tempEnabled = null;
     const t = C(this);
-    if (!t.length || !t.every((n) => n.mode === _)) return;
-    const r = t[Math.floor(Math.random() * t.length)];
-    r && (w(r, y), this.tempEnabled = r);
+    if (!t.length || !t.every((r) => r.mode === _)) return;
+    const n = t[Math.floor(Math.random() * t.length)];
+    n && (w(n, y), this.tempEnabled = n);
   }
   /** Called after the prompt build; mute the temporarily-enabled node back. */
   onPromptEnd() {
@@ -628,23 +628,23 @@ function Qt() {
   nt = !0;
   const e = B, t = e.queuePrompt;
   let o = !1;
-  e.queuePrompt = async function(...n) {
+  e.queuePrompt = async function(...r) {
     o = !0;
     try {
-      return await t.apply(e, n);
+      return await t.apply(e, r);
     } finally {
       o = !1;
     }
   };
-  const r = e.graphToPrompt;
-  e.graphToPrompt = function(...n) {
+  const n = e.graphToPrompt;
+  e.graphToPrompt = function(...r) {
     if (o)
       for (const c of A)
         try {
           c.onPromptStart();
         } catch {
         }
-    const s = r.apply(e, n), i = () => {
+    const s = n.apply(e, r), i = () => {
       for (const c of A)
         try {
           c.onPromptEnd();
@@ -660,23 +660,23 @@ const Zt = Kt, q = "Fast Groups Muter (comfort)", Y = "Fast Groups Bypasser (com
 function ee(e) {
   const t = e.graph;
   if (!t) return [];
-  const o = /* @__PURE__ */ new Set(), r = [], n = (s) => {
+  const o = /* @__PURE__ */ new Set(), n = [], r = (s) => {
     var i;
     if (!(!s || o.has(s))) {
       o.add(s);
-      for (const c of s._groups || s.groups || []) r.push(c);
-      for (const c of s._subgraphs || []) n(c);
+      for (const c of s._groups || s.groups || []) n.push(c);
+      for (const c of s._subgraphs || []) r(c);
       for (const c of s._nodes || [])
-        (i = c.subgraph) != null && i._groups && n(c.subgraph);
+        (i = c.subgraph) != null && i._groups && r(c.subgraph);
     }
   };
-  return n(t), r.sort((s, i) => {
+  return r(t), n.sort((s, i) => {
     var p, d, u, g;
     const c = ((p = s.pos) == null ? void 0 : p[1]) ?? 0, a = ((d = i.pos) == null ? void 0 : d[1]) ?? 0;
     if (c !== a) return c - a;
     const l = ((u = s.pos) == null ? void 0 : u[0]) ?? 0, f = ((g = i.pos) == null ? void 0 : g[0]) ?? 0;
     return l !== f ? l - f : String(s.title || "").localeCompare(String(i.title || ""));
-  }), r;
+  }), n;
 }
 function oe(e) {
   return U(e).some((t) => t.mode === y);
@@ -693,21 +693,21 @@ class mt extends at {
       setValue: () => {
       }
     }), this.listEl.addEventListener("click", (t) => {
-      const r = t.target.closest(".comfort-node-row");
-      if (!r) return;
-      const n = this.rows[Number(r.dataset.idx)];
-      n && (this.applyGroupMode(n, !n.on), this.refresh());
+      const n = t.target.closest(".comfort-node-row");
+      if (!n) return;
+      const r = this.rows[Number(n.dataset.idx)];
+      r && (this.applyGroupMode(r, !r.on), this.refresh());
     }), this.refresh();
   }
   applyGroupMode(t, o) {
-    const r = U(t.group);
-    w(r, o ? this.modeOn : this.modeOff);
+    const n = U(t.group);
+    w(n, o ? this.modeOn : this.modeOff);
   }
   /** Rebuild the group list. Called on a shared interval + on demand. */
   refresh() {
     var s;
     const t = ee(this), o = String(((s = this.properties) == null ? void 0 : s.matchTitle) || "").trim();
-    let r = t.map((i) => ({
+    let n = t.map((i) => ({
       group: i,
       title: String(i.title || "group"),
       on: oe(i)
@@ -715,38 +715,38 @@ class mt extends at {
     if (o)
       try {
         const i = new RegExp(o, "i");
-        r = r.filter((c) => i.test(c.title));
+        n = n.filter((c) => i.test(c.title));
       } catch {
-        r = r.filter((i) => i.title.toLowerCase().includes(o.toLowerCase()));
+        n = n.filter((i) => i.title.toLowerCase().includes(o.toLowerCase()));
       }
-    const n = r.map((i) => i.title + (i.on ? 1 : 0)).join("|");
-    n !== this.lastKey && (this.lastKey = n, this.rows = r, this.renderList());
+    const r = n.map((i) => i.title + (i.on ? 1 : 0)).join("|");
+    r !== this.lastKey && (this.lastKey = r, this.rows = n, this.renderList());
   }
   renderList() {
     var o;
     const t = this.listEl;
     if (t) {
       if (t.innerHTML = "", !this.rows.length) {
-        const r = document.createElement("div");
-        r.className = "comfort-node-empty", r.textContent = "No groups in this workflow", t.appendChild(r);
+        const n = document.createElement("div");
+        n.className = "comfort-node-empty", n.textContent = "No groups in this workflow", t.appendChild(n);
       }
-      if (this.rows.forEach((r, n) => {
+      if (this.rows.forEach((n, r) => {
         const s = document.createElement("div");
-        s.className = "comfort-node-row" + (r.on ? "" : " off"), s.dataset.idx = String(n);
+        s.className = "comfort-node-row" + (n.on ? "" : " off"), s.dataset.idx = String(r);
         const i = document.createElement("button");
-        i.type = "button", i.className = "comfort-toggle " + (r.on ? "on" : "off"), i.textContent = r.on ? "ON" : "OFF", s.appendChild(i);
+        i.type = "button", i.className = "comfort-toggle " + (n.on ? "on" : "off"), i.textContent = n.on ? "ON" : "OFF", s.appendChild(i);
         const c = document.createElement("span");
-        c.className = "comfort-node-title", c.textContent = r.title, c.title = r.title, s.appendChild(c), t.appendChild(s);
+        c.className = "comfort-node-title", c.textContent = n.title, c.title = n.title, s.appendChild(c), t.appendChild(s);
       }), this.size) {
-        const r = Xt * 2 + this.rows.length * Jt, n = Math.max(this.size[0] || 0, te);
-        (this.size[1] !== r || this.size[0] !== n) && ((o = this.setSize) == null || o.call(this, [n, r]));
+        const n = Xt * 2 + this.rows.length * Jt, r = Math.max(this.size[0] || 0, te);
+        (this.size[1] !== n || this.size[0] !== r) && ((o = this.setSize) == null || o.call(this, [r, n]));
       }
     }
   }
   setAllGroups(t) {
     for (const o of this.rows) {
-      const r = t === null ? !o.on : t;
-      this.applyGroupMode(o, r);
+      const n = t === null ? !o.on : t;
+      this.applyGroupMode(o, n);
     }
     this.refresh();
   }
@@ -808,19 +808,27 @@ class ue {
   }
   labelFor(t) {
     var s, i, c, a;
-    const o = (s = this.nodeMap) == null ? void 0 : s[String(t)], r = ((i = o == null ? void 0 : o._meta) == null ? void 0 : i.title) || (o == null ? void 0 : o.class_type);
-    if (r) return r;
-    const n = (a = (c = B.graph) == null ? void 0 : c.getNodeById) == null ? void 0 : a.call(c, String(t));
-    return (n == null ? void 0 : n.title) || (n == null ? void 0 : n.type);
+    const o = (s = this.nodeMap) == null ? void 0 : s[String(t)], n = ((i = o == null ? void 0 : o._meta) == null ? void 0 : i.title) || (o == null ? void 0 : o.class_type);
+    if (n) return n;
+    const r = (a = (c = B.graph) == null ? void 0 : c.getNodeById) == null ? void 0 : a.call(c, String(t));
+    return (r == null ? void 0 : r.title) || (r == null ? void 0 : r.type);
   }
-  executing(t, o, r) {
-    var s;
+  // `executing` event: the payload is the raw node id (string), or null when the
+  // run finishes. A change of node closes out the previous one.
+  setExecuting(t) {
+    var n;
     if (t == null) {
-      this.currentlyExecuting = null;
+      this.currentlyExecuting && this.executedNodeIds.push(this.currentlyExecuting.nodeId), this.currentlyExecuting = null;
       return;
     }
-    const n = String(t);
-    ((s = this.currentlyExecuting) == null ? void 0 : s.nodeId) !== n && (this.currentlyExecuting && this.executedNodeIds.push(this.currentlyExecuting.nodeId), this.currentlyExecuting = { nodeId: n, nodeLabel: this.labelFor(t), pass: 0 }), o != null && ((!this.currentlyExecuting.step || o < this.currentlyExecuting.step) && (this.currentlyExecuting.pass += 1), this.currentlyExecuting.step = o, this.currentlyExecuting.maxSteps = r);
+    const o = String(t);
+    ((n = this.currentlyExecuting) == null ? void 0 : n.nodeId) !== o && (this.currentlyExecuting && this.executedNodeIds.push(this.currentlyExecuting.nodeId), this.currentlyExecuting = { nodeId: o, nodeLabel: this.labelFor(t), pass: 0 });
+  }
+  // `progress` event: step/max for the currently-executing node (the node id is
+  // implied by the preceding `executing` event and not re-sent).
+  setStep(t, o) {
+    const n = this.currentlyExecuting;
+    !n || t == null || ((!n.step || t < n.step) && (n.pass += 1), n.step = t, n.maxSteps = o);
   }
   error(t) {
     this.errorDetails = t;
@@ -830,33 +838,32 @@ class pe extends EventTarget {
   constructor() {
     super(), this.prompts = /* @__PURE__ */ new Map(), this.current = null, this.queueRemaining = 0;
     const t = this, o = b.queuePrompt.bind(b);
-    b.queuePrompt = async function(r, n, ...s) {
+    b.queuePrompt = async function(n, r, ...s) {
       let i;
       try {
-        i = await o(r, n, ...s);
+        i = await o(n, r, ...s);
       } catch (a) {
         const l = t.getOrMake("error");
         throw l.error({ exception_type: "Unknown" }), t.current = l, t.dispatch(), a;
       }
       const c = t.getOrMake((i == null ? void 0 : i.prompt_id) ?? "unknown");
-      return c.setPrompt(n), t.current || (t.current = c), t.prompts.set((i == null ? void 0 : i.prompt_id) ?? "unknown", c), t.dispatch(), i;
-    }, b.addEventListener("status", (r) => {
+      return c.setPrompt(r), t.current || (t.current = c), t.prompts.set((i == null ? void 0 : i.prompt_id) ?? "unknown", c), t.dispatch(), i;
+    }, b.addEventListener("status", (n) => {
       var s, i;
-      const n = (i = (s = r.detail) == null ? void 0 : s.exec_info) == null ? void 0 : i.queue_remaining;
-      typeof n == "number" && (this.queueRemaining = n, this.dispatch());
-    }), b.addEventListener("execution_start", (r) => {
-      var n;
-      this.current = this.getOrMake(((n = r.detail) == null ? void 0 : n.prompt_id) ?? "unknown"), this.dispatch();
-    }), b.addEventListener("executing", (r) => {
-      const n = r.detail;
-      this.current || (this.current = this.getOrMake((n == null ? void 0 : n.prompt_id) ?? "unknown")), this.current.executing((n == null ? void 0 : n.node) ?? null, n == null ? void 0 : n.value, n == null ? void 0 : n.max), this.dispatch(), (n == null ? void 0 : n.node) == null && (this.current = null);
-    }), b.addEventListener("progress", (r) => {
-      const n = r.detail;
-      this.current || (this.current = this.getOrMake((n == null ? void 0 : n.prompt_id) ?? "unknown")), this.current.executing(n == null ? void 0 : n.node, n == null ? void 0 : n.value, n == null ? void 0 : n.max), this.dispatch();
-    }), b.addEventListener("execution_error", (r) => {
+      const r = (i = (s = n.detail) == null ? void 0 : s.exec_info) == null ? void 0 : i.queue_remaining;
+      typeof r == "number" && (this.queueRemaining = r, this.dispatch());
+    }), b.addEventListener("execution_start", (n) => {
+      var r;
+      this.current = this.getOrMake(((r = n.detail) == null ? void 0 : r.prompt_id) ?? "unknown"), this.dispatch();
+    }), b.addEventListener("executing", (n) => {
+      this.current || (this.current = this.getOrMake("unknown")), this.current.setExecuting(n.detail), this.dispatch(), n.detail == null && (this.current = null);
+    }), b.addEventListener("progress", (n) => {
+      const r = n.detail;
+      this.current || (this.current = this.getOrMake((r == null ? void 0 : r.prompt_id) ?? "unknown")), this.current.setStep(r == null ? void 0 : r.value, r == null ? void 0 : r.max), this.dispatch();
+    }), b.addEventListener("execution_error", (n) => {
       var s;
-      const n = r.detail;
-      this.current || (this.current = this.getOrMake((n == null ? void 0 : n.prompt_id) ?? "unknown")), (s = this.current) == null || s.error(n), this.dispatch();
+      const r = n.detail;
+      this.current || (this.current = this.getOrMake((r == null ? void 0 : r.prompt_id) ?? "unknown")), (s = this.current) == null || s.error(r), this.dispatch();
     });
   }
   getOrMake(t) {
@@ -882,14 +889,14 @@ function gt() {
   t.className = "comfort-progress-bar comfort-progress-nodes";
   const o = document.createElement("div");
   o.className = "comfort-progress-bar comfort-progress-steps";
-  const r = document.createElement("span");
-  return r.className = "comfort-progress-text", r.textContent = "Idle", e.append(t, o, r), document.body.appendChild(e), O = e, e;
+  const n = document.createElement("span");
+  return n.className = "comfort-progress-text", n.textContent = "Idle", e.append(t, o, n), document.body.appendChild(e), O = e, e;
 }
 function it(e) {
   var i, c, a;
-  const t = gt(), o = t.querySelector(".comfort-progress-nodes"), r = t.querySelector(".comfort-progress-bar.comfort-progress-steps"), n = t.querySelector(".comfort-progress-text"), s = e.prompt;
+  const t = gt(), o = t.querySelector(".comfort-progress-nodes"), n = t.querySelector(".comfort-progress-bar.comfort-progress-steps"), r = t.querySelector(".comfort-progress-text"), s = e.prompt;
   if (t.classList.remove("comfort-progress-error"), t.classList.toggle("comfort-progress-idle", !s), s != null && s.errorDetails) {
-    t.classList.add("comfort-progress-error"), n.textContent = `${((i = s.errorDetails) == null ? void 0 : i.exception_type) || "Error"} ${((c = s.errorDetails) == null ? void 0 : c.node_id) || ""} ${((a = s.errorDetails) == null ? void 0 : a.node_type) || ""}`.trim(), o.style.width = "100%", r.style.width = "0%";
+    t.classList.add("comfort-progress-error"), r.textContent = `${((i = s.errorDetails) == null ? void 0 : i.exception_type) || "Error"} ${((c = s.errorDetails) == null ? void 0 : c.node_id) || ""} ${((a = s.errorDetails) == null ? void 0 : a.node_type) || ""}`.trim(), o.style.width = "100%", n.style.width = "0%";
     return;
   }
   if (s != null && s.currentlyExecuting) {
@@ -904,14 +911,14 @@ function it(e) {
     let p = "";
     if (l.step != null && l.maxSteps) {
       const d = l.step / l.maxSteps * 100;
-      r.style.width = `${d}%`;
+      n.style.width = `${d}%`;
       let u = "";
       l.pass > 1 && (u = `#${l.pass} `), p = `${u}${Math.round(d)}%`;
     } else
-      r.style.width = "0%";
-    (l.nodeLabel || p) && (f += ` - ${l.nodeLabel || "???"}${p ? ` (${p})` : ""}`), n.textContent = f;
+      n.style.width = "0%";
+    (l.nodeLabel || p) && (f += ` - ${l.nodeLabel || "???"}${p ? ` (${p})` : ""}`), r.textContent = f;
   } else
-    o.style.width = "0%", r.style.width = "0%", n.textContent = e.queue ? `(${e.queue}) Queued` : "Idle";
+    o.style.width = "0%", n.style.width = "0%", r.textContent = e.queue ? `(${e.queue}) Queued` : "Idle";
 }
 function fe() {
   if (O) return;
@@ -936,8 +943,8 @@ B.registerExtension({
     if (Q(e)) {
       const t = Ct(e);
       if (t) {
-        const o = (r) => {
-          t.showSeparate = r, Ot(e);
+        const o = (n) => {
+          t.showSeparate = n, Ot(e);
         };
         return [
           null,
@@ -964,8 +971,8 @@ B.registerExtension({
     }
     if (le(e)) {
       const t = (o) => {
-        var r;
-        return (r = e.setAllRows) == null ? void 0 : r.call(e, o);
+        var n;
+        return (n = e.setAllRows) == null ? void 0 : n.call(e, o);
       };
       return [
         null,
@@ -976,8 +983,8 @@ B.registerExtension({
     }
     if (ae(e)) {
       const t = (o) => {
-        var r;
-        return (r = e.setAllGroups) == null ? void 0 : r.call(e, o);
+        var n;
+        return (n = e.setAllGroups) == null ? void 0 : n.call(e, o);
       };
       return [
         null,
