@@ -122,21 +122,24 @@ function drawButton(
 }
 
 function handlePointerDown(e: PointerEvent): void {
+  const dbg = (window as any).__comfortPDDebug;
+  const log = (m: string) => { if (Array.isArray(dbg)) dbg.push(m); };
   const canvas = app.canvas as any;
   const graph = canvas?.graph;
-  if (!graph) return;
+  if (!graph) { log('no-graph'); return; }
   const el = canvas.canvas;
-  if (!el || !(e.target instanceof Element) || !el.contains(e.target)) return;
-  if (e.button !== 0) return;
+  if (!el || !(e.target instanceof Element) || !el.contains(e.target)) { log('not-canvas'); return; }
+  if (e.button !== 0) { log('bad-button'); return; }
 
   canvas.adjustMouseEvent(e);
   const cx = (e as any).canvasX as number;
   const cy = (e as any).canvasY as number;
   const group = graph.getGroupOnPos(cx, cy);
-  if (!group) return;
+  if (!group) { log('no-group@' + cx + ',' + cy); return; }
   const { mute, bypass } = buttonRects(group);
-  if (!inRect(cx, cy, mute) && !inRect(cx, cy, bypass)) return;
+  if (!inRect(cx, cy, mute) && !inRect(cx, cy, bypass)) { log('no-hit@' + cx + ',' + cy); return; }
 
+  log('hit ' + (inRect(cx, cy, mute) ? 'mute' : 'bypass'));
   e.preventDefault();
   e.stopPropagation();
   toggleGroup(group, inRect(cx, cy, mute) ? "mute" : "bypass");
