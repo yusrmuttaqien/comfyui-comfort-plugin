@@ -796,8 +796,20 @@ function ensureFocusButton(): void {
       (gate as any).selected = true;
     }
     const canvas = (app as any).canvas;
-    canvas?.centerOnNode?.(gate);
-    canvas?.setDirty?.(true);
+    if (!canvas) return;
+    // Zoom so the gate is comfortably readable: fit it to ~half the viewport,
+    // clamped to a sane range — a clear zoom-in without going extreme. Set the
+    // scale first so centerOnNode() centers at the new zoom level.
+    const size = (gate as any).size || [200, 150];
+    const nodeW = size[0] || 200;
+    const nodeH = size[1] || 150;
+    const cEl = canvas.canvas;
+    const vw = (cEl && cEl.clientWidth) || window.innerWidth;
+    const vh = (cEl && cEl.clientHeight) || window.innerHeight;
+    const fit = Math.min((vw * 0.5) / nodeW, (vh * 0.5) / nodeH);
+    canvas.ds.scale = Math.min(Math.max(fit, 0.75), 2.0);
+    canvas.centerOnNode(gate);
+    canvas.setDirty(true);
   });
   anchor.parentElement.insertBefore(btn, anchor.nextSibling);
   focusBtn = btn;

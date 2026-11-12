@@ -69,7 +69,7 @@ function g(e) {
   const n = Nt(e), s = St(n !== !1, n === !1 ? "ALL OFF" : "ALL ON");
   s.className += " comfort-toggle-all", s.title = "Toggle all loras", o.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(B("Model")), r.appendChild(B("Clip"))) : r.appendChild(B("Strength")), o.appendChild(r), t.appendChild(o), e.rows.forEach((u, a) => t.appendChild(Yt(e, u, a)));
+  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(B("Model")), r.appendChild(B("Clip"))) : r.appendChild(B("Strength")), o.appendChild(r), t.appendChild(o), e.rows.forEach((l, a) => t.appendChild(Yt(e, l, a)));
   const i = document.createElement("div");
   i.className = "comfort-lora-footer";
   const c = document.createElement("button");
@@ -102,11 +102,11 @@ async function tt(e, t, o, n) {
 function Kt(e, t, o, n) {
   const s = t.rows[o];
   if (!s) return;
-  const r = o > 0, i = o < t.rows.length - 1, c = (u) => {
-    const a = o + u;
+  const r = o > 0, i = o < t.rows.length - 1, c = (l) => {
+    const a = o + l;
     if (a < 0 || a >= t.rows.length) return;
-    const l = t.rows[o];
-    t.rows[o] = t.rows[a], t.rows[a] = l, g(t);
+    const u = t.rows[o];
+    t.rows[o] = t.rows[a], t.rows[a] = u, g(t);
   };
   new LiteGraph.ContextMenu(
     [
@@ -147,7 +147,7 @@ function Jt(e, t) {
     if (!r) return;
     const i = Number(r.dataset.idx), c = t.rows[i];
     if (!c) return;
-    const u = !!s.closest(".comfort-strength-clip");
+    const l = !!s.closest(".comfort-strength-clip");
     if (s.closest(".comfort-toggle")) {
       c.on = !c.on, g(t);
       return;
@@ -159,11 +159,11 @@ function Jt(e, t) {
       return;
     }
     if (s.closest(".comfort-dec")) {
-      X(c, -1, u), g(t);
+      X(c, -1, l), g(t);
       return;
     }
     if (s.closest(".comfort-inc")) {
-      X(c, 1, u), g(t);
+      X(c, 1, l), g(t);
       return;
     }
     if (s.closest(".comfort-remove")) {
@@ -269,7 +269,7 @@ function et(e) {
   return t.includes("Reroute") || t.includes("Node Collector") || t.includes("Node Combiner");
 }
 function kt(e, t, o) {
-  var c, u, a, l;
+  var c, l, a, u;
   const n = e.graph;
   if (!n) return [];
   const s = [], r = /* @__PURE__ */ new Set(), i = (d) => {
@@ -286,7 +286,7 @@ function kt(e, t, o) {
     }
   };
   if (o != null) {
-    const d = t === "OUTPUT" ? ((u = (c = e.outputs) == null ? void 0 : c[o]) == null ? void 0 : u.links) || [] : [(l = (a = e.inputs) == null ? void 0 : a[o]) == null ? void 0 : l.link];
+    const d = t === "OUTPUT" ? ((l = (c = e.outputs) == null ? void 0 : c[o]) == null ? void 0 : l.links) || [] : [(u = (a = e.inputs) == null ? void 0 : a[o]) == null ? void 0 : u.link];
     for (const p of d) {
       if (p == null) continue;
       const f = n.links[p];
@@ -304,7 +304,7 @@ function k(e, t) {
 function ot(e, t) {
   return kt(e, "OUTPUT", t);
 }
-function z(e) {
+function F(e) {
   if (e != null && e.graph && typeof e.recomputeInsideNodes == "function")
     try {
       e.recomputeInsideNodes();
@@ -317,13 +317,13 @@ function z(e) {
   }) : [];
 }
 function Xt(e) {
-  var c, u, a, l, d, p, f, h;
+  var c, l, a, u, d, p, f, h;
   const t = e.graph;
   if (!t) return null;
-  const o = t._groups || t.groups || [], n = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((u = e.pos) == null ? void 0 : u[1]) ?? 0, r = ((a = e.size) == null ? void 0 : a[0]) ?? 0, i = ((l = e.size) == null ? void 0 : l[1]) ?? 0;
+  const o = t._groups || t.groups || [], n = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((l = e.pos) == null ? void 0 : l[1]) ?? 0, r = ((a = e.size) == null ? void 0 : a[0]) ?? 0, i = ((u = e.size) == null ? void 0 : u[1]) ?? 0;
   for (const m of o) {
-    const y = ((d = m.pos) == null ? void 0 : d[0]) ?? 0, _ = ((p = m.pos) == null ? void 0 : p[1]) ?? 0, zt = ((f = m.size) == null ? void 0 : f[0]) ?? 0, Dt = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
-    if (n >= y && s >= _ && n + r <= y + zt && s + i <= _ + Dt)
+    const y = ((d = m.pos) == null ? void 0 : d[0]) ?? 0, _ = ((p = m.pos) == null ? void 0 : p[1]) ?? 0, Ft = ((f = m.size) == null ? void 0 : f[0]) ?? 0, Dt = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
+    if (n >= y && s >= _ && n + r <= y + Ft && s + i <= _ + Dt)
       return m;
   }
   return null;
@@ -480,7 +480,7 @@ class le extends R {
     }
     const s = Xt(this);
     if (s)
-      for (const r of z(s))
+      for (const r of F(s))
         r !== this && w(r, o);
   }
   getHelp() {
@@ -566,8 +566,8 @@ class me extends R {
     if (this.configuring) return;
     const t = k(this);
     let o;
-    for (const u of t) {
-      const a = u.mode;
+    for (const l of t) {
+      const a = l.mode;
       if (o === void 0) o = a;
       else {
         if (o === a && (a === C || a === S)) continue;
@@ -578,8 +578,8 @@ class me extends R {
     const n = he[o], s = n ? fe[String((c = this.properties) == null ? void 0 : c[n])] : o, r = s !== void 0 ? s : o;
     if (r === -99) return;
     const i = ot(this).filter(G);
-    for (const u of i)
-      u.mode !== r && w(u, r);
+    for (const l of i)
+      l.mode !== r && w(l, r);
   }
   getHelp() {
     return `<p>Watches the mode of the nodes connected to its inputs and drives
@@ -712,14 +712,14 @@ async function ut(e, t, o) {
   if (s) return s;
   const r = (async () => {
     var a;
-    const c = (a = (await It(n, void 0, o)).body) == null ? void 0 : a.data, u = Array.isArray(c) ? c.map((l) => {
+    const c = (a = (await It(n, void 0, o)).body) == null ? void 0 : a.data, l = Array.isArray(c) ? c.map((u) => {
       var d;
       return {
-        id: String(l.id),
-        value: String(((d = l.status) == null ? void 0 : d.value) ?? "")
+        id: String(u.id),
+        value: String(((d = u.status) == null ? void 0 : d.value) ?? "")
       };
     }) : [];
-    return lt.set(n, { at: Date.now(), models: u }), u;
+    return lt.set(n, { at: Date.now(), models: l }), l;
   })().finally(() => H.delete(n));
   return H.set(n, r), r;
 }
@@ -802,12 +802,12 @@ class Re extends W {
     i.type = "button", i.className = "comfort-ninfer-ctrl", i.textContent = "Cancel", i.hidden = !0;
     const c = document.createElement("button");
     c.type = "button", c.className = "comfort-ninfer-ctrl", c.textContent = "Skip", c.hidden = !0, s.appendChild(r), s.appendChild(i), s.appendChild(c), t.appendChild(s);
-    const u = document.createElement("div");
-    u.className = "comfort-ninfer-bulk";
+    const l = document.createElement("div");
+    l.className = "comfort-ninfer-bulk";
     const a = document.createElement("button");
     a.type = "button", a.className = "comfort-bulk", a.dataset.bulk = "all", a.textContent = "Select all";
-    const l = document.createElement("button");
-    l.type = "button", l.className = "comfort-bulk", l.dataset.bulk = "none", l.textContent = "Deselect all", u.appendChild(a), u.appendChild(l), t.appendChild(u);
+    const u = document.createElement("button");
+    u.type = "button", u.className = "comfort-bulk", u.dataset.bulk = "none", u.textContent = "Deselect all", l.appendChild(a), l.appendChild(u), t.appendChild(l);
     const d = document.createElement("div");
     d.className = "comfort-ninfer-rows", t.appendChild(d);
     const p = {
@@ -818,7 +818,7 @@ class Re extends W {
       statusText: r,
       cancelBtn: i,
       skipBtn: c,
-      bulkEl: u,
+      bulkEl: l,
       rowsEl: d,
       models: [],
       selected: /* @__PURE__ */ new Set(),
@@ -843,7 +843,7 @@ class Re extends W {
       if (h.type !== "checkbox" || !h.dataset.id) return;
       const m = new Set(p.selected);
       h.checked ? m.add(h.dataset.id) : m.delete(h.dataset.id), p.selected = m, this.properties.selected = Array.from(m);
-    }), u.addEventListener("click", (f) => {
+    }), l.addEventListener("click", (f) => {
       var m;
       const h = (m = f.target.dataset) == null ? void 0 : m.bulk;
       if (h === "all") {
@@ -886,8 +886,8 @@ class Re extends W {
       i.type = "checkbox", i.checked = t.selected.has(n.id), i.dataset.id = n.id, r.appendChild(i);
       const c = document.createElement("span");
       c.className = "comfort-node-title", c.textContent = n.id, c.title = n.id, r.appendChild(c);
-      const u = n.value || "unknown", a = document.createElement("span");
-      a.className = "comfort-ninfer-badge " + (u === "loaded" ? "loaded" : u === "sleeping" ? "suspended" : "other"), a.textContent = u === "sleeping" ? "suspended" : u, r.appendChild(a), o.appendChild(r);
+      const l = n.value || "unknown", a = document.createElement("span");
+      a.className = "comfort-ninfer-badge " + (l === "loaded" ? "loaded" : l === "sleeping" ? "suspended" : "other"), a.textContent = l === "sleeping" ? "suspended" : l, r.appendChild(a), o.appendChild(r);
     }
   }
   idleSummary() {
@@ -971,7 +971,7 @@ class Re extends W {
     const s = this.computeSelected(n);
     t.selected = s, this.renderRows();
     const r = n.filter(
-      (u) => u.value === "loaded" && s.has(u.id)
+      (l) => l.value === "loaded" && s.has(l.id)
     );
     if (!r.length)
       return this.finish("Ready (nothing to suspend)", !1), { proceed: !0 };
@@ -979,8 +979,8 @@ class Re extends W {
     try {
       for (const a of r) {
         if (t.cancel || t.skip) break;
-        const l = Date.now();
-        for (this.beginSuspending(a.id, l); !(t.cancel || t.skip); ) {
+        const u = Date.now();
+        for (this.beginSuspending(a.id, u); !(t.cancel || t.skip); ) {
           const d = new AbortController();
           t.abort = d;
           let p;
@@ -992,7 +992,7 @@ class Re extends W {
           }
           if (p.status === 200) break;
           if (p.status === 409) {
-            if (this.setBusy(a.id, l), await Oe(_e), t.cancel || t.skip) break;
+            if (this.setBusy(a.id, u), await Oe(_e), t.cancel || t.skip) break;
             if (Date.now() - i > c)
               throw new Error("timed out waiting for NInfer to idle");
             continue;
@@ -1004,9 +1004,9 @@ class Re extends W {
         return this.finish("Cancelled", !1), { proceed: !1 };
       if (t.skip)
         return this.finish("Skipped — running now", !1), { proceed: !0 };
-      const u = Math.round((Date.now() - i) / 1e3);
+      const l = Math.round((Date.now() - i) / 1e3);
       this.finish(
-        `Suspended ${r.length} model${r.length === 1 ? "" : "s"} (${u}s)`,
+        `Suspended ${r.length} model${r.length === 1 ? "" : "s"} (${l}s)`,
         !1
       ), t.resultHold = 2;
       try {
@@ -1014,8 +1014,8 @@ class Re extends W {
       } catch {
       }
       return { proceed: !0 };
-    } catch (u) {
-      return this.finish(u instanceof Error ? u.message : String(u), !0), { proceed: !1 };
+    } catch (l) {
+      return this.finish(l instanceof Error ? l.message : String(l), !0), { proceed: !1 };
     } finally {
       t.abort = null;
     }
@@ -1105,23 +1105,24 @@ function Pe() {
   if (!e || !e.parentElement) return;
   const t = document.createElement("button");
   t.type = "button", t.className = "comfort-topbar-focus", t.title = "Focus NInfer gate", t.textContent = "⚡ NInfer", t.addEventListener("click", () => {
-    var r, i;
     const o = Pt();
     if (!o) return;
     const n = o.graph;
     if (n) {
-      for (const c of n._nodes || []) c.selected = !1;
+      for (const p of n._nodes || []) p.selected = !1;
       o.selected = !0;
     }
     const s = v.canvas;
-    (r = s == null ? void 0 : s.centerOnNode) == null || r.call(s, o), (i = s == null ? void 0 : s.setDirty) == null || i.call(s, !0);
+    if (!s) return;
+    const r = o.size || [200, 150], i = r[0] || 200, c = r[1] || 150, l = s.canvas, a = l && l.clientWidth || window.innerWidth, u = l && l.clientHeight || window.innerHeight, d = Math.min(a * 0.5 / i, u * 0.5 / c);
+    s.ds.scale = Math.min(Math.max(d, 0.75), 2), s.centerOnNode(o), s.setDirty(!0);
   }), e.parentElement.insertBefore(t, e.nextSibling), O = t;
 }
-const Fe = () => {
+const ze = () => {
   Pe(), O && (O.style.display = Pt() ? "" : "none");
 };
-function ze() {
-  E.schedule(Fe, 1);
+function Fe() {
+  E.schedule(ze, 1);
 }
 const q = "Fast Groups Muter (comfort)", K = "Fast Groups Bypasser (comfort)", De = 280;
 function Be(e) {
@@ -1139,16 +1140,16 @@ function Be(e) {
   };
   return s(t), n.sort((r, i) => {
     var d, p, f, h;
-    const c = ((d = r.pos) == null ? void 0 : d[1]) ?? 0, u = ((p = i.pos) == null ? void 0 : p[1]) ?? 0;
-    if (c !== u) return c - u;
-    const a = ((f = r.pos) == null ? void 0 : f[0]) ?? 0, l = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
-    return a !== l ? a - l : String(r.title || "").localeCompare(String(i.title || ""));
+    const c = ((d = r.pos) == null ? void 0 : d[1]) ?? 0, l = ((p = i.pos) == null ? void 0 : p[1]) ?? 0;
+    if (c !== l) return c - l;
+    const a = ((f = r.pos) == null ? void 0 : f[0]) ?? 0, u = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
+    return a !== u ? a - u : String(r.title || "").localeCompare(String(i.title || ""));
   }), n;
 }
 function Ue(e) {
-  return z(e).some((t) => t.mode === b);
+  return F(e).some((t) => t.mode === b);
 }
-class Ft extends W {
+class zt extends W {
   constructor(t) {
     super(t), this.modeOn = b, this.listEl = null, this.rows = [], this.lastKey = "", this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), gt.register(this);
   }
@@ -1177,7 +1178,7 @@ class Ft extends W {
     }), this.refresh();
   }
   applyGroupMode(t, o) {
-    const n = z(t.group);
+    const n = F(t.group);
     w(n, o ? this.modeOn : this.modeOff);
   }
   /** Rebuild the group list. Called on a shared interval + on demand. */
@@ -1220,12 +1221,12 @@ right-click → Properties) to filter which groups appear.</p>`;
     gt.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
-class Ge extends Ft {
+class Ge extends zt {
   constructor() {
     super(q), this.modeOff = C;
   }
 }
-class He extends Ft {
+class He extends zt {
   constructor() {
     super(K), this.modeOff = S;
   }
@@ -1264,32 +1265,32 @@ function Je(e, t) {
       s.push(a);
       continue;
     }
-    const l = String(a), d = l.indexOf("/") > -1 ? "/" : "\\", p = l.indexOf(d);
+    const u = String(a), d = u.indexOf("/") > -1 ? "/" : "\\", p = u.indexOf(d);
     if (p > -1) {
-      const f = l.slice(0, p), h = l.slice(p + 1);
-      n.has(f) || n.set(f, []), n.get(f).push({ full: l, sub: h });
+      const f = u.slice(0, p), h = u.slice(p + 1);
+      n.has(f) || n.set(f, []), n.get(f).push({ full: u, sub: h });
     } else
       s.push(a);
   }
-  const r = (a, l) => ({
-    content: l,
+  const r = (a, u) => ({
+    content: u,
     [yt]: a,
     callback: (d) => o == null ? void 0 : o(d[yt])
-  }), i = [], c = [...n.keys()].sort((a, l) => a.localeCompare(l));
+  }), i = [], c = [...n.keys()].sort((a, u) => a.localeCompare(u));
   for (const a of c) {
-    const l = n.get(a).map((d) => r(d.full, d.sub));
+    const u = n.get(a).map((d) => r(d.full, d.sub));
     i.push({
       content: `📁 ${a}`,
       has_submenu: !0,
       callback: () => {
       },
-      submenu: { options: l }
+      submenu: { options: u }
     });
   }
   for (const a of s)
     typeof a == "string" ? i.push(r(a, a)) : i.push(a);
-  const u = Object.assign({}, t);
-  return u.callback = void 0, { values: i, options: u };
+  const l = Object.assign({}, t);
+  return l.callback = void 0, { values: i, options: l };
 }
 function wt(e, t) {
   return !Array.isArray(e) || e.length < qe ? { values: e, options: t } : (t == null ? void 0 : t.className) !== "dark" ? { values: e, options: t } : e.every((o) => o == null || typeof o == "string") ? e.some((o) => typeof o == "string" && Ke.test(o)) ? Je(e, t) : { values: e, options: t } : { values: e, options: t };
@@ -1310,20 +1311,20 @@ function Ze() {
   t.__comfortAutoNest = !0, LiteGraph.ContextMenu = t;
 }
 const T = 20, xt = 6, Qe = 6;
-let F = /* @__PURE__ */ new Map();
+let z = /* @__PURE__ */ new Map();
 function Et(e, t) {
   const o = document.createElement("div");
   return o.className = "comfort-group-btn " + t, o.textContent = e, o.style.position = "fixed", o.style.display = "none", o.style.pointerEvents = "auto", o.style.zIndex = "100", o;
 }
 function Xe(e) {
-  let t = F.get(e);
+  let t = z.get(e);
   if (t) return t;
   const o = Et("M", "comfort-btn-mute"), n = Et("B", "comfort-btn-byp");
   return o.addEventListener("pointerdown", (s) => {
     s.stopPropagation(), s.preventDefault(), Ct(e, "mute");
   }), n.addEventListener("pointerdown", (s) => {
     s.stopPropagation(), s.preventDefault(), Ct(e, "bypass");
-  }), t = { group: e, mute: o, byp: n }, F.set(e, t), document.body.appendChild(o), document.body.appendChild(n), t;
+  }), t = { group: e, mute: o, byp: n }, z.set(e, t), document.body.appendChild(o), document.body.appendChild(n), t;
 }
 function vt(e, t, o, n) {
   e.style.left = `${t}px`, e.style.top = `${o}px`, e.style.width = `${T * n}px`, e.style.height = `${T * n}px`, e.style.fontSize = `${Math.max(9, T * n * 0.5)}px`;
@@ -1334,28 +1335,28 @@ function to(e, t) {
 function eo() {
   const e = v.canvas, t = e == null ? void 0 : e.graph;
   if (!t) return;
-  const n = e.canvas.getBoundingClientRect(), s = e.ds.scale, r = e.ds.offset, i = (l) => n.left + (l + r[0]) * s, c = (l) => n.top + (l + r[1]) * s, u = t._groups || [], a = /* @__PURE__ */ new Set();
-  for (const l of u)
-    (e.selected_group === l || to(l, e.mouse)) && a.add(l);
-  for (const l of a) {
-    const d = Xe(l), p = l.pos[0] + l.size[0] - xt - T, f = l.pos[1] + xt;
+  const n = e.canvas.getBoundingClientRect(), s = e.ds.scale, r = e.ds.offset, i = (u) => n.left + (u + r[0]) * s, c = (u) => n.top + (u + r[1]) * s, l = t._groups || [], a = /* @__PURE__ */ new Set();
+  for (const u of l)
+    (e.selected_group === u || to(u, e.mouse)) && a.add(u);
+  for (const u of a) {
+    const d = Xe(u), p = u.pos[0] + u.size[0] - xt - T, f = u.pos[1] + xt;
     vt(d.mute, i(p - Qe - T), c(f), s), vt(d.byp, i(p), c(f), s), d.mute.style.display = "block", d.byp.style.display = "block";
   }
-  for (const [l, d] of F)
-    a.has(l) || (d.mute.style.display = "none", d.byp.style.display = "none"), u.includes(l) || (d.mute.remove(), d.byp.remove(), F.delete(l));
+  for (const [u, d] of z)
+    a.has(u) || (d.mute.style.display = "none", d.byp.style.display = "none"), l.includes(u) || (d.mute.remove(), d.byp.remove(), z.delete(u));
 }
 function Ct(e, t) {
-  var u;
-  const o = z(e);
+  var l;
+  const o = F(e);
   if (!o.length) return;
   const n = o.every((a) => a.mode === C), s = o.every((a) => a.mode === S), r = v.graph, i = r == null ? void 0 : r.version;
   try {
     if (t === "mute") {
       const a = n ? b : C;
-      o.forEach((l) => l.mode = a);
+      o.forEach((u) => u.mode = a);
     } else {
       const a = s ? b : S;
-      o.forEach((l) => l.mode = a);
+      o.forEach((u) => u.mode = a);
     }
   } catch (a) {
     console.warn("[comfort] group toggle failed", a);
@@ -1363,7 +1364,7 @@ function Ct(e, t) {
   }
   r && r.version === i && r.setVersion(r.version + 1);
   const c = v.canvas;
-  (u = c == null ? void 0 : c.setDirty) == null || u.call(c, !0, !0);
+  (l = c == null ? void 0 : c.setDirty) == null || l.call(c, !0, !0);
 }
 function oo() {
   const e = v.canvas;
@@ -1390,7 +1391,7 @@ v.registerExtension({
   // Canvas-dependent setup (group header toggles). Done in init() so
   // app.canvas exists — ComfyUI's own selectionBorder extension does the same.
   async init() {
-    oo(), ze();
+    oo(), Fe();
   },
   nodeCreated(e) {
     Q(e) && Zt(e);
