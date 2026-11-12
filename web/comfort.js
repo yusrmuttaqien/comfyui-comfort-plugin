@@ -1058,7 +1058,10 @@ function Se(e) {
   o("hit " + (I(i, c, l) ? "mute" : "bypass")), e.preventDefault(), e.stopPropagation(), Oe(a, I(i, c, l) ? "mute" : "bypass");
 }
 function Re() {
-  const e = C.canvas, t = e.onDrawForeground;
+  const e = C.canvas;
+  if (!e || e.__comfortGroupTogglesInstalled) return;
+  e.__comfortGroupTogglesInstalled = !0;
+  const t = e.onDrawForeground;
   e.onDrawForeground = function(o, ...n) {
     t == null || t.call(this, o, ...n);
     try {
@@ -1086,9 +1089,13 @@ document.head.appendChild(Z);
 me();
 Ee();
 Ne();
-Re();
 C.registerExtension({
   name: "comfort.PowerLoraLoader",
+  // Canvas-dependent setup (group header toggles). Done in init() so
+  // app.canvas exists — ComfyUI's own selectionBorder extension does the same.
+  async init() {
+    Re();
+  },
   nodeCreated(e) {
     tt(e) && Gt(e);
   },

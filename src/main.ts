@@ -22,10 +22,15 @@ document.head.appendChild(styleEl);
 registerComfortNodes();
 setupProgressBar();
 installAutoNest();
-setupGroupToggles();
 
 app.registerExtension({
   name: "comfort.PowerLoraLoader",
+
+  // Canvas-dependent setup (group header toggles). Done in init() so
+  // app.canvas exists — ComfyUI's own selectionBorder extension does the same.
+  async init() {
+    setupGroupToggles();
+  },
 
   nodeCreated(node: any) {
     if (!isComfortLoraNode(node)) return;

@@ -146,8 +146,13 @@ function handlePointerDown(e: PointerEvent): void {
 }
 
 function setupGroupToggles(): void {
-  // Chain the official foreground hook (like ComfyUI's selectionBorder).
   const canvas = app.canvas as any;
+  if (!canvas) return;
+  // Idempotency guard (init should run once; be safe anyway).
+  if (canvas.__comfortGroupTogglesInstalled) return;
+  canvas.__comfortGroupTogglesInstalled = true;
+
+  // Chain the official foreground hook (like ComfyUI's selectionBorder).
   const original = canvas.onDrawForeground;
   canvas.onDrawForeground = function (ctx: CanvasRenderingContext2D, ...rest: unknown[]) {
     original?.call(this, ctx, ...(rest as [any]));
