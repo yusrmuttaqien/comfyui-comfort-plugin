@@ -77,6 +77,15 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 - Models stay suspended after the queue (no auto-resume); NInfer's own `auto_resume` re-loads them on the next NInfer request.
 - Composes with the Random Unmuter: both wrap `app.queuePrompt`; the gate suspends first, then the unmuter acts during the prompt build.
 
+### Refactor & performance (✅ verified on Nodes 2.0)
+- **Unified scheduler** (`src/scheduler.ts`): a single 500 ms clock that all periodic jobs register with at a tick cadence, replacing four independent `setInterval` timers (Relay 500 ms, Fast Groups 1 s, NInfer ambient 3 s, NInfer elapsed 500 ms). Relay, Fast Groups, and NInfer polling all run off this one timer now.
+- **NInfer: skip polling while the tab is hidden** — the ambient model refresh no longer fires network requests when `document.hidden`. Verified: 0 `/comfort/ninfer/forward` calls over a 4.5 s hidden window vs. 2 over an equal visible window.
+- **NInfer: shared `/v1/models` cache** — a short-TTL result cache plus in-flight coalescing means multiple gate nodes pointing at the same NInfer issue one request per poll instead of one each. Verified: 2 gates on one URL → 1 fetch per cycle. The suspend flow and the post-suspend refresh bypass the cache for a fresh read.
+- **Shared toggle-row helper** (`src/toggle-list.ts`): the Fast Muter/Bypasser and Fast Groups nodes draw an identical row, so the DOM building + sizing now live in one place (~40 lines of duplication removed).
+- **Bug fix — "Toggle all" was a no-op**: `setAllRows(null)` re-applied the current state instead of inverting. It now toggles each row (matching `setAllGroups`), so the Fast Muter/Bypasser "Toggle all" menu item actually flips every row. Verified end-to-end (row `on` + connected node mode both flip, both directions).
+- **Dead code removed**: `ComfortVirtualNode.constructed()` (+ its 7 call sites), the unused `widget` fields, an unused `app` import in auto-nest, and the local `MODE_*` constants in group-toggles (now imported from `mode-utils`).
+- Type-checks clean (`tsc --noEmit`); build 51.28 kB (gzip 14.73 kB).
+
 ## Known upstream issues being addressed
 - rgthree/rgthree-comfy#632 — Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
 - rgthree/rgthree-comfy#797 — muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload
