@@ -59,6 +59,19 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 - Auto-nest and group toggles both hook `LiteGraph.ContextMenu` / `canvas.onDrawForeground` (the official foreground callback, called in both renderers). Setup runs in the extension `init()` because `app.canvas` is not available at module-load time.
 - Group toggle buttons are `position: fixed` DOM elements, one pair per active group, removed when the group is deleted.
 
+### NInfer Suspend Gate (🚧 implemented, pending browser verification)
+- [x] Python proxy: `GET`/`POST /comfort/ninfer/forward` in `__init__.py` relays to a user-supplied NInfer URL (server-to-server, no CORS), passing through status codes incl. `409 model_busy`.
+- [x] Frontend node `NInfer Suspend Gate (comfort)` — a disconnected virtual node; one DOM widget (dual renderer) with: NInfer URL field, busy-timeout combo (indefinite / 1–60 min), live status line, Select all / Deselect all, and a per-model checkbox row (loaded models selectable; default = all loaded).
+- [x] Polls `/v1/models` every 3 s to list models + status; suspends checked loaded models on each queue via `POST /v1/models/{id}/suspend`, awaiting the synchronous suspend; retries on `409` until idle or the busy-timeout.
+- [x] Wraps `app.queuePrompt` (same pattern as the Random Unmuter) so the gate runs before the prompt is sent, per queue.
+- [x] Config (url / timeout / selection) persists in `this.properties`.
+
+#### NInfer design notes
+- The suspend call is synchronous on the NInfer side (returns when the model is suspended), so "hold the queue" is just awaiting the proxy's POST.
+- Busy handling: a `409 model_busy` (NInfer mid-request) is retried every 2 s with a visible "NInfer busy — waiting…" status; the timeout defaults to *indefinite*.
+- Models stay suspended after the queue (no auto-resume); NInfer's own `auto_resume` re-loads them on the next NInfer request.
+- Composes with the Random Unmuter: both wrap `app.queuePrompt`; the gate suspends first, then the unmuter acts during the prompt build.
+
 ## Known upstream issues being addressed
 - rgthree/rgthree-comfy#632 — Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
 - rgthree/rgthree-comfy#797 — muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload

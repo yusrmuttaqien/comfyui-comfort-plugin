@@ -51,6 +51,22 @@ bypasses) all nodes inside that group. The toggle reflects whether the group has
 any active nodes. Right-click for **Enable all** / **Disable all** / **Toggle
 all**. Set the `matchTitle` property to filter which groups appear.
 
+### NInfer Suspend Gate (comfort)
+A disconnected control node that frees GPU memory for ComfyUI by suspending
+selected NInfer models on queue:
+- Set the **NInfer URL** (e.g. `http://host:30001`).
+- The node polls `/v1/models` and lists each model with its status. **loaded**
+  models are selectable (checked by default); **Select all** / **Deselect all**
+  for bulk control.
+- On every Run, each checked loaded model is suspended
+  (`POST /v1/models/{id}/suspend`) and the queue is held until it returns. If
+  NInfer is busy (`409 model_busy`) the gate waits and retries until it idles
+  or the **busy timeout** elapses (default *indefinite*, or a number of
+  minutes).
+- Suspended models stay suspended (this plugin never resumes them).
+- NInfer calls go through a small Python proxy (`/comfort/ninfer/forward`) to
+  avoid CORS between the browser and NInfer.
+
 ## Features (no node required)
 
 These are always-on behaviors, not nodes:
@@ -88,9 +104,13 @@ Built output is committed; users clone-and-go.
 - All custom widgets are **DOM widgets** (`node.addDOMWidget`): legacy LiteGraph
   positions them directly; Nodes 2.0 mounts the same element via `WidgetDOM`.
 - No `LGraphNode`/`LGraphCanvas` prototype patching; only official extension
-  hooks (`nodeCreated`, `getNodeMenuItems`). The one exception is the Random
-  Unmuter, which wraps `app.queuePrompt` / `app.graphToPrompt` because ComfyUI
-  exposes no official queue/execute hook.
+  hooks (`nodeCreated`, `getNodeMenuItems`). The exception is queue-time
+  behavior: the Random Unmuter wraps `app.queuePrompt` / `app.graphToPrompt`
+  (ComfyUI exposes no official queue/execute hook), and the NInfer Suspend
+  Gate wraps `app.queuePrompt` to suspend models before the prompt is sent.
+- The NInfer Suspend Gate reaches NInfer through two small aiohttp proxy routes
+  in `__init__.py` (`GET`/`POST /comfort/ninfer/forward`) so the browser need
+  not call NInfer cross-origin.
 - Per-node state lives in a `WeakMap` keyed by node instance (node instances are
   destroyed/recreated on tab switch and subgraph navigation).
 - Node sizing via explicit `setSize` (works in both renderers; `setDirtyCanvas`
@@ -107,3 +127,4 @@ See [CHANGELOG.md](./CHANGELOG.md).
 - M2: Fast Muter/Bypasser, Fast Groups Muter/Bypasser, Repeater/Relay, Random
   Unmuter, Node Collector ✅
 - M3: auto-nest subdirectories, group-header quick toggles ✅
+- NInfer Suspend Gate (queue-time VRAM gate) ✅
