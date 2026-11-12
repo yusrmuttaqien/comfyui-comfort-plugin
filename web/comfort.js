@@ -61,7 +61,7 @@ function ut(e, t, n) {
   const i = document.createElement("button");
   return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", o.appendChild(i), o;
 }
-function f(e) {
+function p(e) {
   const t = e.el;
   t.innerHTML = "";
   const n = document.createElement("div");
@@ -75,11 +75,11 @@ function f(e) {
   const c = document.createElement("button");
   c.type = "button", c.className = "comfort-add-btn", c.textContent = "➕ Add Lora", i.appendChild(c), t.appendChild(i);
 }
-function pt(e) {
+function dt(e) {
   const t = E.get(e);
-  t && (f(t), b(e, t));
+  t && (p(t), b(e, t));
 }
-async function dt() {
+async function ft() {
   try {
     const e = await fetch("/api/models/loras");
     if (!e.ok) return [];
@@ -90,7 +90,7 @@ async function dt() {
   }
 }
 async function H(e, t, n, o) {
-  const s = await dt() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
+  const s = await ft() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
   new LiteGraph.ContextMenu(r, {
     title: "Choose Lora",
     event: n,
@@ -99,21 +99,21 @@ async function H(e, t, n, o) {
     }
   });
 }
-function ft(e, t, n, o) {
+function pt(e, t, n, o) {
   const s = t.rows[n];
   if (!s) return;
   const r = n > 0, i = n < t.rows.length - 1, c = (a) => {
     const l = n + a;
     if (l < 0 || l >= t.rows.length) return;
     const u = t.rows[n];
-    t.rows[n] = t.rows[l], t.rows[l] = u, f(t);
+    t.rows[n] = t.rows[l], t.rows[l] = u, p(t);
   };
   new LiteGraph.ContextMenu(
     [
       {
         content: `${s.on ? "⚫" : "◯"} Toggle ${s.on ? "Off" : "On"}`,
         callback: () => {
-          s.on = !s.on, f(t);
+          s.on = !s.on, p(t);
         }
       },
       null,
@@ -122,7 +122,7 @@ function ft(e, t, n, o) {
       {
         content: "🗑️ Remove",
         callback: () => {
-          t.rows.splice(n, 1), f(t), b(e, t);
+          t.rows.splice(n, 1), p(t), b(e, t);
         }
       }
     ],
@@ -134,12 +134,12 @@ function ht(e, t) {
   n.addEventListener("click", (o) => {
     const s = o.target;
     if (s.closest(".comfort-toggle-all")) {
-      at(t), f(t);
+      at(t), p(t);
       return;
     }
     if (s.closest(".comfort-add-btn")) {
       H(t, e, o, (l) => {
-        t.rows.push(lt(l)), f(t), b(e, t);
+        t.rows.push(lt(l)), p(t), b(e, t);
       });
       return;
     }
@@ -149,25 +149,25 @@ function ht(e, t) {
     if (!c) return;
     const a = !!s.closest(".comfort-strength-clip");
     if (s.closest(".comfort-toggle")) {
-      c.on = !c.on, f(t);
+      c.on = !c.on, p(t);
       return;
     }
     if (s.closest(".comfort-name")) {
       H(t, e, o, (l) => {
-        c.lora = l, f(t);
+        c.lora = l, p(t);
       });
       return;
     }
     if (s.closest(".comfort-dec")) {
-      W(c, -1, a), f(t);
+      W(c, -1, a), p(t);
       return;
     }
     if (s.closest(".comfort-inc")) {
-      W(c, 1, a), f(t);
+      W(c, 1, a), p(t);
       return;
     }
     if (s.closest(".comfort-remove")) {
-      t.rows.splice(i, 1), f(t), b(e, t);
+      t.rows.splice(i, 1), p(t), b(e, t);
       return;
     }
   }), n.addEventListener("change", (o) => {
@@ -179,7 +179,7 @@ function ht(e, t) {
     Number.isFinite(c) && (s.closest(".comfort-strength-clip") ? i.strengthTwo = c : i.strength = c);
   }), n.addEventListener("contextmenu", (o) => {
     const s = o.target.closest(".comfort-lora-row");
-    s && (o.preventDefault(), o.stopPropagation(), ft(e, t, Number(s.dataset.idx), o));
+    s && (o.preventDefault(), o.stopPropagation(), pt(e, t, Number(s.dataset.idx), o));
   });
 }
 function mt(e) {
@@ -195,11 +195,11 @@ function mt(e) {
     hideOnZoom: !0,
     getValue: () => t.rows,
     setValue: (n) => {
-      t.rows = Array.isArray(n) ? n : [], f(t), b(e, t);
+      t.rows = Array.isArray(n) ? n : [], p(t), b(e, t);
     },
     getMinHeight: () => k(t),
     getMaxHeight: () => k(t)
-  })), ht(e, t), f(t), b(e, t);
+  })), ht(e, t), p(t), b(e, t);
 }
 function gt(e, t) {
   let n = Object.getPrototypeOf(e);
@@ -278,12 +278,12 @@ function wt(e, t, n) {
     if (!l || r.has(l)) return;
     r.add(l);
     let u;
-    u = (l.inputs || []).map((p) => p.link);
-    for (const p of u) {
-      if (p == null) continue;
-      const h = o.links[p];
+    u = (l.inputs || []).map((d) => d.link);
+    for (const d of u) {
+      if (d == null) continue;
+      const h = o.links[d];
       if (!h) continue;
-      const d = h.origin_id, m = o.getNodeById(d);
+      const f = h.origin_id, m = o.getNodeById(f);
       !m || r.has(m) || (B(m) ? i(m) : s.push(m));
     }
   };
@@ -291,10 +291,10 @@ function wt(e, t, n) {
     const l = [(a = (c = e.inputs) == null ? void 0 : c[n]) == null ? void 0 : a.link];
     for (const u of l) {
       if (u == null) continue;
-      const p = o.links[u];
-      if (!p) continue;
-      const h = p.origin_id, d = o.getNodeById(h);
-      !d || r.has(d) || (B(d) ? i(d) : s.push(d));
+      const d = o.links[u];
+      if (!d) continue;
+      const h = d.origin_id, f = o.getNodeById(h);
+      !f || r.has(f) || (B(f) ? i(f) : s.push(f));
     }
   } else
     i(e);
@@ -311,12 +311,12 @@ function L(e) {
   }) : [];
 }
 function bt(e) {
-  var c, a, l, u, p, h, d, m;
+  var c, a, l, u, d, h, f, m;
   const t = e.graph;
   if (!t) return null;
   const n = t._groups || t.groups || [], o = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((a = e.pos) == null ? void 0 : a[1]) ?? 0, r = ((l = e.size) == null ? void 0 : l[0]) ?? 0, i = ((u = e.size) == null ? void 0 : u[1]) ?? 0;
   for (const x of n) {
-    const G = ((p = x.pos) == null ? void 0 : p[0]) ?? 0, I = ((h = x.pos) == null ? void 0 : h[1]) ?? 0, tt = ((d = x.size) == null ? void 0 : d[0]) ?? 0, et = ((m = x.size) == null ? void 0 : m[1]) ?? 0;
+    const G = ((d = x.pos) == null ? void 0 : d[0]) ?? 0, I = ((h = x.pos) == null ? void 0 : h[1]) ?? 0, tt = ((f = x.size) == null ? void 0 : f[0]) ?? 0, et = ((m = x.size) == null ? void 0 : m[1]) ?? 0;
     if (o >= G && s >= I && o + r <= G + tt && s + i <= I + et)
       return x;
   }
@@ -493,10 +493,10 @@ function Rt(e) {
       (r = i.subgraph) != null && r._groups && o(i.subgraph);
   };
   return o(t), n.sort((s, r) => {
-    var u, p, h, d;
-    const i = ((u = s.pos) == null ? void 0 : u[1]) ?? 0, c = ((p = r.pos) == null ? void 0 : p[1]) ?? 0;
+    var u, d, h, f;
+    const i = ((u = s.pos) == null ? void 0 : u[1]) ?? 0, c = ((d = r.pos) == null ? void 0 : d[1]) ?? 0;
     if (i !== c) return i - c;
-    const a = ((h = s.pos) == null ? void 0 : h[0]) ?? 0, l = ((d = r.pos) == null ? void 0 : d[0]) ?? 0;
+    const a = ((h = s.pos) == null ? void 0 : h[0]) ?? 0, l = ((f = r.pos) == null ? void 0 : f[0]) ?? 0;
     return a !== l ? a - l : String(s.title || "").localeCompare(String(r.title || ""));
   }), n;
 }
@@ -527,24 +527,22 @@ class X extends Y {
   }
   /** Rebuild the group list. Called on a shared interval + on demand. */
   refresh() {
-    var i;
-    const t = Rt(this), n = String(((i = this.properties) == null ? void 0 : i.matchTitle) || "").trim();
-    let o = t.map((c) => ({
-      group: c,
-      title: String(c.title || "group"),
-      on: zt(c)
+    var r;
+    const t = Rt(this), n = String(((r = this.properties) == null ? void 0 : r.matchTitle) || "").trim();
+    let o = t.map((i) => ({
+      group: i,
+      title: String(i.title || "group"),
+      on: zt(i)
     }));
     if (n)
       try {
-        const c = new RegExp(n, "i");
-        o = o.filter((a) => c.test(a.title));
+        const i = new RegExp(n, "i");
+        o = o.filter((c) => i.test(c.title));
       } catch {
-        o = o.filter((c) => c.title.toLowerCase().includes(n.toLowerCase()));
+        o = o.filter((i) => i.title.toLowerCase().includes(n.toLowerCase()));
       }
-    const s = new Map(this.rows.map((c) => [c.group, c.on]));
-    o = o.map((c) => ({ ...c, on: s.has(c.group) ? s.get(c.group) : c.on }));
-    const r = o.map((c) => c.title + (c.on ? 1 : 0)).join("|");
-    r !== this.lastKey && (this.lastKey = r, this.rows = o, this.renderList());
+    const s = o.map((i) => i.title + (i.on ? 1 : 0)).join("|");
+    s !== this.lastKey && (this.lastKey = s, this.rows = o, this.renderList());
   }
   renderList() {
     var n;
@@ -638,7 +636,7 @@ ot.registerExtension({
       const t = ct(e);
       if (t) {
         const n = (o) => {
-          t.showSeparate = o, pt(e);
+          t.showSeparate = o, dt(e);
         };
         return [
           null,

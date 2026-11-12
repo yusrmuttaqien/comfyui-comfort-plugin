@@ -119,9 +119,6 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
         next = next.filter((r) => r.title.toLowerCase().includes(titleFilter.toLowerCase()));
       }
     }
-    // Preserve existing toggle state for groups that persist.
-    const prev = new Map(this.rows.map((r) => [r.group, r.on]));
-    next = next.map((r) => ({ ...r, on: prev.has(r.group) ? prev.get(r.group)! : r.on }));
     // Only re-render if the set actually changed (avoid flicker).
     const key = next.map((r) => r.title + (r.on ? 1 : 0)).join("|");
     if (key === this.lastKey) return;
