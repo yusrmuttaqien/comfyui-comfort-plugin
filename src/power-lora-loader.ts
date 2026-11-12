@@ -242,9 +242,9 @@ async function showLoraChooser(
   e: MouseEvent,
   onChoose: (lora: string) => void,
 ): Promise<void> {
-  const loras = await fetchLoras();
-  if (!loras.length) loras = ["(no loras found)"];
-  new LiteGraph.ContextMenu(loras, {
+  const loras = (await fetchLoras()) || ["(no loras found)"];
+  const items = loras.length ? loras : ["(no loras found)"];
+  new LiteGraph.ContextMenu(items, {
     title: "Choose Lora",
     event: e,
     callback: (v: string) => {

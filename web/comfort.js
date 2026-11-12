@@ -61,7 +61,7 @@ function D(e, t, o) {
   const a = document.createElement("button");
   return a.type = "button", a.className = "comfort-remove", a.textContent = "×", a.title = "Remove lora", n.appendChild(a), n;
 }
-function s(e) {
+function l(e) {
   const t = e.el;
   t.innerHTML = "";
   const o = document.createElement("div");
@@ -72,12 +72,12 @@ function s(e) {
   c.className = "comfort-header-labels", e.showSeparate ? (c.appendChild(m("Model")), c.appendChild(m("Clip"))) : c.appendChild(m("Strength")), o.appendChild(c), t.appendChild(o), e.rows.forEach((f, i) => t.appendChild(D(e, f, i)));
   const a = document.createElement("div");
   a.className = "comfort-lora-footer";
-  const l = document.createElement("button");
-  l.type = "button", l.className = "comfort-add-btn", l.textContent = "➕ Add Lora", a.appendChild(l), t.appendChild(a);
+  const s = document.createElement("button");
+  s.type = "button", s.className = "comfort-add-btn", s.textContent = "➕ Add Lora", a.appendChild(s), t.appendChild(a);
 }
 function R(e) {
   const t = u.get(e);
-  t && (s(t), p(e, t));
+  t && (l(t), p(e, t));
 }
 async function _() {
   try {
@@ -90,39 +90,39 @@ async function _() {
   }
 }
 async function E(e, t, o, n) {
-  const r = await _();
-  r.length || (r = ["(no loras found)"]), new LiteGraph.ContextMenu(r, {
+  const r = await _() || ["(no loras found)"], c = r.length ? r : ["(no loras found)"];
+  new LiteGraph.ContextMenu(c, {
     title: "Choose Lora",
     event: o,
-    callback: (c) => {
-      c !== "(no loras found)" && n(c);
+    callback: (a) => {
+      a !== "(no loras found)" && n(a);
     }
   });
 }
 function H(e, t, o, n) {
   const r = t.rows[o];
   if (!r) return;
-  const c = o > 0, a = o < t.rows.length - 1, l = (f) => {
+  const c = o > 0, a = o < t.rows.length - 1, s = (f) => {
     const i = o + f;
     if (i < 0 || i >= t.rows.length) return;
     const k = t.rows[o];
-    t.rows[o] = t.rows[i], t.rows[i] = k, s(t);
+    t.rows[o] = t.rows[i], t.rows[i] = k, l(t);
   };
   new LiteGraph.ContextMenu(
     [
       {
         content: `${r.on ? "⚫" : "◯"} Toggle ${r.on ? "Off" : "On"}`,
         callback: () => {
-          r.on = !r.on, s(t);
+          r.on = !r.on, l(t);
         }
       },
       null,
-      { content: "⬆️ Move Up", disabled: !c, callback: () => l(-1) },
-      { content: "⬇️ Move Down", disabled: !a, callback: () => l(1) },
+      { content: "⬆️ Move Up", disabled: !c, callback: () => s(-1) },
+      { content: "⬇️ Move Down", disabled: !a, callback: () => s(1) },
       {
         content: "U0001f5d1️ Remove",
         callback: () => {
-          t.rows.splice(o, 1), s(t), p(e, t);
+          t.rows.splice(o, 1), l(t), p(e, t);
         }
       }
     ],
@@ -134,40 +134,40 @@ function F(e, t) {
   o.addEventListener("click", (n) => {
     const r = n.target;
     if (r.closest(".comfort-toggle-all")) {
-      T(t), s(t);
+      T(t), l(t);
       return;
     }
     if (r.closest(".comfort-add-btn")) {
       E(t, e, n, (i) => {
-        t.rows.push(A(i)), s(t), p(e, t);
+        t.rows.push(A(i)), l(t), p(e, t);
       });
       return;
     }
     const c = r.closest(".comfort-lora-row");
     if (!c) return;
-    const a = Number(c.dataset.idx), l = t.rows[a];
-    if (!l) return;
+    const a = Number(c.dataset.idx), s = t.rows[a];
+    if (!s) return;
     const f = !!r.closest(".comfort-strength-clip");
     if (r.closest(".comfort-toggle")) {
-      l.on = !l.on, s(t);
+      s.on = !s.on, l(t);
       return;
     }
     if (r.closest(".comfort-name")) {
       E(t, e, n, (i) => {
-        l.lora = i, s(t);
+        s.lora = i, l(t);
       });
       return;
     }
     if (r.closest(".comfort-dec")) {
-      C(l, -1, f), s(t);
+      C(s, -1, f), l(t);
       return;
     }
     if (r.closest(".comfort-inc")) {
-      C(l, 1, f), s(t);
+      C(s, 1, f), l(t);
       return;
     }
     if (r.closest(".comfort-remove")) {
-      t.rows.splice(a, 1), s(t), p(e, t);
+      t.rows.splice(a, 1), l(t), p(e, t);
       return;
     }
   }), o.addEventListener("change", (n) => {
@@ -175,8 +175,8 @@ function F(e, t) {
     if (!c || !r.matches("input[type='number']")) return;
     const a = t.rows[Number(c.dataset.idx)];
     if (!a) return;
-    const l = parseFloat(r.value);
-    Number.isFinite(l) && (r.closest(".comfort-strength-clip") ? a.strengthTwo = l : a.strength = l);
+    const s = parseFloat(r.value);
+    Number.isFinite(s) && (r.closest(".comfort-strength-clip") ? a.strengthTwo = s : a.strength = s);
   }), o.addEventListener("contextmenu", (n) => {
     const r = n.target.closest(".comfort-lora-row");
     r && (n.preventDefault(), n.stopPropagation(), H(e, t, Number(r.dataset.idx), n));
@@ -195,11 +195,11 @@ function P(e) {
     hideOnZoom: !0,
     getValue: () => t.rows,
     setValue: (o) => {
-      t.rows = Array.isArray(o) ? o : [], s(t), p(e, t);
+      t.rows = Array.isArray(o) ? o : [], l(t), p(e, t);
     },
     getMinHeight: () => h(t),
     getMaxHeight: () => h(t)
-  })), F(e, t), s(t), p(e, t);
+  })), F(e, t), l(t), p(e, t);
 }
 const W = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}", w = document.createElement("style");
 w.setAttribute("data-comfort-plugin", "true");
