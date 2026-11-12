@@ -5,16 +5,24 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 
 ## Unreleased
 
-### M1 — Power Lora Loader (🚧)
-- [ ] Repo scaffold: Vite+TS build, pyproject.toml, `__init__.py`, README
-- [ ] Python backend (`py/power_lora_loader.py`) adapted from rgthree-comfy (MIT, credited)
-- [ ] Frontend: lora rows as DOM widgets (dual renderer; no canvas-drawn widgets)
-- [ ] Right-click row menu: move up/down, toggle, delete
-- [ ] "Add Lora" button + header, strengths (combined / model+clip)
-- [ ] Fix muted/bypassed node mode serialization (rgthree #797)
-- [ ] Fix promoted-widget visibility in subgraphs (rgthree #714)
-- [ ] Build to `web/`, commit built output
-- [ ] Deploy to test box, browser-verify both renderers (widgets, save/load, tab switch, subgraph nav)
+### M1 — Power Lora Loader (✅ core, verified on Nodes 2.0)
+- [x] Repo scaffold: Vite+TS build, pyproject.toml, `__init__.py`, README
+- [x] Python backend (`py/power_lora_loader.py`) adapted from rgthree-comfy (MIT, credited)
+- [x] Frontend: lora rows as DOM widgets (dual renderer; no canvas-drawn widgets)
+- [x] Right-click row menu: move up/down, toggle, remove
+- [x] "Add Lora" button + header, strengths (combined / model+clip)
+- [x] Build to `web/`, commit built output
+- [x] Browser-verified on Nodes 2.0 (2026-12-13): node creation, lora chooser (real `/api/models/loras` data), add multiple loras, per-row toggle + dimming, strength inc/dec, row right-click menu (toggle/move/remove), node menu "Show Strengths" → Single / Separate Model & Clip (re-renders with model+clip columns), save/reload persistence of rows + strengths + node size
+- [x] Tab switch survival: node instances recreated, widget re-mounts with full state (2026-12-13)
+- [x] Subgraph survival (rgthree #714 scenario): convert node to subgraph → enter → widget renders with full state inside → exit → unpack → node restored at root (2026-12-13)
+- [ ] Legacy LiteGraph renderer verification (needs a session on the legacy frontend; code uses only DOM + LiteGraph core APIs)
+- [x] Muted/bypassed mode serialization (rgthree #797): node bypassed (mode 4) survives save + reload with rows intact (2026-12-13)
+
+#### Fixes found during browser verification (2026-12-13)
+1. **Extension module silently rejected**: the Nodes 2.0 frontend loads extension modules via dynamic `import(url)` without an import map, so the bare specifier `scripts/app.js` failed. Use absolute `/scripts/app.js` (and mark it external in Vite).
+2. **Extension CSS not auto-loaded**: the new frontend no longer auto-injects extension `web/*.css`. Styles are inlined via Vite `?inline` and injected as a `<style>` element at startup (with a `comfort-styles` id guard against double injection).
+3. **`app.api.getList("loras")` gone** in the new frontend; loras are fetched from `/api/models/loras` directly, handling both array and `{name: [...]}` response shapes.
+4. **Node context menu submenus**: Vue's `contextMenuConverter` only maps items with `has_submenu: true` + `submenu.options` (LiteGraph static-submenu shape). A bare `submenu` array produces a dead item in Nodes 2.0. The same shape works in legacy LiteGraph.
 
 ### M2 — Mute/Bypass family (⏸️)
 - [ ] Fast Muter / Fast Bypasser — DOM widget buttons
@@ -37,10 +45,10 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 ## Test matrix (per milestone)
 | Check | Legacy LiteGraph | Nodes 2.0 (Vue) |
 |---|---|---|
-| Widgets render | ☐ | ☐ |
-| Widget interactions (click/drag/value) | ☐ | ☐ |
-| Context menus | ☐ | ☐ |
-| Save/load round-trip | ☐ | ☐ |
-| Tab switch survives | ☐ | ☐ |
-| Subgraph nav survives | ☐ | ☐ |
-| Live updates during execution | ☐ | ☐ |
+| Widgets render | ☐ | ✅ |
+| Widget interactions (click/drag/value) | ☐ | ✅ |
+| Context menus | ☐ | ✅ |
+| Save/load round-trip | ☐ | ✅ |
+| Tab switch survives | ☐ | ✅ |
+| Subgraph nav survives | ☐ | ✅ |
+| Live updates during execution | ☐ | n/a (M1 has none) |
