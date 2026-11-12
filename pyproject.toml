@@ -1,0 +1,13 @@
+[project]
+name = "comfyui-comfort-plugin"
+description = "Dual-renderer (ComfyUI Nodes 2.0 + legacy LiteGraph) rework of select rgthree-comfy features."
+version = "0.1.0"
+license = { text = "MIT" }
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/yusrmuttaqien/comfyui-comfort-plugin"
+
+[tool.comfy]
+PublisherId = "yusrmuttaqien"
+DisplayName = "ComfyUI Comfort Plugin"

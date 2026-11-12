@@ -1,0 +1,143 @@
+/* Power Lora Loader (comfort) — dual-renderer styles.
+   Uses ComfyUI CSS variables where available, with dark-theme fallbacks. */
+
+.comfort-lora-list {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-color, #eeeeee);
+  user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.comfort-lora-header,
+.comfort-lora-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+}
+
+.comfort-lora-header {
+  justify-content: space-between;
+}
+
+.comfort-header-labels {
+  display: inline-flex;
+  gap: 10px;
+  margin-right: 24px;
+}
+
+.comfort-col-label {
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+.comfort-lora-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  margin: 3px 0;
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.12);
+}
+
+.comfort-lora-row.off .comfort-name {
+  opacity: 0.5;
+}
+
+.comfort-toggle {
+  width: 44px;
+  min-width: 44px;
+  padding: 2px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 127, 127, 0.5);
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.comfort-toggle.on {
+  background: #2e7d5b;
+  border-color: #2e7d5b;
+  color: #ffffff;
+}
+
+.comfort-toggle.off {
+  opacity: 0.85;
+}
+
+.comfort-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.comfort-spacer {
+  flex: 0 0 8px;
+}
+
+.comfort-strength {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.comfort-strength button {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.comfort-strength input {
+  width: 54px;
+  padding: 1px 2px;
+  font-size: 11px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 4px;
+  color: inherit;
+}
+
+.comfort-remove {
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.comfort-remove:hover {
+  background: rgba(200, 80, 80, 0.4);
+}
+
+.comfort-add-btn {
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.comfort-add-btn:hover {
+  background: rgba(127, 127, 127, 0.2);
+}
