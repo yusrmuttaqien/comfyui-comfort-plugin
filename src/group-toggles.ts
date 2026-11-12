@@ -115,11 +115,17 @@ function updateOverlay(): void {
     entry.byp.style.display = "block";
   }
 
-  // Hide buttons for groups that are no longer active.
+  // Hide buttons for groups that are no longer active, and remove the DOM
+  // elements entirely for groups that have been deleted from the graph.
   for (const [g, entry] of buttons) {
     if (!active.has(g)) {
       entry.mute.style.display = "none";
       entry.byp.style.display = "none";
+    }
+    if (!groups.includes(g)) {
+      entry.mute.remove();
+      entry.byp.remove();
+      buttons.delete(g);
     }
   }
 }
