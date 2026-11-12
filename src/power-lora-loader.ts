@@ -7,8 +7,6 @@
 //
 // Reworked from rgthree-comfy (MIT, https://github.com/rgthree/rgthree-comfy).
 
-import { app } from "/scripts/app.js";
-
 export const NODE_NAME = "Power Lora Loader (comfort)";
 
 export type LoraRow = {
@@ -225,19 +223,26 @@ export function renderLoraNode(node: any): void {
 // Menus
 // ---------------------------------------------------------------------------
 
+async function fetchLoras(): Promise<string[]> {
+  try {
+    const res = await fetch("/api/models/loras");
+    if (!res.ok) return [];
+    const data = await res.json();
+    // New backend: plain array. Old backend: { name: [...] }.
+    if (Array.isArray(data)) return data;
+    return data?.name ?? [];
+  } catch {
+    return [];
+  }
+}
+
 async function showLoraChooser(
   state: LoraNodeState,
   node: any,
   e: MouseEvent,
   onChoose: (lora: string) => void,
 ): Promise<void> {
-  let loras: string[] = [];
-  try {
-    const res = await app.api.getList("loras");
-    loras = res?.name ?? [];
-  } catch {
-    loras = [];
-  }
+  const loras = await fetchLoras();
   if (!loras.length) loras = ["(no loras found)"];
   new LiteGraph.ContextMenu(loras, {
     title: "Choose Lora",
