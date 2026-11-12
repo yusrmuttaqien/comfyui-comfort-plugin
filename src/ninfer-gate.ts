@@ -53,6 +53,9 @@ type GateState = {
   urlInput: HTMLInputElement;
   timeoutSel: HTMLSelectElement;
   statusEl: HTMLElement;
+  statusText: HTMLSpanElement;
+  cancelBtn: HTMLButtonElement;
+  skipBtn: HTMLButtonElement;
   bulkEl: HTMLElement;
   rowsEl: HTMLElement;
   models: ModelInfo[];
@@ -63,6 +66,9 @@ type GateState = {
   resultText: string;
   resultHold: number;
   polling: boolean;
+  cancel: boolean;
+  skip: boolean;
+  abort: AbortController | null;
 };
 
 const sleep = (ms: number): Promise<void> =>
@@ -73,14 +79,18 @@ const sleep = (ms: number): Promise<void> =>
 async function forward(
   url: string,
   body?: unknown,
+  signal?: AbortSignal,
 ): Promise<{ status: number; body: any }> {
   const resp =
     body === undefined
-      ? await fetch("/comfort/ninfer/forward?url=" + encodeURIComponent(url))
+      ? await fetch("/comfort/ninfer/forward?url=" + encodeURIComponent(url), {
+          signal,
+        })
       : await fetch("/comfort/ninfer/forward", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url, body }),
+          signal,
         });
   const text = await resp.text();
   let parsed: any = text;
@@ -99,7 +109,11 @@ async function forward(
 const modelCache = new Map<string, { at: number; models: ModelInfo[] }>();
 const inFlight = new Map<string, Promise<ModelInfo[]>>();
 
-async function fetchModels(base: string, useCache: boolean): Promise<ModelInfo[]> {
+async function fetchModels(
+  base: string,
+  useCache: boolean,
+  signal?: AbortSignal,
+): Promise<ModelInfo[]> {
   const key = base + "/v1/models";
   if (useCache) {
     const hit = modelCache.get(key);
@@ -108,7 +122,7 @@ async function fetchModels(base: string, useCache: boolean): Promise<ModelInfo[]
   const pending = inFlight.get(key);
   if (pending) return pending;
   const p = (async () => {
-    const r = await forward(key);
+    const r = await forward(key, undefined, signal);
     const data = r.body?.data;
     const models: ModelInfo[] = Array.isArray(data)
       ? data.map((m: any) => ({
@@ -123,8 +137,16 @@ async function fetchModels(base: string, useCache: boolean): Promise<ModelInfo[]
   return p;
 }
 
-function suspendModel(base: string, id: string): Promise<{ status: number; body: any }> {
-  return forward(base + "/v1/models/" + encodeURIComponent(id) + "/suspend", {});
+function suspendModel(
+  base: string,
+  id: string,
+  signal?: AbortSignal,
+): Promise<{ status: number; body: any }> {
+  return forward(
+    base + "/v1/models/" + encodeURIComponent(id) + "/suspend",
+    {},
+    signal,
+  );
 }
 
 export class NInferGateNode extends ComfortVirtualNode {
@@ -230,7 +252,22 @@ export class NInferGateNode extends ComfortVirtualNode {
 
     const statusEl = document.createElement("div");
     statusEl.className = "comfort-ninfer-status";
-    statusEl.textContent = "Set NInfer URL to enable";
+    const statusText = document.createElement("span");
+    statusText.className = "comfort-ninfer-status-text";
+    statusText.textContent = "Set NInfer URL to enable";
+    const cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    cancelBtn.className = "comfort-ninfer-ctrl";
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.hidden = true;
+    const skipBtn = document.createElement("button");
+    skipBtn.type = "button";
+    skipBtn.className = "comfort-ninfer-ctrl";
+    skipBtn.textContent = "Skip";
+    skipBtn.hidden = true;
+    statusEl.appendChild(statusText);
+    statusEl.appendChild(cancelBtn);
+    statusEl.appendChild(skipBtn);
     el.appendChild(statusEl);
 
     const bulkEl = document.createElement("div");
@@ -258,6 +295,9 @@ export class NInferGateNode extends ComfortVirtualNode {
       urlInput,
       timeoutSel,
       statusEl,
+      statusText,
+      cancelBtn,
+      skipBtn,
       bulkEl,
       rowsEl,
       models: [],
@@ -268,7 +308,21 @@ export class NInferGateNode extends ComfortVirtualNode {
       resultText: "",
       resultHold: 0,
       polling: false,
+      cancel: false,
+      skip: false,
+      abort: null,
     };
+
+    // Cancel / Skip: shown only while a suspend is in flight. They set a flag
+    // and abort the in-flight request; the suspend loop below checks them.
+    cancelBtn.addEventListener("click", () => {
+      st.cancel = true;
+      st.abort?.abort();
+    });
+    skipBtn.addEventListener("click", () => {
+      st.skip = true;
+      st.abort?.abort();
+    });
 
     // Per-model checkbox toggle → persist an explicit selection.
     rowsEl.addEventListener("change", (e) => {
@@ -416,7 +470,10 @@ export class NInferGateNode extends ComfortVirtualNode {
       default:
         text = this.idleSummary();
     }
-    st.statusEl.textContent = text;
+    st.statusText.textContent = text;
+    const active = st.phase === "suspending" || st.phase === "busy";
+    st.cancelBtn.hidden = !active;
+    st.skipBtn.hidden = !active;
   }
 
   private layout(): void {
@@ -489,13 +546,17 @@ export class NInferGateNode extends ComfortVirtualNode {
   /**
    * Called from the queuePrompt wrapper, before the prompt is sent. Suspends
    * each checked+loaded model, holding the queue until every suspend returns.
-   * Throws on timeout/unreachable so the queue is aborted rather than sent
-   * while VRAM is still held.
+   * Returns a verdict: `proceed: true` sends the prompt, `false` aborts the
+   * Run (unreachable / timed out / user Cancel). The user can also Skip — stop
+   * suspending and send the prompt with whatever is still loaded.
    */
-  async suspendChecked(): Promise<void> {
+  async suspendChecked(): Promise<{ proceed: boolean }> {
     const st = this.st;
     const base = this.baseUrl();
-    if (!base) return; // no URL configured → don't block the queue
+    if (!base) return { proceed: true }; // no URL configured → don't block
+    st.cancel = false;
+    st.skip = false;
+    st.abort = null;
 
     let models: ModelInfo[];
     try {
@@ -503,7 +564,7 @@ export class NInferGateNode extends ComfortVirtualNode {
       models = await fetchModels(base, false);
     } catch {
       this.finish("NInfer unreachable", true);
-      throw new Error("NInfer unreachable");
+      return { proceed: false };
     }
     st.models = models;
     const selected = this.computeSelected(models);
@@ -515,21 +576,32 @@ export class NInferGateNode extends ComfortVirtualNode {
     );
     if (!targets.length) {
       this.finish("Ready (nothing to suspend)", false);
-      return;
+      return { proceed: true };
     }
 
     const t0 = Date.now();
     const timeoutMs = this.timeoutMs();
     try {
       for (const m of targets) {
+        if (st.cancel || st.skip) break;
         const mStart = Date.now();
         this.beginSuspending(m.id, mStart);
         for (;;) {
-          const r = await suspendModel(base, m.id);
+          if (st.cancel || st.skip) break;
+          const ac = new AbortController();
+          st.abort = ac;
+          let r: { status: number; body: any };
+          try {
+            r = await suspendModel(base, m.id, ac.signal);
+          } catch {
+            if (ac.signal.aborted) break; // Cancel/Skip mid-request
+            throw new Error("suspend request failed");
+          }
           if (r.status === 200) break;
           if (r.status === 409) {
             this.setBusy(m.id, mStart);
             await sleep(BUSY_RETRY_MS);
+            if (st.cancel || st.skip) break;
             if (Date.now() - t0 > timeoutMs) {
               throw new Error("timed out waiting for NInfer to idle");
             }
@@ -537,6 +609,16 @@ export class NInferGateNode extends ComfortVirtualNode {
           }
           throw new Error(`suspend failed (HTTP ${r.status})`);
         }
+      }
+      st.abort = null;
+
+      if (st.cancel) {
+        this.finish("Cancelled", false);
+        return { proceed: false };
+      }
+      if (st.skip) {
+        this.finish("Skipped — running now", false);
+        return { proceed: true };
       }
       const total = Math.round((Date.now() - t0) / 1000);
       this.finish(
@@ -551,9 +633,12 @@ export class NInferGateNode extends ComfortVirtualNode {
       } catch {
         /* the periodic poll will retry */
       }
+      return { proceed: true };
+    } catch (e) {
+      this.finish(e instanceof Error ? e.message : String(e), true);
+      return { proceed: false };
     } finally {
-      // The elapsed display is advanced by the shared scheduler; nothing to
-      // stop here.
+      st.abort = null;
     }
   }
 
@@ -650,12 +735,86 @@ function installHooks(): void {
   const appAny = app as any;
   const orig = appAny.queuePrompt;
   appAny.queuePrompt = async function (...args: any[]) {
+    let proceed = true;
     for (const gate of Array.from(registry)) {
       if (gate.removed) continue;
-      await gate.suspendChecked();
+      const v = await gate.suspendChecked();
+      if (!v.proceed) {
+        proceed = false; // Cancel / unreachable → abort the Run
+        break;
+      }
     }
+    if (!proceed) return Promise.resolve();
     return await orig.apply(appAny, args);
   };
+}
+
+// --- Top-bar "focus NInfer" button ----------------------------------------
+// A small button in ComfyUI's top bar that jumps the view to a gate node. It
+// only shows while a gate node is in the currently-rendered graph, so it
+// disappears on workflows without one (or when you navigate into a subgraph
+// that doesn't contain it). Driven by the shared scheduler.
+
+let focusBtn: HTMLButtonElement | null = null;
+
+function queueButtonAnchor(): HTMLElement | null {
+  return document.querySelector('[data-testid="queue-button"]') as HTMLElement | null;
+}
+
+function currentGraph(): any {
+  const a = app as any;
+  return a.canvas?.graph ?? a.graph ?? null;
+}
+
+function findFocusableGate(): NInferGateNode | null {
+  const g = currentGraph();
+  if (!g) return null;
+  for (const gate of registry) {
+    if (!gate.removed && gate.graph === g) return gate;
+  }
+  return null;
+}
+
+function ensureFocusButton(): void {
+  if (focusBtn && focusBtn.isConnected) return;
+  // Anchor on the Run / Queue Prompt button (testid="queue-button"), which
+  // exists in both the legacy top bar and the Nodes 2.0 action bar, and insert
+  // our button right after it — visible in both renderers.
+  const anchor = queueButtonAnchor();
+  if (!anchor || !anchor.parentElement) return;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "comfort-topbar-focus";
+  btn.title = "Focus NInfer gate";
+  btn.textContent = "⚡ NInfer";
+  btn.addEventListener("click", () => {
+    const gate = findFocusableGate();
+    if (!gate) return;
+    const graph = gate.graph;
+    if (graph) {
+      for (const n of (graph as any)._nodes || []) (n as any).selected = false;
+      (gate as any).selected = true;
+    }
+    const canvas = (app as any).canvas;
+    canvas?.centerOnNode?.(gate);
+    canvas?.setDirty?.(true);
+  });
+  anchor.parentElement.insertBefore(btn, anchor.nextSibling);
+  focusBtn = btn;
+}
+
+const focusJob = (): void => {
+  ensureFocusButton();
+  if (focusBtn) focusBtn.style.display = findFocusableGate() ? "" : "none";
+};
+
+/**
+ * Set up the top-bar "focus NInfer" button. Call once from the extension
+ * init. The button is injected idempotently and its visibility is driven by
+ * the shared scheduler (shows only while a gate is in the current graph).
+ */
+export function setupNInferFocusButton(): void {
+  scheduler.schedule(focusJob, 1);
 }
 
 export function isComfortNInferGate(node: any): boolean {

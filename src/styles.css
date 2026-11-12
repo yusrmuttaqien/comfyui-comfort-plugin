@@ -240,13 +240,35 @@
 }
 
 .comfort-ninfer-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   min-height: 18px;
   padding: 2px;
   font-size: 11px;
   opacity: 0.9;
+}
+
+.comfort-ninfer-status-text {
+  flex: 1 1 auto;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.comfort-ninfer-ctrl {
+  flex: 0 0 auto;
+  padding: 1px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.comfort-ninfer-ctrl:hover {
+  background: rgba(127, 127, 127, 0.2);
 }
 
 .comfort-ninfer-bulk {
@@ -307,4 +329,20 @@
 
 .comfort-ninfer-badge.other {
   opacity: 0.7;
+}
+
+/* Top-bar "focus NInfer" button (injected into .comfy-menu). */
+.comfort-topbar-focus {
+  padding: 3px 8px;
+  margin-left: 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.comfort-topbar-focus:hover {
+  background: rgba(127, 127, 127, 0.2);
 }

@@ -9,6 +9,7 @@ import {
 import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
 import { installAutoNest } from "./auto-nest.js";
 import { setupGroupToggles } from "./group-toggles.js";
+import { setupNInferFocusButton } from "./ninfer-gate.js";
 import styles from "./styles.css?inline";
 
 // The Nodes 2.0 frontend no longer auto-loads extension .css files; inject
@@ -28,6 +29,7 @@ app.registerExtension({
   // app.canvas exists — ComfyUI's own selectionBorder extension does the same.
   async init() {
     setupGroupToggles();
+    setupNInferFocusButton();
   },
 
   nodeCreated(node: any) {
