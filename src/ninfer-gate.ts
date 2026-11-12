@@ -16,9 +16,16 @@
 // Config (url, timeout, selected models) persists in `this.properties`. The
 // whole UI is one DOM widget (renders natively in both renderers). Virtual
 // node — not sent in the prompt.
+//
+// Polling is driven by the shared scheduler (see scheduler.ts): an ambient
+// model refresh every ~3s (skipped while the tab is hidden) and a 500ms tick
+// that advances the elapsed-time display while a suspend is in progress. The
+// suspend itself is synchronous, so no polling is needed to detect its
+// completion — we refresh once right after it returns.
 
 import { ComfortVirtualNode } from "./virtual-node.js";
 import { app } from "/scripts/app.js";
+import { scheduler } from "./scheduler.js";
 
 export const NINFER_GATE = "NInfer Suspend Gate (comfort)";
 
@@ -30,8 +37,11 @@ const ROW_H = 30;
 const PAD_Y = 10;
 const MIN_W = 300;
 
-const POLL_MS = 3000; // how often to refresh the model list / status
+// Scheduler cadences (in 500ms ticks) + retry / cache timing.
+const AMBIENT_TICKS = 6; // ~3s between ambient model refreshes
+const ELAPSED_TICKS = 1; // 500ms — advance the elapsed-time display
 const BUSY_RETRY_MS = 2000; // how often to retry a 409 model_busy
+const MODEL_CACHE_MS = 1000; // TTL for the shared /v1/models result cache
 
 const TIMEOUT_OPTIONS = ["indefinite", "1", "5", "10", "15", "30", "60"];
 
@@ -40,7 +50,6 @@ type ModelInfo = { id: string; value: string };
 
 type GateState = {
   el: HTMLElement;
-  widget: any;
   urlInput: HTMLInputElement;
   timeoutSel: HTMLSelectElement;
   statusEl: HTMLElement;
@@ -53,12 +62,70 @@ type GateState = {
   phaseStart: number;
   resultText: string;
   resultHold: number;
-  ticker: number | null;
   polling: boolean;
 };
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((r) => setTimeout(r, ms));
+
+// --- NInfer calls (via the proxy) ----------------------------------------
+
+async function forward(
+  url: string,
+  body?: unknown,
+): Promise<{ status: number; body: any }> {
+  const resp =
+    body === undefined
+      ? await fetch("/comfort/ninfer/forward?url=" + encodeURIComponent(url))
+      : await fetch("/comfort/ninfer/forward", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, body }),
+        });
+  const text = await resp.text();
+  let parsed: any = text;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    /* keep raw text */
+  }
+  return { status: resp.status, body: parsed };
+}
+
+// Shared /v1/models cache. Multiple gate nodes pointing at the same NInfer
+// share one request per poll: the result cache serves fresh-enough reads
+// within MODEL_CACHE_MS, and `inFlight` coalesces concurrent fetches so two
+// gates polling in the same tick issue a single request.
+const modelCache = new Map<string, { at: number; models: ModelInfo[] }>();
+const inFlight = new Map<string, Promise<ModelInfo[]>>();
+
+async function fetchModels(base: string, useCache: boolean): Promise<ModelInfo[]> {
+  const key = base + "/v1/models";
+  if (useCache) {
+    const hit = modelCache.get(key);
+    if (hit && Date.now() - hit.at < MODEL_CACHE_MS) return hit.models;
+  }
+  const pending = inFlight.get(key);
+  if (pending) return pending;
+  const p = (async () => {
+    const r = await forward(key);
+    const data = r.body?.data;
+    const models: ModelInfo[] = Array.isArray(data)
+      ? data.map((m: any) => ({
+          id: String(m.id),
+          value: String(m.status?.value ?? ""),
+        }))
+      : [];
+    modelCache.set(key, { at: Date.now(), models });
+    return models;
+  })().finally(() => inFlight.delete(key));
+  inFlight.set(key, p);
+  return p;
+}
+
+function suspendModel(base: string, id: string): Promise<{ status: number; body: any }> {
+  return forward(base + "/v1/models/" + encodeURIComponent(id) + "/suspend", {});
+}
 
 export class NInferGateNode extends ComfortVirtualNode {
   private st: GateState;
@@ -71,7 +138,6 @@ export class NInferGateNode extends ComfortVirtualNode {
     this.properties.selected = null;
     this.st = this.setupWidget();
     NInferGateRegistry.register(this);
-    this.constructed();
   }
 
   /**
@@ -89,15 +155,25 @@ export class NInferGateNode extends ComfortVirtualNode {
   /** Runs after the node is added to a graph (creation AND workflow load). */
   onAdded(): void {
     super.onAdded?.();
-    // Sync the inputs to the current properties, then start polling.
+    // Sync the inputs to the current properties, then fetch the model list.
     this.syncFieldsFromProperties();
     this.refresh();
   }
 
   onRemoved(): void {
-    this.stopTicker();
     NInferGateRegistry.unregister(this);
     super.onRemoved?.();
+  }
+
+  /**
+   * Called every tick by the shared scheduler. Advances the elapsed-time
+   * display while a suspend is in progress; a no-op otherwise (so idle nodes
+   * don't churn the DOM).
+   */
+  updateLiveStatus(): void {
+    if (this.st.phase === "suspending" || this.st.phase === "busy") {
+      this.renderStatus();
+    }
   }
 
   // --- configuration accessors -------------------------------------------
@@ -179,7 +255,6 @@ export class NInferGateNode extends ComfortVirtualNode {
 
     const st: GateState = {
       el,
-      widget: null,
       urlInput,
       timeoutSel,
       statusEl,
@@ -192,7 +267,6 @@ export class NInferGateNode extends ComfortVirtualNode {
       phaseStart: 0,
       resultText: "",
       resultHold: 0,
-      ticker: null,
       polling: false,
     };
 
@@ -248,7 +322,7 @@ export class NInferGateNode extends ComfortVirtualNode {
     });
 
     if (typeof this.addDOMWidget === "function") {
-      st.widget = this.addDOMWidget("ninfer", "comfort_ninfer_list", el, {
+      this.addDOMWidget("ninfer", "comfort_ninfer_list", el, {
         serialize: false,
         hideOnZoom: true,
       });
@@ -345,20 +419,6 @@ export class NInferGateNode extends ComfortVirtualNode {
     st.statusEl.textContent = text;
   }
 
-  private startTicker(): void {
-    const st = this.st;
-    if (st.ticker !== null) return;
-    st.ticker = window.setInterval(() => this.renderStatus(), 500);
-  }
-
-  private stopTicker(): void {
-    const st = this.st;
-    if (st.ticker !== null) {
-      window.clearInterval(st.ticker);
-      st.ticker = null;
-    }
-  }
-
   private layout(): void {
     const n = this.st.models.length;
     const h = PAD_Y * 2 + FIELD_H + FIELD_H + STATUS_H + BULK_H + n * ROW_H;
@@ -367,48 +427,14 @@ export class NInferGateNode extends ComfortVirtualNode {
     if (!cur || cur[1] !== h || cur[0] !== w) this.setSize?.([w, h]);
   }
 
-  // --- NInfer calls (via proxy) ------------------------------------------
-
-  private async forward(
-    url: string,
-    body?: unknown,
-  ): Promise<{ status: number; body: any }> {
-    const resp =
-      body === undefined
-        ? await fetch("/comfort/ninfer/forward?url=" + encodeURIComponent(url))
-        : await fetch("/comfort/ninfer/forward", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url, body }),
-          });
-    const text = await resp.text();
-    let parsed: any = text;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      /* keep raw text */
-    }
-    return { status: resp.status, body: parsed };
-  }
-
-  private async fetchModels(base: string): Promise<ModelInfo[]> {
-    const r = await this.forward(base + "/v1/models");
-    const data = r.body?.data;
-    if (!Array.isArray(data)) return [];
-    return data.map((m: any) => ({
-      id: String(m.id),
-      value: String(m.status?.value ?? ""),
-    }));
-  }
-
-  private suspendModel(base: string, id: string): Promise<{ status: number; body: any }> {
-    return this.forward(base + "/v1/models/" + encodeURIComponent(id) + "/suspend", {});
-  }
-
   // --- polling -----------------------------------------------------------
 
-  /** Refresh the model list + status. Called on a shared interval + on demand. */
-  async refresh(): Promise<void> {
+  /**
+   * Refresh the model list + status. Driven by the ambient scheduler job and
+   * on demand (load, URL change, post-suspend). `fresh` bypasses the shared
+   * result cache (used right after a suspend, to see the new state at once).
+   */
+  async refresh(fresh = false): Promise<void> {
     const st = this.st;
     if (st.polling) return;
     if (st.phase === "suspending" || st.phase === "busy") return;
@@ -425,7 +451,7 @@ export class NInferGateNode extends ComfortVirtualNode {
 
     st.polling = true;
     try {
-      const models = await this.fetchModels(base);
+      const models = await fetchModels(base, !fresh);
       st.models = models;
       if (this.properties.selected == null) {
         // First-ever poll: default to all currently-loaded models and freeze
@@ -473,7 +499,8 @@ export class NInferGateNode extends ComfortVirtualNode {
 
     let models: ModelInfo[];
     try {
-      models = await this.fetchModels(base);
+      // Fresh read — we're about to suspend, so the current state matters.
+      models = await fetchModels(base, false);
     } catch {
       this.finish("NInfer unreachable", true);
       throw new Error("NInfer unreachable");
@@ -498,7 +525,7 @@ export class NInferGateNode extends ComfortVirtualNode {
         const mStart = Date.now();
         this.beginSuspending(m.id, mStart);
         for (;;) {
-          const r = await this.suspendModel(base, m.id);
+          const r = await suspendModel(base, m.id);
           if (r.status === 200) break;
           if (r.status === 409) {
             this.setBusy(m.id, mStart);
@@ -517,15 +544,16 @@ export class NInferGateNode extends ComfortVirtualNode {
         false,
       );
       st.resultHold = 2;
-      // Refresh immediately so the rows/badges reflect the new (suspended)
-      // state right away rather than waiting for the next 3s poll.
+      // Refresh immediately (bypassing the cache) so the rows/badges reflect
+      // the new (suspended) state right away rather than on the next poll.
       try {
-        await this.refresh();
+        await this.refresh(true);
       } catch {
         /* the periodic poll will retry */
       }
     } finally {
-      this.stopTicker();
+      // The elapsed display is advanced by the shared scheduler; nothing to
+      // stop here.
     }
   }
 
@@ -534,7 +562,6 @@ export class NInferGateNode extends ComfortVirtualNode {
     st.phase = "suspending";
     st.phaseModel = model;
     st.phaseStart = start;
-    this.startTicker();
     this.renderStatus();
   }
 
@@ -550,7 +577,6 @@ export class NInferGateNode extends ComfortVirtualNode {
     const st = this.st;
     st.phase = isError ? "error" : "done";
     st.resultText = text;
-    this.stopTicker();
     this.renderStatus();
   }
 
@@ -569,33 +595,48 @@ Suspended models stay suspended.</p>
 // ---------------------------------------------------------------------------
 
 const registry = new Set<any>();
-let pollTimer: number | null = null;
 let hooksInstalled = false;
+
+// Two jobs on the shared scheduler:
+//  - ambientJob: refresh the model list (~3s), skipped while the tab is hidden.
+//  - elapsedJob: advance the elapsed-time display while a suspend is running.
+const ambientJob = (): void => {
+  if (document.hidden) return; // no network/CPU while the tab isn't visible
+  for (const n of Array.from(registry)) {
+    if (n.removed) continue;
+    try {
+      n.refresh();
+    } catch {
+      /* ignore */
+    }
+  }
+};
+const elapsedJob = (): void => {
+  for (const n of Array.from(registry)) {
+    if (n.removed) continue;
+    try {
+      n.updateLiveStatus();
+    } catch {
+      /* ignore */
+    }
+  }
+};
 
 const NInferGateRegistry = {
   register(node: any): void {
     registry.add(node);
     installHooks();
-    startPolling();
+    scheduler.schedule(ambientJob, AMBIENT_TICKS);
+    scheduler.schedule(elapsedJob, ELAPSED_TICKS);
   },
   unregister(node: any): void {
     registry.delete(node);
+    if (!registry.size) {
+      scheduler.unschedule(ambientJob);
+      scheduler.unschedule(elapsedJob);
+    }
   },
 };
-
-function startPolling(): void {
-  if (pollTimer !== null) return;
-  pollTimer = window.setInterval(() => {
-    for (const n of Array.from(registry)) {
-      if (n.removed) continue;
-      try {
-        n.refresh();
-      } catch {
-        /* ignore */
-      }
-    }
-  }, POLL_MS);
-}
 
 /**
  * Wrap app.queuePrompt once. Before the real queuePrompt runs, each live gate

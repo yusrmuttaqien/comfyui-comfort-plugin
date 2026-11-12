@@ -8,8 +8,6 @@
 // filter, which uses the same wrapping technique) and only touch "dark" combo
 // menus that exceed a threshold and actually contain subdirectories.
 
-import { app } from "/scripts/app.js";
-
 const NEST_THRESHOLD = 10;
 const SEP = /[/\\]/;
 const ORIGINAL_KEY = "__comfort_original";
@@ -95,7 +93,6 @@ function installAutoNest(): void {
   });
   wrapped.__comfortAutoNest = true;
   (LiteGraph as any).ContextMenu = wrapped;
-  void app;
 }
 
 export { installAutoNest };

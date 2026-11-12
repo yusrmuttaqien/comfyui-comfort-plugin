@@ -13,7 +13,6 @@ class CollectorNode extends ComfortFanInNode {
   constructor() {
     super(NODE_COLLECTOR);
     this.addOutput("Output", "*");
-    this.constructed();
   }
 
   protected onConnectedNodesChanged(_nodes: any[]): void {

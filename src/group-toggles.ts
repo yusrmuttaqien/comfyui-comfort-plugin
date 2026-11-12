@@ -9,14 +9,11 @@
 // (Nodes 2.0) renderer. Positions are recomputed every frame from the canvas
 // view transform, so they track pan / zoom / group drags.
 import { app } from "/scripts/app.js";
-import { getGroupNodes } from "./mode-utils.js";
+import { MODE_ALWAYS, MODE_NEVER, MODE_BYPASS, getGroupNodes } from "./mode-utils.js";
 
 const BUTTON = 20;
 const HEADER_PAD = 6;
 const GAP = 6;
-const MODE_ACTIVE = 0;
-const MODE_MUTED = 2;
-const MODE_BYPASS = 4;
 
 interface GroupButtons {
   group: any;
@@ -125,16 +122,16 @@ function updateOverlay(): void {
 function toggleGroup(group: any, which: "mute" | "bypass"): void {
   const nodes = getGroupNodes(group);
   if (!nodes.length) return;
-  const allMuted = nodes.every((n: any) => n.mode === MODE_MUTED);
+  const allMuted = nodes.every((n: any) => n.mode === MODE_NEVER);
   const allBypass = nodes.every((n: any) => n.mode === MODE_BYPASS);
   const graph = app.graph as any;
   const before = graph?.version;
   try {
     if (which === "mute") {
-      const mode = allMuted ? MODE_ACTIVE : MODE_MUTED;
+      const mode = allMuted ? MODE_ALWAYS : MODE_NEVER;
       nodes.forEach((n: any) => (n.mode = mode));
     } else {
-      const mode = allBypass ? MODE_ACTIVE : MODE_BYPASS;
+      const mode = allBypass ? MODE_ALWAYS : MODE_BYPASS;
       nodes.forEach((n: any) => (n.mode = mode));
     }
   } catch (err) {

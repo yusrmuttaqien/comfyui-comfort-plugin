@@ -29,7 +29,6 @@ class RandomUnmuterNode extends ComfortFanInNode {
 
   constructor() {
     super(RANDOM_UNMUTER);
-    this.constructed();
     RandomUnmuterRegistry.register(this);
   }
 

@@ -11,9 +11,8 @@
 
 import { ComfortFanInNode } from "./fan-in-base.js";
 import { getConnectedInputNodes } from "./mode-utils.js";
+import { renderToggleRows, resizeForRows } from "./toggle-list.js";
 
-const ROW_H = 34;
-const PAD_Y = 10;
 const MIN_W = 260;
 
 type RowState = {
@@ -25,7 +24,6 @@ type RowState = {
 export abstract class ComfortAnyInputNode extends ComfortFanInNode {
   private listEl: HTMLElement | null = null;
   private rows: RowState[] = [];
-  private widget: any = null;
 
   /** Mode a connected node is set to when its row is ON. */
   protected abstract readonly modeOn: number;
@@ -35,14 +33,13 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
   constructor(title?: string) {
     super(title);
     this.setupListWidget();
-    this.constructed();
   }
 
   private setupListWidget(): void {
     this.listEl = document.createElement("div");
     this.listEl.className = "comfort-node-list";
     if (typeof this.addDOMWidget === "function") {
-      this.widget = this.addDOMWidget("nodes", "comfort_node_list", this.listEl, {
+      this.addDOMWidget("nodes", "comfort_node_list", this.listEl, {
         serialize: true,
         hideOnZoom: true,
         getValue: () => this.rows.map((r) => ({ title: r.title, on: r.on })),
@@ -58,40 +55,8 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
   private renderList(): void {
     const el = this.listEl;
     if (!el) return;
-    el.innerHTML = "";
-    if (!this.rows.length) {
-      const empty = document.createElement("div");
-      empty.className = "comfort-node-empty";
-      empty.textContent = "Connect nodes to control them";
-      el.appendChild(empty);
-    }
-    this.rows.forEach((row, i) => {
-      const rowEl = document.createElement("div");
-      rowEl.className = "comfort-node-row" + (row.on ? "" : " off");
-      rowEl.dataset.idx = String(i);
-
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "comfort-toggle " + (row.on ? "on" : "off");
-      btn.textContent = row.on ? "ON" : "OFF";
-      rowEl.appendChild(btn);
-
-      const label = document.createElement("span");
-      label.className = "comfort-node-title";
-      label.textContent = row.title;
-      label.title = row.title;
-      rowEl.appendChild(label);
-
-      el.appendChild(rowEl);
-    });
-    this.resizeForRows();
-  }
-
-  private resizeForRows(): void {
-    if (!this.size) return;
-    const h = PAD_Y * 2 + this.rows.length * ROW_H;
-    const w = Math.max(this.size[0] || 0, MIN_W);
-    if (this.size[1] !== h || this.size[0] !== w) this.setSize?.([w, h]);
+    renderToggleRows(el, this.rows, "Connect nodes to control them");
+    resizeForRows(this, this.rows.length, MIN_W);
   }
 
   private bindListEvents(): void {
@@ -141,10 +106,10 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     this.syncRows();
   }
 
-  /** Actions: set every row on/off/toggle. */
+  /** Bulk actions: set every row on, off, or toggle each one. */
   setAllRows(on: boolean | null): void {
     for (const row of this.rows) {
-      if (on !== null) row.on = on;
+      row.on = on === null ? !row.on : on;
       this.applyRowMode(row);
     }
     this.renderList();

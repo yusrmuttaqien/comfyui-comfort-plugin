@@ -20,7 +20,6 @@ export type LoraNodeState = {
   rows: LoraRow[];
   showSeparate: boolean;
   el: HTMLElement;
-  widget: any;
 };
 
 // Per-node state, keyed by node instance. Node instances are recreated on tab
@@ -387,7 +386,6 @@ export function setupPowerLoraLoader(node: any): void {
     rows: [],
     showSeparate: false,
     el: document.createElement("div"),
-    widget: null,
   };
   state.el.className = "comfort-lora-list";
   states.set(node, state);
@@ -396,7 +394,7 @@ export function setupPowerLoraLoader(node: any): void {
   node.serialize_widgets = true;
 
   if (typeof node.addDOMWidget === "function") {
-    state.widget = node.addDOMWidget("loras", "comfort_lora_list", state.el, {
+    node.addDOMWidget("loras", "comfort_lora_list", state.el, {
       serialize: true,
       hideOnZoom: true,
       getValue: () => state.rows,

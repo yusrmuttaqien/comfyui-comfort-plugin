@@ -24,8 +24,6 @@ function findProtoPropDescriptor(obj: any, prop: string): PropertyDescriptor | u
 export abstract class ComfortVirtualNode extends LGraphNode {
   /** True while `configure()` is running (workflow load). False otherwise. */
   configuring = false;
-  /** True once the constructor has finished. */
-  __constructed__ = false;
   /** True after the node has been removed from its graph. */
   removed = false;
 
@@ -46,7 +44,6 @@ export abstract class ComfortVirtualNode extends LGraphNode {
     this.isVirtualNode = true;
 
     this.installModeInterceptor();
-    this.__constructed__ = true;
   }
 
   /**
@@ -71,11 +68,6 @@ export abstract class ComfortVirtualNode extends LGraphNode {
         if (old !== mode) this.onModeChange(old, mode);
       },
     });
-  }
-
-  /** Called after the subclass finishes setting up slots/widgets. */
-  protected constructed(): void {
-    this.__constructed__ = true;
   }
 
   configure(info: any): void {

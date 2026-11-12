@@ -15,6 +15,7 @@ import {
   getConnectedOutputNodes,
 } from "./mode-utils.js";
 import { isComfortRepeater } from "./mode-repeater.js";
+import { scheduler } from "./scheduler.js";
 
 export const MODE_RELAY = "Mode Relay (comfort)";
 
@@ -41,7 +42,6 @@ class ModeRelayNode extends ComfortFanInNode {
       color_off: "#a80",
       shape: 5,
     });
-    this.constructed();
     RelayRegistry.register(this);
   }
 
@@ -120,30 +120,27 @@ properties to remap or suppress (NOTHING) each signal.</p>`;
   }
 }
 
-// Shared registry + polling loop (re-evaluates as input modes change).
+// Shared registry, driven by the shared scheduler (re-evaluates as input modes
+// change). The relay only traverses its own connections, so per-tick cost is
+// negligible.
 const registry = new Set<any>();
-let timer: any = null;
+const relayJob = () => {
+  for (const n of registry) {
+    try {
+      n.evaluate();
+    } catch {
+      /* ignore */
+    }
+  }
+};
 const RelayRegistry = {
   register(node: any) {
     registry.add(node);
-    if (timer == null) {
-      timer = setInterval(() => {
-        for (const n of registry) {
-          try {
-            n.evaluate();
-          } catch {
-            /* ignore */
-          }
-        }
-      }, 500);
-    }
+    scheduler.schedule(relayJob, 1); // every tick (500ms)
   },
   unregister(node: any) {
     registry.delete(node);
-    if (!registry.size && timer != null) {
-      clearInterval(timer);
-      timer = null;
-    }
+    if (!registry.size) scheduler.unschedule(relayJob);
   },
 };
 

@@ -20,7 +20,6 @@ class ModeRepeaterNode extends ComfortFanInNode {
   constructor() {
     super(MODE_REPEATER);
     this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
-    this.constructed();
   }
 
   protected onConnectedNodesChanged(_nodes: any[]): void {

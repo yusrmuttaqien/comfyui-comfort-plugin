@@ -13,12 +13,12 @@ import {
   changeModeOfNodes,
   getGroupNodes,
 } from "./mode-utils.js";
+import { renderToggleRows, resizeForRows } from "./toggle-list.js";
+import { scheduler } from "./scheduler.js";
 
 export const FAST_GROUPS_MUTER = "Fast Groups Muter (comfort)";
 export const FAST_GROUPS_BYPASSER = "Fast Groups Bypasser (comfort)";
 
-const ROW_H = 34;
-const PAD_Y = 10;
 const MIN_W = 280;
 
 type GroupRow = {
@@ -66,13 +66,13 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
   protected readonly modeOn = MODE_ALWAYS;
   private listEl: HTMLElement | null = null;
   private rows: GroupRow[] = [];
+  private lastKey = "";
 
   constructor(title?: string) {
     super(title);
     this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
     this.setupListWidget();
     FastGroupsRegistry.register(this);
-    this.constructed();
   }
 
   /**
@@ -140,39 +140,11 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     this.rows = next;
     this.renderList();
   }
-  private lastKey = "";
-
   private renderList(): void {
     const el = this.listEl;
     if (!el) return;
-    el.innerHTML = "";
-    if (!this.rows.length) {
-      const empty = document.createElement("div");
-      empty.className = "comfort-node-empty";
-      empty.textContent = "No groups in this workflow";
-      el.appendChild(empty);
-    }
-    this.rows.forEach((row, i) => {
-      const rowEl = document.createElement("div");
-      rowEl.className = "comfort-node-row" + (row.on ? "" : " off");
-      rowEl.dataset.idx = String(i);
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "comfort-toggle " + (row.on ? "on" : "off");
-      btn.textContent = row.on ? "ON" : "OFF";
-      rowEl.appendChild(btn);
-      const label = document.createElement("span");
-      label.className = "comfort-node-title";
-      label.textContent = row.title;
-      label.title = row.title;
-      rowEl.appendChild(label);
-      el.appendChild(rowEl);
-    });
-    if (this.size) {
-      const h = PAD_Y * 2 + this.rows.length * ROW_H;
-      const w = Math.max(this.size[0] || 0, MIN_W);
-      if (this.size[1] !== h || this.size[0] !== w) this.setSize?.([w, h]);
-    }
+    renderToggleRows(el, this.rows, "No groups in this workflow");
+    resizeForRows(this, this.rows.length, MIN_W);
   }
 
   setAllGroups(on: boolean | null): void {
@@ -209,30 +181,28 @@ class FastGroupsBypasser extends FastGroupsMuterNode {
   }
 }
 
-// Shared registry + a single refresh loop for all Fast Groups nodes.
+// Shared registry, driven by the shared scheduler (every 2 ticks = 1s). The
+// per-refresh cost is O(nodes x groups) cheap bounding-box checks, negligible
+// even for large workflows; the `lastKey` guard avoids re-rendering when the
+// set hasn't changed.
 const registry = new Set<any>();
-let timer: any = null;
+const groupsJob = () => {
+  for (const n of registry) {
+    try {
+      n.refresh();
+    } catch {
+      /* ignore */
+    }
+  }
+};
 const FastGroupsRegistry = {
   register(node: any) {
     registry.add(node);
-    if (timer == null) {
-      timer = setInterval(() => {
-        for (const n of registry) {
-          try {
-            n.refresh();
-          } catch {
-            /* ignore */
-          }
-        }
-      }, 1000);
-    }
+    scheduler.schedule(groupsJob, 2); // every 2 ticks (1s)
   },
   unregister(node: any) {
     registry.delete(node);
-    if (!registry.size && timer != null) {
-      clearInterval(timer);
-      timer = null;
-    }
+    if (!registry.size) scheduler.unschedule(groupsJob);
   },
 };
 
