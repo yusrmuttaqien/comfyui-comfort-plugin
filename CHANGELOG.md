@@ -15,8 +15,13 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 - [x] Browser-verified on Nodes 2.0 (2026-12-13): node creation, lora chooser (real `/api/models/loras` data), add multiple loras, per-row toggle + dimming, strength inc/dec, row right-click menu (toggle/move/remove), node menu "Show Strengths" → Single / Separate Model & Clip (re-renders with model+clip columns), save/reload persistence of rows + strengths + node size
 - [x] Tab switch survival: node instances recreated, widget re-mounts with full state (2026-12-13)
 - [x] Subgraph survival (rgthree #714 scenario): convert node to subgraph → enter → widget renders with full state inside → exit → unpack → node restored at root (2026-12-13)
-- [ ] Legacy LiteGraph renderer verification (needs a session on the legacy frontend; code uses only DOM + LiteGraph core APIs)
 - [x] Muted/bypassed mode serialization (rgthree #797): node bypassed (mode 4) survives save + reload with rows intact (2026-12-13)
+- [x] Legacy LiteGraph renderer verification (2026-12-13): widget renders, toggle + strength inc/dec work, row context menu works (emoji render), node menu "Show Strengths" present, submenu (Single / Separate) works, mode toggle re-renders + resizes node, save/reload round-trip preserves rows + strengths + toggle + mode
+
+#### Legacy LiteGraph verification notes (2026-12-13)
+- The current frontend keeps a **legacy menu compat layer**: `LGraphCanvas.prototype.getNodeMenuOptions` is wrapped so that items returned by the `getNodeMenuItems` extension hook are appended to legacy node menus. Our "Show Strengths" item therefore appears in legacy mode with no extra code.
+- Legacy submenus are **native LiteGraph static submenus** (`has_submenu` + `submenu.options`), opened on click/`pointerenter`. No `show_submenu`/`hide_submenu` callbacks needed (those were only for the Vue `reka-ui` `DropdownMenuSub`).
+- The canvas suppresses the native `contextmenu` event (`_doNothing`) and drives menus from pointer events, so programmatic triggers must call `canvas.getNodeMenuOptions(node)` + `new LiteGraph.ContextMenu(items, {event})` rather than dispatch a synthetic `contextmenu`.
 
 #### Fixes found during browser verification (2026-12-13)
 1. **Extension module silently rejected**: the Nodes 2.0 frontend loads extension modules via dynamic `import(url)` without an import map, so the bare specifier `scripts/app.js` failed. Use absolute `/scripts/app.js` (and mark it external in Vite).
@@ -45,10 +50,10 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 ## Test matrix (per milestone)
 | Check | Legacy LiteGraph | Nodes 2.0 (Vue) |
 |---|---|---|
-| Widgets render | ☐ | ✅ |
-| Widget interactions (click/drag/value) | ☐ | ✅ |
-| Context menus | ☐ | ✅ |
-| Save/load round-trip | ☐ | ✅ |
-| Tab switch survives | ☐ | ✅ |
-| Subgraph nav survives | ☐ | ✅ |
-| Live updates during execution | ☐ | n/a (M1 has none) |
+| Widgets render | ✅ | ✅ |
+| Widget interactions (click/drag/value) | ✅ | ✅ |
+| Context menus (row + node + submenu) | ✅ | ✅ |
+| Save/load round-trip | ✅ | ✅ |
+| Tab switch survives | ✅ | ✅ |
+| Subgraph nav survives | ✅ | ✅ |
+| Live updates during execution | n/a (M1 has none) | n/a (M1 has none) |
