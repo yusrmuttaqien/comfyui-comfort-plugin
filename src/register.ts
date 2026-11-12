@@ -3,6 +3,7 @@
 import { ComfortAnyInputNode } from "./any-input-node.js";
 import { FastMuter, FastBypasser, FAST_MUTER, FAST_BYPASSER } from "./fast-muter.js";
 import { NodeCollector, NODE_COLLECTOR } from "./collector-node.js";
+import { ModeRepeater, MODE_REPEATER } from "./mode-repeater.js";
 
 const registered = new Set<string>();
 
@@ -18,6 +19,7 @@ export function registerComfortNodes(): void {
   registerType(FAST_MUTER, FastMuter);
   registerType(FAST_BYPASSER, FastBypasser);
   registerType(NODE_COLLECTOR, NodeCollector);
+  registerType(MODE_REPEATER, ModeRepeater);
 }
 
 export function isComfortMuter(node: any): boolean {
