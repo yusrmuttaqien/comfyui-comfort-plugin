@@ -17,7 +17,7 @@ function N(e, t) {
   const o = W(t), n = Math.max(e.size[0] || 0, At);
   (e.size[1] !== o || e.size[0] !== n) && ((s = e.setSize) == null || s.call(e, [n, o]));
 }
-function zt(e) {
+function It(e) {
   return { lora: e ?? null, on: !0, strength: 1, strengthTwo: null };
 }
 function bt(e) {
@@ -26,7 +26,7 @@ function bt(e) {
     if (t = t && n.on === !0, o = o && n.on === !1, !t && !o) return null;
   return !!(t && e.rows.length > 0);
 }
-function It(e) {
+function zt(e) {
   const t = !bt(e);
   for (const o of e.rows) o.on = t;
 }
@@ -135,12 +135,12 @@ function $t(e, t) {
   o.addEventListener("click", (n) => {
     const s = n.target;
     if (s.closest(".comfort-toggle-all")) {
-      It(t), g(t);
+      zt(t), g(t);
       return;
     }
     if (s.closest(".comfort-add-btn")) {
       et(t, e, n, (l) => {
-        t.rows.push(zt(l)), g(t), N(e, t);
+        t.rows.push(It(l)), g(t), N(e, t);
       });
       return;
     }
@@ -311,6 +311,11 @@ function nt(e, t) {
   return Et(e, "OUTPUT", t);
 }
 function D(e) {
+  if (e != null && e.graph && typeof e.recomputeInsideNodes == "function")
+    try {
+      e.recomputeInsideNodes();
+    } catch {
+    }
   const t = e == null ? void 0 : e._children;
   return t ? Array.from(t).filter((o) => {
     var n;
@@ -614,12 +619,12 @@ group.</p>`;
     rt.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
-const z = /* @__PURE__ */ new Set(), rt = {
+const I = /* @__PURE__ */ new Set(), rt = {
   register(e) {
-    z.add(e), ce();
+    I.add(e), ce();
   },
   unregister(e) {
-    z.delete(e);
+    I.delete(e);
   }
 };
 let it = !1;
@@ -639,13 +644,13 @@ function ce() {
   const n = e.graphToPrompt;
   e.graphToPrompt = function(...s) {
     if (o)
-      for (const c of z)
+      for (const c of I)
         try {
           c.onPromptStart();
         } catch {
         }
     const r = n.apply(e, s), i = () => {
-      for (const c of z)
+      for (const c of I)
         try {
           c.onPromptEnd();
         } catch {
@@ -684,6 +689,16 @@ function fe(e) {
 class Mt extends xt {
   constructor(t) {
     super(t), this.modeOn = y, this.listEl = null, this.rows = [], this.lastKey = "", this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), ct.register(this), this.constructed();
+  }
+  /**
+   * The constructor's refresh runs before we're attached to a graph (so
+   * `this.graph` is null and it finds no groups). Re-run now that we're in a
+   * graph so the group rows appear immediately instead of waiting for the 1s
+   * poll. Also covers the load path (nodes are re-added to the graph on load).
+   */
+  onAdded() {
+    var t;
+    (t = super.onAdded) == null || t.call(this), this.refresh();
   }
   setupListWidget() {
     this.listEl = document.createElement("div"), this.listEl.className = "comfort-node-list", typeof this.addDOMWidget == "function" && this.addDOMWidget("groups", "comfort_group_list", this.listEl, {
@@ -981,20 +996,20 @@ function ke() {
   t.__comfortAutoNest = !0, LiteGraph.ContextMenu = t;
 }
 const S = 20, pt = 6, Se = 6, dt = 0, ft = 2, ht = 4;
-let I = /* @__PURE__ */ new Map();
+let z = /* @__PURE__ */ new Map();
 function mt(e, t) {
   const o = document.createElement("div");
   return o.className = "comfort-group-btn " + t, o.textContent = e, o.style.position = "fixed", o.style.display = "none", o.style.pointerEvents = "auto", o.style.zIndex = "100", o;
 }
 function Re(e) {
-  let t = I.get(e);
+  let t = z.get(e);
   if (t) return t;
   const o = mt("M", "comfort-btn-mute"), n = mt("B", "comfort-btn-byp");
   return o.addEventListener("pointerdown", (s) => {
     s.stopPropagation(), s.preventDefault(), yt(e, "mute");
   }), n.addEventListener("pointerdown", (s) => {
     s.stopPropagation(), s.preventDefault(), yt(e, "bypass");
-  }), t = { group: e, mute: o, byp: n }, I.set(e, t), document.body.appendChild(o), document.body.appendChild(n), t;
+  }), t = { group: e, mute: o, byp: n }, z.set(e, t), document.body.appendChild(o), document.body.appendChild(n), t;
 }
 function gt(e, t, o, n) {
   e.style.left = `${t}px`, e.style.top = `${o}px`, e.style.width = `${S * n}px`, e.style.height = `${S * n}px`, e.style.fontSize = `${Math.max(9, S * n * 0.5)}px`;
@@ -1012,8 +1027,8 @@ function Te() {
     const p = Re(a), f = a.pos[0] + a.size[0] - pt - S, d = a.pos[1] + pt;
     gt(p.mute, i(f - Se - S), c(d), s), gt(p.byp, i(f), c(d), s), p.mute.style.display = "block", p.byp.style.display = "block";
   }
-  for (const [a, p] of I)
-    l.has(a) || (p.mute.style.display = "none", p.byp.style.display = "none"), u.includes(a) || (p.mute.remove(), p.byp.remove(), I.delete(a));
+  for (const [a, p] of z)
+    l.has(a) || (p.mute.style.display = "none", p.byp.style.display = "none"), u.includes(a) || (p.mute.remove(), p.byp.remove(), z.delete(a));
 }
 function yt(e, t) {
   var u;

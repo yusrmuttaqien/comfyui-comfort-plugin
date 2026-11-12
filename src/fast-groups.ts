@@ -75,6 +75,17 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     this.constructed();
   }
 
+  /**
+   * The constructor's refresh runs before we're attached to a graph (so
+   * `this.graph` is null and it finds no groups). Re-run now that we're in a
+   * graph so the group rows appear immediately instead of waiting for the 1s
+   * poll. Also covers the load path (nodes are re-added to the graph on load).
+   */
+  onAdded(): void {
+    super.onAdded?.();
+    this.refresh();
+  }
+
   private setupListWidget(): void {
     this.listEl = document.createElement("div");
     this.listEl.className = "comfort-node-list";

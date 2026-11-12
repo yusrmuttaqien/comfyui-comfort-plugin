@@ -111,6 +111,18 @@ export function getConnectedOutputNodes(node: any, slot?: number): any[] {
 
 /** The nodes inside a group (LiteGraph groups keep children in `_children`). */
 export function getGroupNodes(group: any): any[] {
+  // `_children` is derived spatially and is NOT populated on workflow load --
+  // it's only filled when `recomputeInsideNodes` runs (selection, group ops,
+  // node drags). Right after a reload it's empty, so a toggle would act on
+  // nothing. Recompute so we always see the nodes actually inside the group.
+  // The call is idempotent (it clears and rebuilds `_children`).
+  if (group?.graph && typeof group.recomputeInsideNodes === "function") {
+    try {
+      group.recomputeInsideNodes();
+    } catch {
+      /* fall through to whatever `_children` currently holds */
+    }
+  }
   const children = group?._children;
   if (!children) return [];
   return Array.from(children).filter((c: any) => c && (c.isLGraphNode || c.constructor?.type));
