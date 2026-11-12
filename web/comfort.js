@@ -1,5 +1,5 @@
 import { app as v } from "/scripts/app.js";
-const d = "Power Lora Loader (comfort)", u = /* @__PURE__ */ new WeakMap(), L = 32, S = 36, M = 34, b = 14, z = 380;
+const d = "Power Lora Loader (comfort)", u = /* @__PURE__ */ new WeakMap(), L = 32, S = 36, M = 34, w = 14, z = 380;
 function x(e) {
   var t;
   return (e == null ? void 0 : e.type) === d || (e == null ? void 0 : e.comfyClass) === d || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === d;
@@ -8,7 +8,7 @@ function O(e) {
   return u.get(e);
 }
 function h(e) {
-  return b + L + e.rows.length * S + M + b;
+  return w + L + e.rows.length * S + M + w;
 }
 function p(e, t) {
   var r;
@@ -51,7 +51,7 @@ function g(e, t) {
   const c = document.createElement("input");
   return c.type = "number", c.step = "0.05", c.min = "-2", c.max = "3", c.value = String(t === "two" ? e.strengthTwo ?? 1 : e.strength), c.title = t === "two" ? "Clip strength" : "Strength", o.appendChild(n), o.appendChild(c), o.appendChild(r), o;
 }
-function D(e, t, o) {
+function _(e, t, o) {
   const n = document.createElement("div");
   n.className = "comfort-lora-row" + (t.on ? "" : " off"), n.dataset.idx = String(o), n.appendChild(N(t.on, t.on ? "ON" : "OFF"));
   const r = document.createElement("span");
@@ -69,17 +69,17 @@ function l(e) {
   const n = y(e), r = N(n !== !1, n === !1 ? "ALL OFF" : "ALL ON");
   r.className += " comfort-toggle-all", r.title = "Toggle all loras", o.appendChild(r);
   const c = document.createElement("span");
-  c.className = "comfort-header-labels", e.showSeparate ? (c.appendChild(m("Model")), c.appendChild(m("Clip"))) : c.appendChild(m("Strength")), o.appendChild(c), t.appendChild(o), e.rows.forEach((f, i) => t.appendChild(D(e, f, i)));
+  c.className = "comfort-header-labels", e.showSeparate ? (c.appendChild(m("Model")), c.appendChild(m("Clip"))) : c.appendChild(m("Strength")), o.appendChild(c), t.appendChild(o), e.rows.forEach((f, i) => t.appendChild(_(e, f, i)));
   const a = document.createElement("div");
   a.className = "comfort-lora-footer";
   const s = document.createElement("button");
   s.type = "button", s.className = "comfort-add-btn", s.textContent = "➕ Add Lora", a.appendChild(s), t.appendChild(a);
 }
-function R(e) {
+function D(e) {
   const t = u.get(e);
   t && (l(t), p(e, t));
 }
-async function _() {
+async function R() {
   try {
     const e = await fetch("/api/models/loras");
     if (!e.ok) return [];
@@ -90,7 +90,7 @@ async function _() {
   }
 }
 async function E(e, t, o, n) {
-  const r = await _() || ["(no loras found)"], c = r.length ? r : ["(no loras found)"];
+  const r = await R() || ["(no loras found)"], c = r.length ? r : ["(no loras found)"];
   new LiteGraph.ContextMenu(c, {
     title: "Choose Lora",
     event: o,
@@ -120,7 +120,7 @@ function H(e, t, o, n) {
       { content: "⬆️ Move Up", disabled: !c, callback: () => s(-1) },
       { content: "⬇️ Move Down", disabled: !a, callback: () => s(1) },
       {
-        content: "U0001f5d1️ Remove",
+        content: "🗑️ Remove",
         callback: () => {
           t.rows.splice(o, 1), l(t), p(e, t);
         }
@@ -201,10 +201,10 @@ function P(e) {
     getMaxHeight: () => h(t)
   })), F(e, t), l(t), p(e, t);
 }
-const W = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}", w = document.createElement("style");
-w.setAttribute("data-comfort-plugin", "true");
-w.textContent = W;
-document.head.appendChild(w);
+const W = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}", b = document.createElement("style");
+b.setAttribute("data-comfort-plugin", "true");
+b.textContent = W;
+document.head.appendChild(b);
 v.registerExtension({
   name: "comfort.PowerLoraLoader",
   nodeCreated(e) {
@@ -216,24 +216,27 @@ v.registerExtension({
     const t = O(e);
     if (!t) return [];
     const o = (n) => {
-      t.showSeparate = n, R(e);
+      t.showSeparate = n, D(e);
     };
     return [
       null,
       {
         content: "Show Strengths",
-        submenu: [
-          {
-            content: "Single Strength",
-            checked: () => !t.showSeparate,
-            callback: () => o(!1)
-          },
-          {
-            content: "Separate Model & Clip",
-            checked: () => t.showSeparate,
-            callback: () => o(!0)
-          }
-        ]
+        has_submenu: !0,
+        submenu: {
+          options: [
+            {
+              content: "Single Strength",
+              checked: () => !t.showSeparate,
+              callback: () => o(!1)
+            },
+            {
+              content: "Separate Model & Clip",
+              checked: () => t.showSeparate,
+              callback: () => o(!0)
+            }
+          ]
+        }
       }
     ];
   }

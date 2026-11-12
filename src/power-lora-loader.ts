@@ -279,7 +279,7 @@ function showRowMenu(node: any, state: LoraNodeState, idx: number, e: MouseEvent
       { content: "\u2b06\ufe0f Move Up", disabled: !canUp, callback: () => move(-1) },
       { content: "\u2b07\ufe0f Move Down", disabled: !canDown, callback: () => move(1) },
       {
-        content: "\U0001f5d1\ufe0f Remove",
+        content: "\u{1F5D1}\uFE0F Remove",
         callback: () => {
           state.rows.splice(idx, 1);
           render(state);

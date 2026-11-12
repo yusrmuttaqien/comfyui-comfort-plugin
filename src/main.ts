@@ -36,18 +36,21 @@ app.registerExtension({
       null,
       {
         content: "Show Strengths",
-        submenu: [
-          {
-            content: "Single Strength",
-            checked: () => !state.showSeparate,
-            callback: () => setMode(false),
-          },
-          {
-            content: "Separate Model & Clip",
-            checked: () => state.showSeparate,
-            callback: () => setMode(true),
-          },
-        ],
+        has_submenu: true,
+        submenu: {
+          options: [
+            {
+              content: "Single Strength",
+              checked: () => !state.showSeparate,
+              callback: () => setMode(false),
+            },
+            {
+              content: "Separate Model & Clip",
+              checked: () => state.showSeparate,
+              callback: () => setMode(true),
+            },
+          ],
+        },
       },
     ];
   },
