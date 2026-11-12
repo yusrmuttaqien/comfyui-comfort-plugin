@@ -141,3 +141,43 @@
 .comfort-add-btn:hover {
   background: rgba(127, 127, 127, 0.2);
 }
+
+/* ------------------------------------------------------------------ */
+/* Fast Muter / Bypasser node list                                     */
+/* ------------------------------------------------------------------ */
+
+.comfort-node-list {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-color, #eeeeee);
+  user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.comfort-node-empty {
+  padding: 6px;
+  opacity: 0.55;
+  font-style: italic;
+}
+
+.comfort-node-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  margin: 3px 0;
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.12);
+}
+
+.comfort-node-row.off .comfort-node-title {
+  opacity: 0.5;
+}
+
+.comfort-node-title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
