@@ -12,7 +12,8 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "/scripts/app.js": ["src/typings/comfy-app.d.ts"]
+      "/scripts/app.js": ["src/typings/comfy-app.d.ts"],
+      "/scripts/api.js": ["src/typings/comfy-api.d.ts"]
     }
   },
   "include": ["src/**/*.ts"]

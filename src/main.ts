@@ -7,6 +7,7 @@ import {
   renderLoraNode,
 } from "./power-lora-loader.js";
 import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
+import { setupProgressBar } from "./progress-bar.js";
 import styles from "./styles.css?inline";
 
 // The Nodes 2.0 frontend no longer auto-loads extension .css files; inject
@@ -17,6 +18,7 @@ styleEl.textContent = styles;
 document.head.appendChild(styleEl);
 
 registerComfortNodes();
+setupProgressBar();
 
 app.registerExtension({
   name: "comfort.PowerLoraLoader",
