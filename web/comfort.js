@@ -1,8 +1,8 @@
 import { app as ot } from "/scripts/app.js";
-const O = "Power Lora Loader (comfort)", E = /* @__PURE__ */ new WeakMap(), nt = 32, st = 36, rt = 34, D = 14, it = 380;
+const v = "Power Lora Loader (comfort)", E = /* @__PURE__ */ new WeakMap(), nt = 32, st = 36, rt = 34, D = 14, it = 380;
 function P(e) {
   var t;
-  return (e == null ? void 0 : e.type) === O || (e == null ? void 0 : e.comfyClass) === O || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === O;
+  return (e == null ? void 0 : e.type) === v || (e == null ? void 0 : e.comfyClass) === v || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === v;
 }
 function ct(e) {
   return E.get(e);
@@ -10,7 +10,7 @@ function ct(e) {
 function k(e) {
   return D + nt + e.rows.length * st + rt + D;
 }
-function w(e, t) {
+function b(e, t) {
   var s;
   if (!e.size) return;
   const n = k(t), o = Math.max(e.size[0] || 0, it);
@@ -37,11 +37,11 @@ function U(e, t) {
   const n = document.createElement("button");
   return n.type = "button", n.className = "comfort-toggle " + (e ? "on" : "off"), n.textContent = t, n;
 }
-function v(e) {
+function M(e) {
   const t = document.createElement("span");
   return t.className = "comfort-col-label", t.textContent = e, t;
 }
-function M(e, t) {
+function O(e, t) {
   const n = document.createElement("div");
   n.className = "comfort-strength" + (t === "two" ? " comfort-strength-clip" : "");
   const o = document.createElement("button");
@@ -57,7 +57,7 @@ function ut(e, t, n) {
   const s = document.createElement("span");
   s.className = "comfort-name", s.textContent = t.lora || "None", s.title = t.lora || "No lora selected — click to choose", o.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-spacer", o.appendChild(r), e.showSeparate ? (o.appendChild(M(t, "one")), o.appendChild(M(t, "two"))) : o.appendChild(M(t, "one"));
+  r.className = "comfort-spacer", o.appendChild(r), e.showSeparate ? (o.appendChild(O(t, "one")), o.appendChild(O(t, "two"))) : o.appendChild(O(t, "one"));
   const i = document.createElement("button");
   return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", o.appendChild(i), o;
 }
@@ -69,17 +69,17 @@ function f(e) {
   const o = j(e), s = U(o !== !1, o === !1 ? "ALL OFF" : "ALL ON");
   s.className += " comfort-toggle-all", s.title = "Toggle all loras", n.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(v("Model")), r.appendChild(v("Clip"))) : r.appendChild(v("Strength")), n.appendChild(r), t.appendChild(n), e.rows.forEach((a, l) => t.appendChild(ut(e, a, l)));
+  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(M("Model")), r.appendChild(M("Clip"))) : r.appendChild(M("Strength")), n.appendChild(r), t.appendChild(n), e.rows.forEach((a, l) => t.appendChild(ut(e, a, l)));
   const i = document.createElement("div");
   i.className = "comfort-lora-footer";
   const c = document.createElement("button");
   c.type = "button", c.className = "comfort-add-btn", c.textContent = "➕ Add Lora", i.appendChild(c), t.appendChild(i);
 }
-function dt(e) {
+function pt(e) {
   const t = E.get(e);
-  t && (f(t), w(e, t));
+  t && (f(t), b(e, t));
 }
-async function pt() {
+async function dt() {
   try {
     const e = await fetch("/api/models/loras");
     if (!e.ok) return [];
@@ -90,7 +90,7 @@ async function pt() {
   }
 }
 async function H(e, t, n, o) {
-  const s = await pt() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
+  const s = await dt() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
   new LiteGraph.ContextMenu(r, {
     title: "Choose Lora",
     event: n,
@@ -122,7 +122,7 @@ function ft(e, t, n, o) {
       {
         content: "🗑️ Remove",
         callback: () => {
-          t.rows.splice(n, 1), f(t), w(e, t);
+          t.rows.splice(n, 1), f(t), b(e, t);
         }
       }
     ],
@@ -139,7 +139,7 @@ function ht(e, t) {
     }
     if (s.closest(".comfort-add-btn")) {
       H(t, e, o, (l) => {
-        t.rows.push(lt(l)), f(t), w(e, t);
+        t.rows.push(lt(l)), f(t), b(e, t);
       });
       return;
     }
@@ -167,7 +167,7 @@ function ht(e, t) {
       return;
     }
     if (s.closest(".comfort-remove")) {
-      t.rows.splice(i, 1), f(t), w(e, t);
+      t.rows.splice(i, 1), f(t), b(e, t);
       return;
     }
   }), n.addEventListener("change", (o) => {
@@ -195,11 +195,11 @@ function mt(e) {
     hideOnZoom: !0,
     getValue: () => t.rows,
     setValue: (n) => {
-      t.rows = Array.isArray(n) ? n : [], f(t), w(e, t);
+      t.rows = Array.isArray(n) ? n : [], f(t), b(e, t);
     },
     getMinHeight: () => k(t),
     getMaxHeight: () => k(t)
-  })), ht(e, t), f(t), w(e, t);
+  })), ht(e, t), f(t), b(e, t);
 }
 function gt(e, t) {
   let n = Object.getPrototypeOf(e);
@@ -250,8 +250,12 @@ class Y extends LGraphNode {
   }
 }
 const _ = 0, K = 2, Z = 4;
-function y(e, t) {
+function w(e, t) {
   var o;
+  if (Array.isArray(e)) {
+    for (const s of e) w(s, t);
+    return;
+  }
   if (!e) return;
   try {
     e.mode = t;
@@ -259,7 +263,7 @@ function y(e, t) {
   }
   const n = (o = e.subgraph) == null ? void 0 : o.nodes;
   if (Array.isArray(n))
-    for (const s of n) y(s, t);
+    for (const s of n) w(s, t);
 }
 function B(e) {
   var n;
@@ -274,12 +278,12 @@ function wt(e, t, n) {
     if (!l || r.has(l)) return;
     r.add(l);
     let u;
-    u = (l.inputs || []).map((d) => d.link);
-    for (const d of u) {
-      if (d == null) continue;
-      const h = o.links[d];
+    u = (l.inputs || []).map((p) => p.link);
+    for (const p of u) {
+      if (p == null) continue;
+      const h = o.links[p];
       if (!h) continue;
-      const p = h.origin_id, m = o.getNodeById(p);
+      const d = h.origin_id, m = o.getNodeById(d);
       !m || r.has(m) || (B(m) ? i(m) : s.push(m));
     }
   };
@@ -287,10 +291,10 @@ function wt(e, t, n) {
     const l = [(a = (c = e.inputs) == null ? void 0 : c[n]) == null ? void 0 : a.link];
     for (const u of l) {
       if (u == null) continue;
-      const d = o.links[u];
-      if (!d) continue;
-      const h = d.origin_id, p = o.getNodeById(h);
-      !p || r.has(p) || (B(p) ? i(p) : s.push(p));
+      const p = o.links[u];
+      if (!p) continue;
+      const h = p.origin_id, d = o.getNodeById(h);
+      !d || r.has(d) || (B(d) ? i(d) : s.push(d));
     }
   } else
     i(e);
@@ -307,14 +311,14 @@ function L(e) {
   }) : [];
 }
 function bt(e) {
-  var c, a, l, u, d, h, p, m;
+  var c, a, l, u, p, h, d, m;
   const t = e.graph;
   if (!t) return null;
   const n = t._groups || t.groups || [], o = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((a = e.pos) == null ? void 0 : a[1]) ?? 0, r = ((l = e.size) == null ? void 0 : l[0]) ?? 0, i = ((u = e.size) == null ? void 0 : u[1]) ?? 0;
-  for (const b of n) {
-    const G = ((d = b.pos) == null ? void 0 : d[0]) ?? 0, I = ((h = b.pos) == null ? void 0 : h[1]) ?? 0, tt = ((p = b.size) == null ? void 0 : p[0]) ?? 0, et = ((m = b.size) == null ? void 0 : m[1]) ?? 0;
+  for (const x of n) {
+    const G = ((p = x.pos) == null ? void 0 : p[0]) ?? 0, I = ((h = x.pos) == null ? void 0 : h[1]) ?? 0, tt = ((d = x.size) == null ? void 0 : d[0]) ?? 0, et = ((m = x.size) == null ? void 0 : m[1]) ?? 0;
     if (o >= G && s >= I && o + r <= G + tt && s + i <= I + et)
-      return b;
+      return x;
   }
   return null;
 }
@@ -414,7 +418,7 @@ class q extends S {
     this.renderList();
   }
 }
-const F = "Fast Muter (comfort)", R = "Fast Bypasser (comfort)";
+const F = "Fast Muter (comfort)", A = "Fast Bypasser (comfort)";
 class Et extends q {
   constructor() {
     super(F), this.modeOn = _, this.modeOff = K;
@@ -426,15 +430,15 @@ toggle it to mute or unmute that node without leaving the canvas.</p>`;
 }
 class Nt extends q {
   constructor() {
-    super(R), this.modeOn = _, this.modeOff = Z;
+    super(A), this.modeOn = _, this.modeOff = Z;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
 toggle it to bypass or un-bypass that node without leaving the canvas.</p>`;
   }
 }
-const _t = Et, Ot = Nt, J = "Node Collector (comfort)";
-class vt extends S {
+const _t = Et, vt = Nt, J = "Node Collector (comfort)";
+class Mt extends S {
   constructor() {
     super(J), this.addOutput("Output", "*"), this.constructed();
   }
@@ -446,7 +450,7 @@ output to a Fast Muter or Fast Bypasser and it will list every node connected
 to this Collector, so one toggle can mute/bypass all of them at once.</p>`;
   }
 }
-const Mt = vt, Q = "Mute / Bypass Repeater (comfort)";
+const Ot = Mt, Q = "Mute / Bypass Repeater (comfort)";
 class kt extends S {
   constructor() {
     super(Q), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.constructed();
@@ -455,20 +459,20 @@ class kt extends S {
     if (this.configuring) return;
     const n = t;
     for (const o of n)
-      o.mode !== this.mode && y(o, this.mode);
+      o.mode !== this.mode && w(o, this.mode);
   }
   /** Propagate our mode to every connected input node (or our group). */
   onModeChange(t, n) {
     if (this.configuring) return;
     const o = N(this);
     if (o.length) {
-      for (const r of o) y(r, n);
+      for (const r of o) w(r, n);
       return;
     }
     const s = bt(this);
     if (s)
       for (const r of L(s))
-        r !== this && y(r, n);
+        r !== this && w(r, n);
   }
   getHelp() {
     return `<p>When this node's mode (Always / Mute / Bypass) changes, it
@@ -477,8 +481,8 @@ connected but it is inside a group, it applies to the whole group. Connect its
 output to a Fast Muter for a single toggle over all of them.</p>`;
   }
 }
-const Lt = kt, z = "Fast Groups Muter (comfort)", A = "Fast Groups Bypasser (comfort)", St = 34, Ft = 10, Rt = 280;
-function zt(e) {
+const Lt = kt, R = "Fast Groups Muter (comfort)", z = "Fast Groups Bypasser (comfort)", St = 34, Ft = 10, At = 280;
+function Rt(e) {
   const t = e.graph;
   if (!t) return [];
   const n = [], o = (s) => {
@@ -489,14 +493,14 @@ function zt(e) {
       (r = i.subgraph) != null && r._groups && o(i.subgraph);
   };
   return o(t), n.sort((s, r) => {
-    var u, d, h, p;
-    const i = ((u = s.pos) == null ? void 0 : u[1]) ?? 0, c = ((d = r.pos) == null ? void 0 : d[1]) ?? 0;
+    var u, p, h, d;
+    const i = ((u = s.pos) == null ? void 0 : u[1]) ?? 0, c = ((p = r.pos) == null ? void 0 : p[1]) ?? 0;
     if (i !== c) return i - c;
-    const a = ((h = s.pos) == null ? void 0 : h[0]) ?? 0, l = ((p = r.pos) == null ? void 0 : p[0]) ?? 0;
+    const a = ((h = s.pos) == null ? void 0 : h[0]) ?? 0, l = ((d = r.pos) == null ? void 0 : d[0]) ?? 0;
     return a !== l ? a - l : String(s.title || "").localeCompare(String(r.title || ""));
   }), n;
 }
-function At(e) {
+function zt(e) {
   return L(e).some((t) => t.mode === _);
 }
 class X extends Y {
@@ -519,16 +523,16 @@ class X extends Y {
   }
   applyGroupMode(t, n) {
     const o = L(t.group);
-    y(o, n ? this.modeOn : this.modeOff);
+    w(o, n ? this.modeOn : this.modeOff);
   }
   /** Rebuild the group list. Called on a shared interval + on demand. */
   refresh() {
     var i;
-    const t = zt(this), n = String(((i = this.properties) == null ? void 0 : i.matchTitle) || "").trim();
+    const t = Rt(this), n = String(((i = this.properties) == null ? void 0 : i.matchTitle) || "").trim();
     let o = t.map((c) => ({
       group: c,
       title: String(c.title || "group"),
-      on: At(c)
+      on: zt(c)
     }));
     if (n)
       try {
@@ -558,7 +562,7 @@ class X extends Y {
         const c = document.createElement("span");
         c.className = "comfort-node-title", c.textContent = o.title, c.title = o.title, r.appendChild(c), t.appendChild(r);
       }), this.size) {
-        const o = Ft * 2 + this.rows.length * St, s = Math.max(this.size[0] || 0, Rt);
+        const o = Ft * 2 + this.rows.length * St, s = Math.max(this.size[0] || 0, At);
         (this.size[1] !== o || this.size[0] !== s) && ((n = this.setSize) == null || n.call(this, [s, o]));
       }
     }
@@ -582,19 +586,19 @@ right-click → Properties) to filter which groups appear.</p>`;
 }
 class Tt extends X {
   constructor() {
-    super(z), this.modeOff = K;
+    super(R), this.modeOff = K;
   }
 }
 class Gt extends X {
   constructor() {
-    super(A), this.modeOff = Z;
+    super(z), this.modeOff = Z;
   }
 }
 const C = /* @__PURE__ */ new Set();
-let x = null;
+let y = null;
 const V = {
   register(e) {
-    C.add(e), x == null && (x = setInterval(() => {
+    C.add(e), y == null && (y = setInterval(() => {
       for (const t of C)
         try {
           t.refresh();
@@ -603,20 +607,20 @@ const V = {
     }, 1e3));
   },
   unregister(e) {
-    C.delete(e), !C.size && x != null && (clearInterval(x), x = null);
+    C.delete(e), !C.size && y != null && (clearInterval(y), y = null);
   }
 }, It = Tt, Dt = Gt, $ = /* @__PURE__ */ new Set();
 function g(e, t) {
   $.has(e) || ($.add(e), t.category = "comfort", LiteGraph.registerNodeType(e, t));
 }
 function Pt() {
-  g(F, _t), g(R, Ot), g(J, Mt), g(Q, Lt), g(z, It), g(A, Dt);
+  g(F, _t), g(A, vt), g(J, Ot), g(Q, Lt), g(R, It), g(z, Dt);
 }
 function Wt(e) {
-  return (e == null ? void 0 : e.type) === F || (e == null ? void 0 : e.type) === R;
+  return (e == null ? void 0 : e.type) === F || (e == null ? void 0 : e.type) === A;
 }
 function Ht(e) {
-  return (e == null ? void 0 : e.type) === z || (e == null ? void 0 : e.type) === A;
+  return (e == null ? void 0 : e.type) === R || (e == null ? void 0 : e.type) === z;
 }
 const Bt = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}", T = document.createElement("style");
 T.setAttribute("data-comfort-plugin", "true");
@@ -634,7 +638,7 @@ ot.registerExtension({
       const t = ct(e);
       if (t) {
         const n = (o) => {
-          t.showSeparate = o, dt(e);
+          t.showSeparate = o, pt(e);
         };
         return [
           null,
@@ -687,5 +691,5 @@ ot.registerExtension({
   }
 });
 export {
-  O as NODE_NAME
+  v as NODE_NAME
 };

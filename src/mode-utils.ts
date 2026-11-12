@@ -11,19 +11,23 @@ export const MODE_BYPASS = 4;
 export type Mode = number;
 
 /**
- * Set `mode` on a node (and, if it's a subgraph proxy, its children).
- * Setting `.mode` fires the node's own `onModeChange` if it has one, which is
- * how repeaters/relays propagate.
+ * Set `mode` on a node or array of nodes (and, if it's a subgraph proxy, its
+ * children). Setting `.mode` fires the node's own `onModeChange` if it has one,
+ * which is how repeaters/relays propagate.
  */
-export function changeModeOfNodes(node: any, mode: Mode): void {
-  if (!node) return;
+export function changeModeOfNodes(nodeOrNodes: any, mode: Mode): void {
+  if (Array.isArray(nodeOrNodes)) {
+    for (const node of nodeOrNodes) changeModeOfNodes(node, mode);
+    return;
+  }
+  if (!nodeOrNodes) return;
   try {
-    node.mode = mode;
+    nodeOrNodes.mode = mode;
   } catch {
     /* ignore */
   }
   // Subgraph proxy nodes carry their children in `subgraph.nodes`.
-  const children = node.subgraph?.nodes;
+  const children = nodeOrNodes.subgraph?.nodes;
   if (Array.isArray(children)) {
     for (const child of children) changeModeOfNodes(child, mode);
   }
