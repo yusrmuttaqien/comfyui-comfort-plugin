@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 
-// ComfyUI loads every .js/.css file in web/ — .js as ES modules, .css as
-// stylesheets. We build one ES module bundle + one stylesheet.
+// ComfyUI loads web/comfort.js as an ES module (dynamic import, no import
+// map). Absolute /scripts/*.js imports resolve against the server root in
+// both the legacy and Nodes 2.0 frontends.
 export default defineConfig({
   build: {
     outDir: "web",
@@ -12,8 +13,7 @@ export default defineConfig({
       fileName: () => "comfort.js",
     },
     rollupOptions: {
-      // Provided by ComfyUI at runtime via its import map.
-      external: ["scripts/app.js"],
+      external: (id) => id.startsWith("/scripts/"),
     },
   },
 });

@@ -7,7 +7,7 @@
 //
 // Reworked from rgthree-comfy (MIT, https://github.com/rgthree/rgthree-comfy).
 
-import { app } from "scripts/app.js";
+import { app } from "/scripts/app.js";
 
 export const NODE_NAME = "Power Lora Loader (comfort)";
 

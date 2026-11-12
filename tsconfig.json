@@ -9,7 +9,11 @@
     "strictNullChecks": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": []
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "/scripts/app.js": ["src/typings/comfy-app.d.ts"]
+    }
   },
   "include": ["src/**/*.ts"]
 }
