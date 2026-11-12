@@ -211,7 +211,7 @@ function it(e, t) {
 }
 class ct extends LGraphNode {
   constructor(t) {
-    super(t), this.configuring = !0, this.__constructed__ = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.installModeInterceptor(), this.__constructed__ = !0;
+    super(t), this.configuring = !1, this.__constructed__ = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.installModeInterceptor(), this.__constructed__ = !0;
   }
   /**
    * Wrap `this.mode` so reads/writes go through us and `onModeChange` fires.
@@ -235,9 +235,7 @@ class ct extends LGraphNode {
     this.__constructed__ = !0;
   }
   configure(t) {
-    this.configuring = !0, super.configure(t), setTimeout(() => {
-      this.configuring = !1;
-    }, 0);
+    this.configuring = !0, super.configure(t), this.configuring = !1;
   }
   /** Fire when this node's own mode changes. Guard with `this.configuring`. */
   onModeChange(t, o) {

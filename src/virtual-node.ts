@@ -22,8 +22,8 @@ function findProtoPropDescriptor(obj: any, prop: string): PropertyDescriptor | u
 }
 
 export abstract class ComfortVirtualNode extends LGraphNode {
-  /** True while a workflow is loading (construct → configure → connect). */
-  configuring = true;
+  /** True while `configure()` is running (workflow load). False otherwise. */
+  configuring = false;
   /** True once the constructor has finished. */
   __constructed__ = false;
   /** True after the node has been removed from its graph. */
@@ -74,11 +74,7 @@ export abstract class ComfortVirtualNode extends LGraphNode {
   configure(info: any): void {
     this.configuring = true;
     super.configure(info);
-    // Flip out of "configuring" on the next tick so the whole load sequence
-    // (configure + link restore) is suppressed.
-    setTimeout(() => {
-      this.configuring = false;
-    }, 0);
+    this.configuring = false;
   }
 
   /** Fire when this node's own mode changes. Guard with `this.configuring`. */
