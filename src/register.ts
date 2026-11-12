@@ -4,6 +4,12 @@ import { ComfortAnyInputNode } from "./any-input-node.js";
 import { FastMuter, FastBypasser, FAST_MUTER, FAST_BYPASSER } from "./fast-muter.js";
 import { NodeCollector, NODE_COLLECTOR } from "./collector-node.js";
 import { ModeRepeater, MODE_REPEATER } from "./mode-repeater.js";
+import {
+  FastGroupsMuterClass,
+  FastGroupsBypasserClass,
+  FAST_GROUPS_MUTER,
+  FAST_GROUPS_BYPASSER,
+} from "./fast-groups.js";
 
 const registered = new Set<string>();
 
@@ -20,8 +26,14 @@ export function registerComfortNodes(): void {
   registerType(FAST_BYPASSER, FastBypasser);
   registerType(NODE_COLLECTOR, NodeCollector);
   registerType(MODE_REPEATER, ModeRepeater);
+  registerType(FAST_GROUPS_MUTER, FastGroupsMuterClass);
+  registerType(FAST_GROUPS_BYPASSER, FastGroupsBypasserClass);
 }
 
 export function isComfortMuter(node: any): boolean {
   return node?.type === FAST_MUTER || node?.type === FAST_BYPASSER;
+}
+
+export function isComfortGroupsNode(node: any): boolean {
+  return node?.type === FAST_GROUPS_MUTER || node?.type === FAST_GROUPS_BYPASSER;
 }

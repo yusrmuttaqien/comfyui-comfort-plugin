@@ -6,7 +6,7 @@ import {
   getLoraNodeState,
   renderLoraNode,
 } from "./power-lora-loader.js";
-import { registerComfortNodes, isComfortMuter } from "./register.js";
+import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
 import styles from "./styles.css?inline";
 
 // The Nodes 2.0 frontend no longer auto-loads extension .css files; inject
@@ -63,6 +63,18 @@ app.registerExtension({
     if (isComfortMuter(node)) {
       const setAll = (on: boolean | null) =>
         (node as any).setAllRows?.(on);
+      return [
+        null,
+        { content: "Enable all", callback: () => setAll(true) },
+        { content: "Disable all", callback: () => setAll(false) },
+        { content: "Toggle all", callback: () => setAll(null) },
+      ];
+    }
+
+    // Fast Groups Muter / Bypasser: bulk actions over all listed groups.
+    if (isComfortGroupsNode(node)) {
+      const setAll = (on: boolean | null) =>
+        (node as any).setAllGroups?.(on);
       return [
         null,
         { content: "Enable all", callback: () => setAll(true) },
