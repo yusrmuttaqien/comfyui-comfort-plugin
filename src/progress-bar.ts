@@ -263,4 +263,7 @@ export function setupProgressBar(): void {
   });
   // Prime the initial state.
   renderBar({ queue: 0, prompt: null });
+
+  // Debug/testing hook: drive the bar directly (e.g. from devtools).
+  (window as any).__comfortProgress = { render: (detail: any) => renderBar(detail) };
 }
