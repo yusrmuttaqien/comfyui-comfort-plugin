@@ -38,6 +38,13 @@ export abstract class ComfortVirtualNode extends LGraphNode {
     this.widgets = this.widgets || [];
     this.properties = this.properties || {};
 
+    // Frontend-only: skip this node in graphToPrompt so the backend never sees a
+    // class_type it doesn't know (avoids "Missing node type" on queue). All comfort
+    // nodes are control/passthrough devices — their real nodes keep independent data
+    // paths, and their own outputs (OPT/REPEATER/collector) only ever feed other
+    // comfort nodes, so no applyToGraph forwarding is required.
+    this.isVirtualNode = true;
+
     this.installModeInterceptor();
     this.__constructed__ = true;
   }

@@ -212,7 +212,7 @@ function Ht(e, t) {
 }
 class xt extends LGraphNode {
   constructor(t) {
-    super(t), this.configuring = !1, this.__constructed__ = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.installModeInterceptor(), this.__constructed__ = !0;
+    super(t), this.configuring = !1, this.__constructed__ = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.isVirtualNode = !0, this.installModeInterceptor(), this.__constructed__ = !0;
   }
   /**
    * Wrap `this.mode` so reads/writes go through us and `onModeChange` fires.
@@ -351,7 +351,7 @@ class L extends xt {
     (!t || t.link != null) && this.addInput("", "*");
   }
 }
-const qt = 34, Yt = 10, Vt = 260;
+const qt = 34, Vt = 10, Yt = 260;
 class _t extends L {
   constructor(t) {
     super(t), this.listEl = null, this.rows = [], this.widget = null, this.setupListWidget(), this.constructed();
@@ -385,7 +385,7 @@ class _t extends L {
   resizeForRows() {
     var n;
     if (!this.size) return;
-    const t = Yt * 2 + this.rows.length * qt, o = Math.max(this.size[0] || 0, Vt);
+    const t = Vt * 2 + this.rows.length * qt, o = Math.max(this.size[0] || 0, Yt);
     (this.size[1] !== t || this.size[0] !== o) && ((n = this.setSize) == null || n.call(this, [o, t]));
   }
   bindListEvents() {
@@ -425,7 +425,7 @@ class _t extends L {
     this.renderList();
   }
 }
-const q = "Fast Muter (comfort)", Y = "Fast Bypasser (comfort)";
+const q = "Fast Muter (comfort)", V = "Fast Bypasser (comfort)";
 class jt extends _t {
   constructor() {
     super(q), this.modeOn = y, this.modeOff = v;
@@ -437,7 +437,7 @@ toggle it to mute or unmute that node without leaving the canvas.</p>`;
 }
 class Kt extends _t {
   constructor() {
-    super(Y), this.modeOn = y, this.modeOff = R;
+    super(V), this.modeOn = y, this.modeOff = R;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
@@ -457,10 +457,10 @@ output to a Fast Muter or Fast Bypasser and it will list every node connected
 to this Collector, so one toggle can mute/bypass all of them at once.</p>`;
   }
 }
-const Jt = Xt, V = "Mute / Bypass Repeater (comfort)";
+const Jt = Xt, Y = "Mute / Bypass Repeater (comfort)";
 class te extends L {
   constructor() {
-    super(V), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.constructed();
+    super(Y), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.constructed();
   }
   onConnectedNodesChanged(t) {
     if (this.configuring) return;
@@ -490,7 +490,7 @@ output to a Fast Muter for a single toggle over all of them.</p>`;
 }
 const ee = te;
 function $(e) {
-  return (e == null ? void 0 : e.type) === V;
+  return (e == null ? void 0 : e.type) === Y;
 }
 const Ct = "Mode Relay (comfort)", oe = {
   ACTIVE: y,
@@ -790,10 +790,10 @@ function E(e, t) {
   lt.has(e) || (lt.add(e), t.category = "comfort", LiteGraph.registerNodeType(e, t));
 }
 function be() {
-  E(q, Qt), E(Y, Zt), E(vt, Jt), E(V, ee), E(Ct, re), E(Nt, le), E(j, ge), E(K, ye);
+  E(q, Qt), E(V, Zt), E(vt, Jt), E(Y, ee), E(Ct, re), E(Nt, le), E(j, ge), E(K, ye);
 }
 function we(e) {
-  return (e == null ? void 0 : e.type) === q || (e == null ? void 0 : e.type) === Y;
+  return (e == null ? void 0 : e.type) === q || (e == null ? void 0 : e.type) === V;
 }
 function xe(e) {
   return (e == null ? void 0 : e.type) === j || (e == null ? void 0 : e.type) === K;

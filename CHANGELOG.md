@@ -44,6 +44,7 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 
 #### M2 design notes
 - Virtual nodes registered via `LiteGraph.registerNodeType` at module load (works in both renderers); `category = "comfort"`.
+- **All comfort virtual nodes set `isVirtualNode = true`** (on the `ComfortVirtualNode` base). This makes `graphToPrompt` skip them, so the backend never receives a `class_type` it doesn't know — fixing the "Missing node type" error when a comfort node is in the workflow. Their outputs are auto-passthrough: ComfyUI resolves a virtual node's output through its input at the same slot index, so a real node downstream of a Collector/Repeater/Relay output still references the correct upstream node. No `applyToGraph` needed (matches rgthree, which also uses `isVirtualNode` with no forwarding). Verified: Fast Muter (no output) is absent from the prompt; Node Collector (with output) is absent and its downstream resolves to the collector's upstream.
 - Class hierarchy: `ComfortVirtualNode` → `ComfortFanInNode` → { `ComfortAnyInputNode` (Muter/Bypasser), `ModeRepeater`, `ModeRelay`, `RandomUnmuter`, `NodeCollector` }; `ComfortVirtualNode` → `FastGroupsMuterNode` (Muter/Bypasser).
 - Repeater / Relay / Fast Groups poll on a shared `setInterval` (per-node state is cheap to recompute; the timer is cleared when the last instance is removed). The Random Unmuter reacts to queue events instead.
 
