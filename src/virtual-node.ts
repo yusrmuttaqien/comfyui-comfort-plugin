@@ -71,15 +71,42 @@ export abstract class ComfortVirtualNode extends LGraphNode {
     this.__constructed__ = true;
   }
 
+  /**
+   * Mode-change listeners (used by the Relay to forward a Repeater's mode to
+   * a Muter/Bypasser). Registered nodes are notified from `onModeChange`.
+   */
+  private modeListeners: Set<(from: number | undefined, to: number) => void> =
+    new Set();
+
+  /** Register a mode-change listener. Returns an unsubscribe function. */
+  addModeListener(
+    fn: (from: number | undefined, to: number) => void,
+  ): () => void {
+    this.modeListeners.add(fn);
+    return () => this.removeModeListener(fn);
+  }
+
+  removeModeListener(
+    fn: (from: number | undefined, to: number) => void,
+  ): void {
+    this.modeListeners.delete(fn);
+  }
+
   configure(info: any): void {
     this.configuring = true;
     super.configure(info);
     this.configuring = false;
   }
 
-  /** Fire when this node's own mode changes. Guard with `this.configuring`. */
+  /** Called after the subclass finishes setting up slots/widgets. */
   onModeChange(_from: number | undefined, _to: number): void {
-    /* override */
+    for (const fn of this.modeListeners) {
+      try {
+        fn(_from, _to);
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
   /** Help HTML shown in the node's help dialog / menu. */

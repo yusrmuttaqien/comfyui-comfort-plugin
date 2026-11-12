@@ -59,3 +59,8 @@ output to a Fast Muter for a single toggle over all of them.</p>`;
 }
 
 export const ModeRepeater = ModeRepeaterNode;
+
+/** True if the node is a comfort Repeater (the Relay's output target). */
+export function isComfortRepeater(node: any): boolean {
+  return node?.type === MODE_REPEATER;
+}
