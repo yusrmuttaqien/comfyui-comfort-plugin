@@ -10,6 +10,12 @@ import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./reg
 import { installAutoNest } from "./auto-nest.js";
 import { setupGroupToggles } from "./group-toggles.js";
 import { setupNInferFocusButton } from "./ninfer-gate.js";
+import {
+  ANY_ROUTER,
+  isComfortAnyRouter,
+  setupAnyRouterNode,
+  augmentAnyRouterClass,
+} from "./any-router.js";
 import styles from "./styles.css?inline";
 
 // The Nodes 2.0 frontend no longer auto-loads extension .css files; inject
@@ -32,9 +38,23 @@ app.registerExtension({
     setupNInferFocusButton();
   },
 
+  // ComfyUI auto-creates a class for every server-backed node def. For the Any
+  // Router we replace its behavior in place (it has no fixed connection inputs
+  // in the def; we add the dynamic `any_*` inputs and manage them).
+  beforeRegisterNodeDef(nodeType: any, nodeData: any) {
+    if (nodeData && nodeData.name === ANY_ROUTER) {
+      augmentAnyRouterClass(nodeType);
+    }
+  },
+
   nodeCreated(node: any) {
-    if (!isComfortLoraNode(node)) return;
-    setupPowerLoraLoader(node);
+    if (isComfortLoraNode(node)) {
+      setupPowerLoraLoader(node);
+      return;
+    }
+    if (isComfortAnyRouter(node)) {
+      setupAnyRouterNode(node);
+    }
   },
 
   // Node right-click menu: Show Strengths mode.

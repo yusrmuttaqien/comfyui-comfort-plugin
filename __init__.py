@@ -15,9 +15,11 @@ from server import PromptServer
 from aiohttp import web
 
 from .py.power_lora_loader import ComfortPowerLoraLoader
+from .py.any_router import ComfortAnyRouter
 
 NODE_CLASS_MAPPINGS = {
     ComfortPowerLoraLoader.NAME: ComfortPowerLoraLoader,
+    ComfortAnyRouter.NAME: ComfortAnyRouter,
 }
 
 WEB_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")

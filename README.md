@@ -51,6 +51,17 @@ bypasses) all nodes inside that group. The toggle reflects whether the group has
 any active nodes. Right-click for **Enable all** / **Disable all** / **Toggle
 all**. Set the `matchTitle` property to filter which groups appear.
 
+### Any Router (comfort)
+Routes one of several any-type inputs to a single any output. Inputs are dynamic
+(`any_01`, `any_02`, … — grow on connect, trimmed when unused) and are retyped
+to the connected type. The **selection** combo picks the routing rule:
+- **Non-empty** (default): the backend returns the first input that is not
+  empty.
+- **Active source**: at build time only the first input whose source node is
+  active (not muted / not bypassed) is kept, so that one is routed.
+
+Mute or bypass a source to switch which input wins in *active source* mode.
+
 ### NInfer Suspend Gate (comfort)
 A disconnected control node that frees GPU memory for ComfyUI by suspending
 selected NInfer models on queue:
@@ -128,3 +139,4 @@ See [CHANGELOG.md](./CHANGELOG.md).
   Unmuter, Node Collector ✅
 - M3: auto-nest subdirectories, group-header quick toggles ✅
 - NInfer Suspend Gate (queue-time VRAM gate) ✅
+- Any Router (server-backed any-input router, non-empty / active-source) ✅

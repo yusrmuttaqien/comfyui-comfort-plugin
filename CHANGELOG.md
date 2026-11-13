@@ -89,6 +89,23 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 - **Focus-button anchor**: the Run button's `data-testid="queue-button"` is present in both the Nodes 2.0 action bar and the legacy top bar, so one anchor covers both renderers — no renderer-specific lookup. Verified the button appears, hides (0 gates in graph), reappears (tab switch back), and centers + selects the gate in **both** Nodes 2.0 and legacy LiteGraph; the Cancel/Skip controls render in the legacy DOM widget too.
 - Type-checks clean (`tsc --noEmit`); build 51.28 kB (gzip 14.73 kB).
 
+### Any Router (✅ verified on both renderers)
+A server-backed `Any Router (comfort)` node that routes one of several any-type inputs to a single any output. Re-worked from rgthree-comfy's Any Switch (MIT), with a selectable routing criterion:
+- [x] Python backend (`py/any_router.py`): `AnyType` + `FlexibleOptionalInputType` accept any number of `any_*` inputs of any type; `route()` returns the first non-empty `any_*`. Registered under the `comfort` category.
+- [x] **Selection combo** (`non_empty` / `active_source`), default `non_empty`.
+  - `non_empty`: all inputs are passed to the backend, which picks the first non-`None` value at execution time.
+  - `active_source`: at prompt-build time the frontend keeps only the first input whose **direct source node is active** (not muted, not bypassed) and strips the rest, so the backend returns exactly that one.
+- [x] Frontend augments ComfyUI's auto-generated class in place via the official `beforeRegisterNodeDef` hook (the def has no fixed connection inputs; we add the dynamic `any_*` pool): seeds 5 `any_*` inputs on create, trims trailing unused down to 4, always keeps one trailing free slot, and follows connections to infer + retype all ports (so downstream type-checking stays correct).
+- [x] `configure` tops up the `any_*` slots to the saved count before ComfyUI attaches saved links by index, so a workflow saved with more than 5 inputs reloads with every link intact.
+- [x] The `active_source` strip runs as a post-process on `app.graphToPrompt` (chained with the Random Unmuter's wrapper), matching the live mute/bypass state at build time.
+- [x] Browser-verified on **Nodes 2.0 and legacy LiteGraph** (2026-12-14): node renders with 5 `any_*` inputs + the selection combo; connecting a typed source retypes the inputs + output; `active_source` keeps only the first active source (verified: both-active→first, mute-first→second, both-muted→none); `non_empty` passes all inputs to the backend; a saved node with 8 `any_*` inputs reloads with all 7 links intact.
+
+#### Any Router design notes
+- The `selection` combo is a `required` combo in the def, so ComfyUI serializes it as input index 0 (`type: "COMBO"`) plus a `widgets_values` entry. The pool logic therefore counts only `any_*` inputs (by name) and never touches the combo at index 0; the saved data and the live node both place `any_*` at the same indices, so link attachment stays aligned.
+- Registered via `beforeRegisterNodeDef` (not `registerNodeType`), because `registerNodeType` would be overwritten by ComfyUI's def processing. The `comfyClass` is set by ComfyUI to the node name, so `graphToPrompt` emits the correct `class_type`.
+- The `active_source` check uses `mode !== NEVER(2) && mode !== BYPASS(4)`, matching ComfyUI's own prompt-build skip rule (so `ON_EVENT` / `ON_TRIGGER` sources count as active, same as the rest of the graph).
+- Build 60.09 kB (gzip 17.25 kB); `tsc --noEmit` clean.
+
 ## Known upstream issues being addressed
 - rgthree/rgthree-comfy#632 — Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
 - rgthree/rgthree-comfy#797 — muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload
