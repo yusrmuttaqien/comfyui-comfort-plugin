@@ -211,16 +211,18 @@ export function setupImageComparerNode(node: any): void {
     setWipe(st, pos);
   });
 
-  // The stage has a fixed height (440px) and its width tracks the node width
-  // (CSS `width: 100%` of the widget container). The node height is fixed
-  // (title + stage + nav row) so it doesn't track the width; a fixed aspect
-  // ratio on the stage made the node height follow the width, which left empty
-  // space at the bottom on interaction.
+  // The stage has a fixed height (440px) and its width tracks the node width.
+  // The node height is driven by the renderer: in legacy LiteGraph auto-grows
+  // the node to fit the widget (see LGraphNode._arrangeWidgets), and in Nodes
+  // 2.0 the Vue layout uses getMinHeight/getMaxHeight. Forcing the height in a
+  // setSize wrapper fought the legacy auto-grow and collapsed the node on
+  // resize, so only the width is synced here.
   const NODE_H = 440 + 28 + 20; // stage + nav row + title bar
-  // The widget container is set to the pre-resize width at creation and only
-  // grows on a later resize, so the stage (100% of it) is pinned narrow. Drive
-  // the container and stage widths from the node width directly instead.
   const MARGIN = 24;
+  // The legacy container width follows widget.width (falling back to the node
+  // width), recomputed every frame by DomWidgets.vue. Set widget.width to the
+  // node width so the stage (100% of the container) fills it; also set the
+  // stage width directly as a belt-and-suspenders for the initial frame.
   const syncWidth = (w: number) => {
     const container = el.parentElement;
     if (container) container.style.width = w + "px";
@@ -228,12 +230,20 @@ export function setupImageComparerNode(node: any): void {
   };
   node.setSize?.([NODE_W, NODE_H]);
   if (typeof node.addDOMWidget === "function") {
-    node.addDOMWidget("compare", "comfort_image_compare", el, {
+    const widget: any = node.addDOMWidget("compare", "comfort_image_compare", el, {
       serialize: false,
       hideOnZoom: true,
       getMinHeight: () => NODE_H,
       getMaxHeight: () => NODE_H,
     });
+    // Keep widget.width in sync with the node width so the legacy container
+    // (which reads widget.width every frame) fills the node.
+    if (widget) {
+      Object.defineProperty(widget, "width", {
+        get: () => (node.size ? node.size[0] : NODE_W),
+        configurable: true,
+      });
+    }
   }
   node.minHeight = NODE_H;
   const origSetSize = node.setSize?.bind(node);
@@ -243,17 +253,26 @@ export function setupImageComparerNode(node: any): void {
       if (Array.isArray(w)) nw = w[0];
       else nw = w;
       if (typeof nw === "number" && isFinite(nw)) nw = Math.max(node.minWidth || 0, nw);
-      const result = origSetSize([nw, NODE_H]);
-      syncWidth(nw);
+      // Pass the requested height through (don't force it) so legacy can
+      // auto-grow the node to fit the widget; the stage width is synced below.
+      const result = origSetSize([nw, h ?? node.size?.[1]]);
+      if (typeof nw === "number") syncWidth(nw);
       return result;
     };
   }
   node.setSize?.([NODE_W, NODE_H]);
+  // In legacy LiteGraph, setSize does not always adopt the requested width
+  // (the layout pass resets it), so set node.size[0] directly as well.
+  if (node.size) node.size[0] = NODE_W;
   syncWidth(NODE_W);
   // Re-sync once the node has settled (the container is laid out after creation
-  // and the node width updates asynchronously).
+  // and the node width updates asynchronously). Also re-assert the width, since
+  // the legacy layout pass can reset it to the initial value.
   setTimeout(() => {
-    if (node.graph && node.size) syncWidth(node.size[0]);
+    if (node.graph && node.size) {
+      node.size[0] = NODE_W;
+      syncWidth(NODE_W);
+    }
   }, 1500);
 }
 
