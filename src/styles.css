@@ -389,11 +389,10 @@
 .ci-stage {
   position: relative;
   width: 100%;
-  /* Fixed aspect ratio so the preview scales proportionally with the node width
-   * (instead of a fixed 440px height that distorts when the node is resized).
-   * The node's minimum size is constrained to fit the stage at its smallest.
-   */
-  aspect-ratio: 11 / 10;
+  /* Fixed height (the width still tracks the node width). A fixed aspect ratio
+   * made the node height track the width, which left empty space at the bottom
+   * on interaction; a fixed height keeps the node height constant. */
+  height: 440px;
   overflow: hidden;
   background: #161616;
   border-radius: 6px;
