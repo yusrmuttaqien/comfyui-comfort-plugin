@@ -16,6 +16,12 @@ import {
   setupAnyRouterNode,
   augmentAnyRouterClass,
 } from "./any-router.js";
+import {
+  IMAGE_COMPARER,
+  isComfortImageComparer,
+  setupImageComparerNode,
+  augmentImageComparerClass,
+} from "./image-comparer.js";
 import styles from "./styles.css?inline";
 
 // The Nodes 2.0 frontend no longer auto-loads extension .css files; inject
@@ -45,6 +51,9 @@ app.registerExtension({
     if (nodeData && nodeData.name === ANY_ROUTER) {
       augmentAnyRouterClass(nodeType);
     }
+    if (nodeData && nodeData.name === IMAGE_COMPARER) {
+      augmentImageComparerClass(nodeType);
+    }
   },
 
   nodeCreated(node: any) {
@@ -54,6 +63,10 @@ app.registerExtension({
     }
     if (isComfortAnyRouter(node)) {
       setupAnyRouterNode(node);
+      return;
+    }
+    if (isComfortImageComparer(node)) {
+      setupImageComparerNode(node);
     }
   },
 
