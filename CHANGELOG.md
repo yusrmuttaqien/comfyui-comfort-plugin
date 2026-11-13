@@ -106,6 +106,13 @@ A server-backed `Any Router (comfort)` node that routes one of several any-type 
 - The `active_source` check uses `mode !== NEVER(2) && mode !== BYPASS(4)`, matching ComfyUI's own prompt-build skip rule (so `ON_EVENT` / `ON_TRIGGER` sources count as active, same as the rest of the graph).
 - Build 60.09 kB (gzip 17.25 kB); `tsc --noEmit` clean.
 
+### Image Comparer (✅ verified on both renderers)
+A server-backed `Image Comparer (comfort)` node that compares two images with a draggable wipe slider (mirrors the native ComfyUI ImageCompare widget, whose Vue-only DOM widget breaks in legacy LiteGraph).
+- [x] Python backend (`py/image_comparer.py`): `ComfortImageComparer(PreviewImage)` with optional `image_left` / `image_right`; `compare_images()` saves each side to `output/` and returns both URL lists plus an `IMAGE` passthrough (the left image if connected, else the right) so downstream links keep working.
+- [x] Frontend augments ComfyUI's auto-generated class in place via the official `beforeRegisterNodeDef` hook (wrapping `onExecuted` to update the wipe from the result). One DOM widget (dual renderer) with a nav row (Left / Right / Both buttons + a percent readout) and a wipe stage (the left image revealed over the right via `clip-path`, mouse-driven).
+- [x] **Stage scales with the node width**: the stage keeps a fixed 11:10 aspect ratio and its width tracks the node width (CSS `width: 100%` of the widget container). The node height follows the stage (a `setSize` wrapper reports the stage height as a function of the width), so resizing the node scales the preview with no empty space. Verified on **Nodes 2.0 and legacy LiteGraph** (2026-12-14): the stage width tracks the node width at multiple sizes in both renderers, and the node height follows the stage.
+- Build 65.69 kB (gzip 18.66 kB); `tsc --noEmit` clean.
+
 ## Known upstream issues being addressed
 - rgthree/rgthree-comfy#632 — Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
 - rgthree/rgthree-comfy#797 — muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload

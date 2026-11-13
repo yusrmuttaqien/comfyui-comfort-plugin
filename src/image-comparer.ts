@@ -14,10 +14,8 @@ import { app } from "/scripts/app.js";
 
 export const IMAGE_COMPARER = "Image Comparer (comfort)";
 
-// Layout constants (px) — used for explicit node sizing.
-const STAGE_H = 440; // image area
-const NAV_H = 28; // batch-nav row (min; empty when no batches)
-const WIDGET_H = STAGE_H + NAV_H;
+// Default node width (px). The stage keeps a fixed 11:10 aspect ratio and scales
+// with the node width; the node's height auto-computes to fit it.
 const NODE_W = 512;
 
 export function isComfortImageComparer(node: any): boolean {
@@ -213,15 +211,50 @@ export function setupImageComparerNode(node: any): void {
     setWipe(st, pos);
   });
 
+  // The stage keeps a fixed 11:10 aspect ratio and scales with the node width.
+  // Report the node's height (title + stage + nav row) as a function of the node
+  // width so the renderer sizes the node to fit the stage; constrain the minimum
+  // size so the preview never overflows the node. The 24px horizontal margin and
+  // 20px title height match the renderer's layout at the default width.
+  const MARGIN = 24;
+  const widgetHeightFor = (w: number): number =>
+    Math.round(Math.max(0, w - MARGIN) / 1.1 + 28 + 20);
+  const nodeWidth = (): number => node.size?.[0] ?? node.width;
+  // Size the node before registering the widget so the widget container adopts
+  // the full width (legacy otherwise pins it to the node's pre-resize width).
+  // The stage's own width is CSS `width: 100%` (of the widget container), so it
+  // tracks the node width as the container grows.
+  node.setSize?.([NODE_W, widgetHeightFor(NODE_W)]);
   if (typeof node.addDOMWidget === "function") {
     node.addDOMWidget("compare", "comfort_image_compare", el, {
       serialize: false,
       hideOnZoom: true,
-      getMinHeight: () => WIDGET_H,
-      getMaxHeight: () => WIDGET_H,
+      getMinHeight: () => widgetHeightFor(nodeWidth()),
+      getMaxHeight: () => widgetHeightFor(nodeWidth()),
     });
   }
-  node.setSize?.([NODE_W, WIDGET_H]);
+  node.minHeight = 300;
+  // The renderer only consults the widget's max/min height during the initial
+  // layout, so a manual resize keeps the stale height. Wrap setSize to keep the
+  // node height in sync with the stage (which tracks the width) on every resize.
+  const origSetSize = node.setSize?.bind(node);
+  if (origSetSize) {
+    node.setSize = (w: any, h: any) => {
+      let nw: number | undefined;
+      if (Array.isArray(w)) nw = w[0];
+      else nw = w;
+      if (typeof nw === "number" && isFinite(nw)) nw = Math.max(node.minWidth || 0, nw);
+      return origSetSize([nw, widgetHeightFor(nw)]);
+    };
+  }
+  node.setSize?.([NODE_W, widgetHeightFor(NODE_W)]);
+  // Legacy sets the widget container to the pre-resize width at creation and
+  // only grows it on a later resize. Re-apply the size once the node has
+  // settled so the container (and the stage, which is 100% of it) adopts the
+  // full width immediately.
+  setTimeout(() => {
+    if (node.graph && node.size) node.setSize([node.size[0], node.size[1]]);
+  }, 500);
 }
 
 /**
