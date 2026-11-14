@@ -1,4 +1,4 @@
-// Node Collector — a fan-in node. Connect any number of nodes to its inputs;
+// Node Collector: a fan-in node. Connect any number of nodes to its inputs.
 // they are bundled into a single output that feeds a Fast Muter / Bypasser /
 // Repeater. The Muter follows *through* the Collector (PassThroughFollowing.ALL)
 // and shows the real nodes, so one Muter row can control many bundled nodes.

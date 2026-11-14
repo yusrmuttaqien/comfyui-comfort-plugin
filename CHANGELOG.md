@@ -59,7 +59,7 @@ All dates UTC. Status: in progress / done / blocked.
 - Auto-nest and group toggles both hook `LiteGraph.ContextMenu` / `canvas.onDrawForeground` (the official foreground callback, called in both renderers). Setup runs in the extension `init()` because `app.canvas` is not available at module-load time.
 - Group toggle buttons are `position: fixed` DOM elements, one pair per active group, removed when the group is deleted.
 
-### NInfer Suspend Gate (verified on Nodes 2.0)
+### NInfer Suspend Gate (moved to [comfyui-vram-purge-plugin](https://github.com/yusrmuttaqien/comfyui-vram_purge-plugin))
 - [x] Python proxy: `GET`/`POST /comfort/ninfer/forward` in `__init__.py` relays to a user-supplied NInfer URL (server-to-server, no CORS), passing through status codes incl. `409 model_busy`.
 - [x] Frontend node `NInfer Suspend Gate (comfort)`: a disconnected virtual node. One DOM widget (dual renderer) with: NInfer URL field, busy-timeout combo (indefinite / 1-60 min), live status line, Select all / Deselect all, and a per-model checkbox row (loaded models selectable. Default = all loaded).
 - [x] Polls `/v1/models` every 3 s to list models + status. Suspends checked loaded models on each queue via `POST /v1/models/{id}/suspend`, awaiting the synchronous suspend. Retries on `409` until idle or the busy-timeout.

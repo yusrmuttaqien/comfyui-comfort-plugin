@@ -1,4 +1,4 @@
-// Shared clock for all comfort polling. One setInterval; jobs register by cadence (ticks).
+// Shared clock for all comfort polling. One setInterval. Jobs register by cadence (ticks).
 
 const BASE_MS = 500;
 

@@ -1,4 +1,4 @@
-// Fast Muter / Fast Bypasser — connect nodes to them and toggle each one
+// Fast Muter / Fast Bypasser: connect nodes to them and toggle each one
 // mute/bypass on and off with a single click.
 //
 // Re-worked from rgthree-comfy (MIT). Virtual nodes (no backend).

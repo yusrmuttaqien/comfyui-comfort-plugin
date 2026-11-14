@@ -1,4 +1,4 @@
-// Fast Groups Muter / Bypasser — mute/bypass all nodes inside a group with one click.
+// Fast Groups Muter / Bypasser: mute/bypass all nodes inside a group with one click.
 // Re-worked from rgthree-comfy (MIT). Virtual node.
 
 import { ComfortVirtualNode } from "./virtual-node.js";
@@ -9,7 +9,7 @@ import {
   changeModeOfNodes,
   getGroupNodes,
 } from "./mode-utils.js";
-import { renderToggleRows, resizeForRows } from "./toggle-list.js";
+import { renderToggleRows } from "./toggle-list.js";
 import { scheduler } from "./scheduler.js";
 
 export const FAST_GROUPS_MUTER = "Fast Groups Muter (comfort)";
@@ -66,6 +66,7 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
 
   constructor(title?: string) {
     super(title);
+    this.setSize([MIN_W, 150]);
     this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
     this.setupListWidget();
     FastGroupsRegistry.register(this);
@@ -135,7 +136,6 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     const el = this.listEl;
     if (!el) return;
     renderToggleRows(el, this.rows, "No groups in this workflow");
-    resizeForRows(this, this.rows.length, MIN_W);
   }
 
   setAllGroups(on: boolean | null): void {

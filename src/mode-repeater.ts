@@ -1,4 +1,4 @@
-// Mute / Bypass Repeater — a fan-in "master switch". When this node's mode
+// Mute / Bypass Repeater: a fan-in "master switch". When this node mode
 // (Always / Mute / Bypass) changes, it repeats that mode to every node
 // connected to its inputs. If nothing is connected but the node sits inside a
 // group, it applies to the whole group. Its optional output can feed a Fast
@@ -24,7 +24,7 @@ class ModeRepeaterNode extends ComfortFanInNode {
 
   protected onConnectedNodesChanged(_nodes: any[]): void {
     // When a new node connects (and we're not loading), bring it in line with
-    // our current mode — matching rgthree's behaviour.
+    // our current mode, matching rgthree behaviour.
     if (this.configuring) return;
     const nodes = _nodes;
     for (const node of nodes) {

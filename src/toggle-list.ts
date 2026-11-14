@@ -4,7 +4,7 @@
 // span) inside a `comfort-node-list` container, so the DOM building and the
 // resulting node size live here once.
 //
-// Rows are addressed by index (`data-idx`); the caller's click handler reads
+// Rows are addressed by index (`data-idx`). The caller click handler reads
 // that index back to find the matching row in its own state.
 
 export const ROW_H = 34;
@@ -44,12 +44,4 @@ export function renderToggleRows(el: HTMLElement, rows: ToggleRow[], emptyText: 
 
     el.appendChild(rowEl);
   });
-}
-
-/** Size the node to fit `rowCount` rows (no-op if already correct). */
-export function resizeForRows(node: any, rowCount: number, minW: number): void {
-  if (!node.size) return;
-  const h = PAD_Y * 2 + rowCount * ROW_H;
-  const w = Math.max(node.size[0] || 0, minW);
-  if (node.size[1] !== h || node.size[0] !== w) node.setSize?.([w, h]);
 }

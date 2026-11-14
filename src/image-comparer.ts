@@ -1,4 +1,4 @@
-// Image Comparer (comfort) — wipe-slider image comparison, dual-renderer.
+// Image Comparer (comfort): wipe-slider image comparison, dual-renderer.
 // Re-worked from rgthree-comfy (MIT) and native ComfyUI ImageCompare (Vue-only).
 
 import { app } from "/scripts/app.js";
@@ -171,8 +171,6 @@ export function setupImageComparerNode(node: any): void {
     node.addDOMWidget("compare", "comfort_image_compare", el, {
       serialize: false,
       hideOnZoom: true,
-      getMinHeight: () => 200,
-      getMaxHeight: () => 0,
     });
   }
 

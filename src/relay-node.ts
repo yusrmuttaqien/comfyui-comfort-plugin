@@ -1,4 +1,4 @@
-// Mode Relay — watches input node modes and drives a connected Repeater.
+// Mode Relay: watches input node modes and drives a connected Repeater.
 // Re-worked from rgthree-comfy (MIT). Virtual node.
 
 import { ComfortFanInNode } from "./fan-in-base.js";

@@ -1,4 +1,4 @@
-// Random Unmuter — unmutes one random connected node per prompt build.
+// Random Unmuter: unmutes one random connected node per prompt build.
 // Re-worked from rgthree-comfy (MIT). Virtual node.
 
 import { ComfortFanInNode } from "./fan-in-base.js";

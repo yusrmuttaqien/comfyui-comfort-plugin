@@ -1,4 +1,4 @@
-// Any Router (comfort) — server-backed "any" node that routes one of several
+// Any Router (comfort): server-backed "any" node that routes one of several
 // any-type inputs to a single any output. Re-worked from rgthree-comfy (MIT).
 
 import { app } from "/scripts/app.js";

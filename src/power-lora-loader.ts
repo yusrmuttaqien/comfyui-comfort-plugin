@@ -1,4 +1,4 @@
-// Power Lora Loader (comfort) — dual-renderer. Re-worked from rgthree-comfy (MIT).
+// Power Lora Loader (comfort): dual-renderer. Re-worked from rgthree-comfy (MIT).
 
 export const NODE_NAME = "Power Lora Loader (comfort)";
 
@@ -18,10 +18,6 @@ export type LoraNodeState = {
 
 const states = new WeakMap<any, LoraNodeState>();
 
-const HEADER_H = 32;
-const ROW_H = 36;
-const FOOTER_H = 34;
-const PAD_Y = 14;
 const MIN_W = 380;
 
 export function isComfortLoraNode(node: any): boolean {
@@ -34,25 +30,6 @@ export function isComfortLoraNode(node: any): boolean {
 
 export function getLoraNodeState(node: any): LoraNodeState | undefined {
   return states.get(node);
-}
-
-function totalHeight(state: LoraNodeState): number {
-  return (
-    PAD_Y +
-    HEADER_H +
-    state.rows.length * ROW_H +
-    FOOTER_H +
-    PAD_Y
-  );
-}
-
-function resize(node: any, state: LoraNodeState): void {
-  if (!node.size) return;
-  const h = totalHeight(state);
-  const w = Math.max(node.size[0] || 0, MIN_W);
-  if (node.size[1] !== h || node.size[0] !== w) {
-    node.setSize?.([w, h]);
-  }
 }
 
 function defaultRow(lora?: string | null): LoraRow {
@@ -138,7 +115,7 @@ function makeRow(state: LoraNodeState, row: LoraRow, idx: number): HTMLElement {
   const name = document.createElement("span");
   name.className = "comfort-name";
   name.textContent = row.lora || "None";
-  name.title = row.lora || "No lora selected — click to choose";
+  name.title = row.lora || "No lora selected - click to choose";
   rowEl.appendChild(name);
 
   const spacer = document.createElement("span");
@@ -203,7 +180,6 @@ export function renderLoraNode(node: any): void {
   const state = states.get(node);
   if (state) {
     render(state);
-    resize(node, state);
   }
 }
 
@@ -269,7 +245,6 @@ function showRowMenu(node: any, state: LoraNodeState, idx: number, e: MouseEvent
         callback: () => {
           state.rows.splice(idx, 1);
           render(state);
-          resize(node, state);
         },
       },
     ],
@@ -293,7 +268,6 @@ function bindEvents(node: any, state: LoraNodeState): void {
       showLoraChooser(state, node, e, (lora) => {
         state.rows.push(defaultRow(lora));
         render(state);
-        resize(node, state);
       });
       return;
     }
@@ -331,7 +305,6 @@ function bindEvents(node: any, state: LoraNodeState): void {
     if (t.closest(".comfort-remove")) {
       state.rows.splice(idx, 1);
       render(state);
-      resize(node, state);
       return;
     }
   });
@@ -382,14 +355,13 @@ export function setupPowerLoraLoader(node: any): void {
       setValue: (v: unknown) => {
         state.rows = Array.isArray(v) ? (v as LoraRow[]) : [];
         render(state);
-        resize(node, state);
       },
-      getMinHeight: () => totalHeight(state),
-      getMaxHeight: () => totalHeight(state),
     });
   }
 
   bindEvents(node, state);
   render(state);
-  resize(node, state);
+  if (!node.__comfortLoaded) {
+    node.setSize?.([Math.max(node.size?.[0] || 0, MIN_W), 150]);
+  }
 }

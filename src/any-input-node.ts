@@ -2,7 +2,7 @@
 // row per connected node (Fast Muter / Fast Bypasser / Random Unmuter).
 //
 // The node keeps a pool of `*` inputs (managed by ComfortFanInNode). As nodes
-// connect, a row appears in a single DOM widget; disconnecting removes it. The
+// connect, a row appears in a single DOM widget. Disconnecting removes it. The
 // DOM widget renders identically in legacy LiteGraph and Nodes 2.0.
 //
 // Re-worked from rgthree-comfy's BaseAnyInputConnectedNode + BaseNodeModeChanger
@@ -11,7 +11,7 @@
 
 import { ComfortFanInNode } from "./fan-in-base.js";
 import { getConnectedInputNodes } from "./mode-utils.js";
-import { renderToggleRows, resizeForRows } from "./toggle-list.js";
+import { renderToggleRows } from "./toggle-list.js";
 
 const MIN_W = 260;
 
@@ -32,6 +32,7 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
 
   constructor(title?: string) {
     super(title);
+    this.setSize([MIN_W, 150]);
     this.setupListWidget();
   }
 
@@ -56,7 +57,6 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     const el = this.listEl;
     if (!el) return;
     renderToggleRows(el, this.rows, "Connect nodes to control them");
-    resizeForRows(this, this.rows.length, MIN_W);
   }
 
   private bindListEvents(): void {

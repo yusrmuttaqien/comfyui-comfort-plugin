@@ -45,6 +45,13 @@ app.registerExtension({
     if (nodeData && nodeData.name === IMAGE_COMPARER) {
       augmentImageComparerClass(nodeType);
     }
+    if (nodeData && nodeData.name === NODE_NAME) {
+      const origConfigure = nodeType.prototype.configure;
+      nodeType.prototype.configure = function (info: any) {
+        this.__comfortLoaded = true;
+        return origConfigure.call(this, info);
+      };
+    }
   },
 
   nodeCreated(node: any) {
