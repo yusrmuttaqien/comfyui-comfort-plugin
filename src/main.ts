@@ -9,7 +9,6 @@ import {
 import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
 import { installAutoNest } from "./auto-nest.js";
 import { setupGroupToggles } from "./group-toggles.js";
-import { setupNInferGateFocusButton } from "./ninfer-gate.js";
 import {
   ANY_ROUTER,
   isComfortAnyRouter,
@@ -37,7 +36,6 @@ app.registerExtension({
 
   async init() {
     setupGroupToggles();
-    setupNInferGateFocusButton();
   },
 
   beforeRegisterNodeDef(nodeType: any, nodeData: any) {

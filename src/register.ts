@@ -6,7 +6,6 @@ import { NodeCollector, NODE_COLLECTOR } from "./collector-node.js";
 import { ModeRepeater, MODE_REPEATER } from "./mode-repeater.js";
 import { ModeRelay, MODE_RELAY } from "./relay-node.js";
 import { RandomUnmuter, RANDOM_UNMUTER } from "./random-unmuter.js";
-import { NInferGateNode, NINFER_GATE } from "./ninfer-gate.js";
 import {
   FastGroupsMuterClass,
   FastGroupsBypasserClass,
@@ -33,7 +32,6 @@ export function registerComfortNodes(): void {
   registerType(RANDOM_UNMUTER, RandomUnmuter);
   registerType(FAST_GROUPS_MUTER, FastGroupsMuterClass);
   registerType(FAST_GROUPS_BYPASSER, FastGroupsBypasserClass);
-  registerType(NINFER_GATE, NInferGateNode);
 }
 
 export function isComfortMuter(node: any): boolean {
