@@ -11,3 +11,5 @@ Repository = "https://github.com/yusrmuttaqien/comfyui-comfort-plugin"
 [tool.comfy]
 PublisherId = "yusrmuttaqien"
 DisplayName = "ComfyUI Comfort Plugin"
+Icon = "https://raw.githubusercontent.com/yusrmuttaqien/comfyui-comfort-plugin/main/icon.png"
+requires-comfyui = ">=0.3.0"
