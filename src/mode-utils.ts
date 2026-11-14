@@ -1,8 +1,4 @@
-// Mode + connection helpers for the mute/bypass family.
-//
-// Re-worked from rgthree-comfy (MIT). Kept deliberately small: we only need
-// "which nodes are connected to this node's inputs/outputs" and "set a node's
-// mode", plus group node enumeration. No prototype patching.
+// Mode + connection helpers for the mute/bypass family. Re-worked from rgthree-comfy (MIT).
 
 export const MODE_ALWAYS = 0;
 export const MODE_NEVER = 2; // mute
@@ -10,11 +6,7 @@ export const MODE_BYPASS = 4;
 
 export type Mode = number;
 
-/**
- * Set `mode` on a node or array of nodes (and, if it's a subgraph proxy, its
- * children). Setting `.mode` fires the node's own `onModeChange` if it has one,
- * which is how repeaters/relays propagate.
- */
+
 export function changeModeOfNodes(nodeOrNodes: any, mode: Mode): void {
   if (Array.isArray(nodeOrNodes)) {
     for (const node of nodeOrNodes) changeModeOfNodes(node, mode);
@@ -33,18 +25,13 @@ export function changeModeOfNodes(nodeOrNodes: any, mode: Mode): void {
   }
 }
 
-/** True for passthrough-style nodes we should follow when resolving a connection. */
+
 export function shouldPassThrough(node: any): boolean {
   const type: string = node?.type || node?.constructor?.type || "";
   return type.includes("Reroute") || type.includes("Node Collector") || type.includes("Node Combiner");
 }
 
-/**
- * Resolve the nodes connected to `startNode`'s inputs (dir=INPUT) or outputs
- * (dir=OUTPUT), following through passthrough nodes (reroutes / collectors /
- * combiners). Only the "real" (non-passthrough) nodes are returned — this is
- * what a Muter shows as rows, and what a toggle actually acts on.
- */
+
 export function getConnectedNodes(
   startNode: any,
   dir: "INPUT" | "OUTPUT",
@@ -109,7 +96,7 @@ export function getConnectedOutputNodes(node: any, slot?: number): any[] {
   return getConnectedNodes(node, "OUTPUT", slot);
 }
 
-/** The nodes inside a group (LiteGraph groups keep children in `_children`). */
+
 export function getGroupNodes(group: any): any[] {
   // `_children` is derived spatially and is NOT populated on workflow load --
   // it's only filled when `recomputeInsideNodes` runs (selection, group ops,
@@ -128,7 +115,7 @@ export function getGroupNodes(group: any): any[] {
   return Array.from(children).filter((c: any) => c && (c.isLGraphNode || c.constructor?.type));
 }
 
-/** Find the group that contains `node` (overlapping, like LiteGraph does). */
+
 export function findGroupForNode(node: any): any | null {
   const graph = node.graph;
   if (!graph) return null;

@@ -1,13 +1,4 @@
-// Group header quick mute / bypass toggles.
-//
-// Small M / B buttons drawn over each group's header while that group is
-// hovered or selected. Clicking M mutes / unmutes every node in the group;
-// B bypasses / un-bypasses.
-//
-// The buttons are DOM elements (position: fixed) rather than canvas draws, so
-// they stay on top of both the canvas and the DOM nodes of the modern
-// (Nodes 2.0) renderer. Positions are recomputed every frame from the canvas
-// view transform, so they track pan / zoom / group drags.
+// Group header quick mute / bypass toggles (DOM overlay buttons, repositioned every frame).
 import { app } from "/scripts/app.js";
 import { MODE_ALWAYS, MODE_NEVER, MODE_BYPASS, getGroupNodes } from "./mode-utils.js";
 
@@ -74,8 +65,7 @@ function isHovered(group: any, mouse: number[] | null | undefined): boolean {
   );
 }
 
-// Recompute which groups show buttons and where. Called every frame from the
-// foreground hook.
+
 function updateOverlay(): void {
   const canvas = app.canvas as any;
   const graph = canvas?.graph;
@@ -93,7 +83,7 @@ function updateOverlay(): void {
     if (canvas.selected_group === g || isHovered(g, canvas.mouse)) active.add(g);
   }
 
-  // Show + position active groups' buttons.
+
   for (const g of active) {
     const entry = ensureButtons(g);
     const right = g.pos[0] + g.size[0] - HEADER_PAD - BUTTON;
@@ -104,8 +94,7 @@ function updateOverlay(): void {
     entry.byp.style.display = "block";
   }
 
-  // Hide buttons for groups that are no longer active, and remove the DOM
-  // elements entirely for groups that have been deleted from the graph.
+
   for (const [g, entry] of buttons) {
     if (!active.has(g)) {
       entry.mute.style.display = "none";
@@ -149,8 +138,7 @@ function setupGroupToggles(): void {
   if (canvas.__comfortGroupTogglesInstalled) return;
   canvas.__comfortGroupTogglesInstalled = true;
 
-  // Chain the official foreground hook so we refresh positions every frame
-  // (like ComfyUI's selectionBorder extension).
+
   const original = canvas.onDrawForeground;
   canvas.onDrawForeground = function (ctx: CanvasRenderingContext2D, ...rest: unknown[]) {
     original?.call(this, ctx, ...(rest as [any]));

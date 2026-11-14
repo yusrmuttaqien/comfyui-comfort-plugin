@@ -1,9 +1,5 @@
-// Mode Relay — a fan-in node that watches the mode (Always / Mute / Bypass) of
-// the nodes connected to its inputs and drives a connected Repeater with the
-// resulting mode. All inputs muted → mute the Repeater; all bypassed → bypass;
-// any active → activate. The mapping is configurable per mode via properties.
-//
-// Re-worked from rgthree-comfy's NodeModeRelay (MIT). Virtual node.
+// Mode Relay — watches input node modes and drives a connected Repeater.
+// Re-worked from rgthree-comfy (MIT). Virtual node.
 
 import { ComfortFanInNode } from "./fan-in-base.js";
 import {
@@ -49,10 +45,7 @@ class ModeRelayNode extends ComfortFanInNode {
     this.evaluate();
   }
 
-  /**
-   * With no inputs connected, the Relay acts as a plain mode forwarder: changing
-   * its own mode drives the connected Repeater.
-   */
+
   override onModeChange(_from: number | undefined, to: number): void {
     super.onModeChange(_from, to);
     if (this.configuring) return;
@@ -64,10 +57,7 @@ class ModeRelayNode extends ComfortFanInNode {
     }
   }
 
-  /**
-   * Restrict the REPEATER output to Repeater nodes only.
-   * `inputNode` is the node whose input we are connecting to.
-   */
+
   onConnectOutput(
     _slot: number,
     _type: string | number,
@@ -78,7 +68,7 @@ class ModeRelayNode extends ComfortFanInNode {
     return inputNode ? isComfortRepeater(inputNode) : true;
   }
 
-  /** Vote on the input modes and drive the connected Repeater. */
+
   private evaluate(): void {
     if (this.configuring) return;
     const inputs = getConnectedInputNodes(this);
@@ -90,11 +80,10 @@ class ModeRelayNode extends ComfortFanInNode {
       else if (m === MODE_ALWAYS || mode === MODE_ALWAYS) mode = MODE_ALWAYS;
       else mode = undefined;
     }
-    // If no inputs are connected, relay our own mode when it changes is handled
-    // by onModeChange; here we only act on the inputs' vote.
+
     if (mode === undefined) return;
 
-    // Translate via the per-mode property mapping.
+
     const propKey = MODE_TO_PROPERTY[mode];
     const mapped = propKey ? OPTION_TO_MODE[String(this.properties?.[propKey])] : mode;
     const finalMode = mapped !== undefined ? mapped : mode;
@@ -120,9 +109,7 @@ properties to remap or suppress (NOTHING) each signal.</p>`;
   }
 }
 
-// Shared registry, driven by the shared scheduler (re-evaluates as input modes
-// change). The relay only traverses its own connections, so per-tick cost is
-// negligible.
+
 const registry = new Set<any>();
 const relayJob = () => {
   for (const n of registry) {

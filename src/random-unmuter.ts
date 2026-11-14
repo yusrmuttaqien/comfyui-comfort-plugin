@@ -1,12 +1,5 @@
-// Random Unmuter — a fan-in node that, each time a prompt is queued, temporarily
-// unmutes one randomly-chosen connected node (that is currently muted) for the
-// duration of the prompt build, then mutes it back. All connected nodes must be
-// muted for it to act. Useful to randomly pick one of N muted branches per run.
-//
-// Re-worked from rgthree-comfy's RandomUnmuter (MIT). Virtual node.
-//
-// ComfyUI has no official queue/execute hook, so (as rgthree does) we wrap
-// app.queuePrompt / app.graphToPrompt and dispatch to registered unmUTERS.
+// Random Unmuter — unmutes one random connected node per prompt build.
+// Re-worked from rgthree-comfy (MIT). Virtual node.
 
 import { ComfortFanInNode } from "./fan-in-base.js";
 import {
@@ -22,20 +15,13 @@ export const RANDOM_UNMUTER = "Random Unmuter (comfort)";
 class RandomUnmuterNode extends ComfortFanInNode {
   private tempEnabled: any = null;
 
-  /** No-op: this node only acts on queue, not on connection changes. */
-  protected onConnectedNodesChanged(_nodes: any[]): void {
-    /* no-op */
-  }
 
   constructor() {
     super(RANDOM_UNMUTER);
     RandomUnmuterRegistry.register(this);
   }
 
-  /**
-   * Called when a prompt build begins (inside queuePrompt). If all connected
-   * nodes are muted, pick one at random and unmute it for the build.
-   */
+
   onPromptStart(): void {
     if (this.configuring) return;
     this.tempEnabled = null;
@@ -50,7 +36,7 @@ class RandomUnmuterNode extends ComfortFanInNode {
     }
   }
 
-  /** Called after the prompt build; mute the temporarily-enabled node back. */
+
   onPromptEnd(): void {
     if (this.tempEnabled) {
       changeModeOfNodes(this.tempEnabled, MODE_NEVER);
@@ -72,7 +58,7 @@ group.</p>`;
   }
 }
 
-// Registry of live Random Unmuter nodes.
+
 const registry = new Set<any>();
 const RandomUnmuterRegistry = {
   register(node: any) {
@@ -84,11 +70,7 @@ const RandomUnmuterRegistry = {
   },
 };
 
-/**
- * Wrap app.queuePrompt / app.graphToPrompt once. The queuePrompt wrapper sets a
- * flag; the graphToPrompt wrapper dispatches to each unmuter for the duration
- * of the prompt build (so each batch item can pick a different random node).
- */
+
 let installed = false;
 function installQueueHooks(): void {
   if (installed) return;

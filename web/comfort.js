@@ -1,47 +1,47 @@
-import { app as x } from "/scripts/app.js";
-const W = "Power Lora Loader (comfort)", F = /* @__PURE__ */ new WeakMap(), Qt = 32, Xt = 36, te = 34, it = 14, ee = 380;
-function ct(e) {
+import { app as b } from "/scripts/app.js";
+const H = "Power Lora Loader (comfort)", U = /* @__PURE__ */ new WeakMap(), Qt = 32, Xt = 36, te = 34, st = 14, ee = 380;
+function rt(e) {
   var t;
-  return (e == null ? void 0 : e.type) === W || (e == null ? void 0 : e.comfyClass) === W || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === W;
+  return (e == null ? void 0 : e.type) === H || (e == null ? void 0 : e.comfyClass) === H || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === H;
 }
 function ne(e) {
-  return F.get(e);
+  return U.get(e);
 }
-function J(e) {
-  return it + Qt + e.rows.length * Xt + te + it;
+function q(e) {
+  return st + Qt + e.rows.length * Xt + te + st;
 }
-function I(e, t) {
+function M(e, t) {
   var s;
   if (!e.size) return;
-  const n = J(t), o = Math.max(e.size[0] || 0, ee);
+  const n = q(t), o = Math.max(e.size[0] || 0, ee);
   (e.size[1] !== n || e.size[0] !== o) && ((s = e.setSize) == null || s.call(e, [o, n]));
 }
 function oe(e) {
   return { lora: e ?? null, on: !0, strength: 1, strengthTwo: null };
 }
-function zt(e) {
+function Pt(e) {
   let t = !0, n = !0;
   for (const o of e.rows)
     if (t = t && o.on === !0, n = n && o.on === !1, !t && !n) return null;
   return !!(t && e.rows.length > 0);
 }
 function se(e) {
-  const t = !zt(e);
+  const t = !Pt(e);
   for (const n of e.rows) n.on = t;
 }
-function at(e, t, n) {
+function it(e, t, n) {
   const o = n ? "strengthTwo" : "strength", s = e[o] ?? 1;
   e[o] = Math.round((s + t * 0.05) * 100) / 100;
 }
-function Ut(e, t) {
+function zt(e, t) {
   const n = document.createElement("button");
   return n.type = "button", n.className = "comfort-toggle " + (e ? "on" : "off"), n.textContent = t, n;
 }
-function $(e) {
+function G(e) {
   const t = document.createElement("span");
   return t.className = "comfort-col-label", t.textContent = e, t;
 }
-function j(e, t) {
+function $(e, t) {
   const n = document.createElement("div");
   n.className = "comfort-strength" + (t === "two" ? " comfort-strength-clip" : "");
   const o = document.createElement("button");
@@ -53,31 +53,31 @@ function j(e, t) {
 }
 function re(e, t, n) {
   const o = document.createElement("div");
-  o.className = "comfort-lora-row" + (t.on ? "" : " off"), o.dataset.idx = String(n), o.appendChild(Ut(t.on, t.on ? "ON" : "OFF"));
+  o.className = "comfort-lora-row" + (t.on ? "" : " off"), o.dataset.idx = String(n), o.appendChild(zt(t.on, t.on ? "ON" : "OFF"));
   const s = document.createElement("span");
   s.className = "comfort-name", s.textContent = t.lora || "None", s.title = t.lora || "No lora selected — click to choose", o.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-spacer", o.appendChild(r), e.showSeparate ? (o.appendChild(j(t, "one")), o.appendChild(j(t, "two"))) : o.appendChild(j(t, "one"));
+  r.className = "comfort-spacer", o.appendChild(r), e.showSeparate ? (o.appendChild($(t, "one")), o.appendChild($(t, "two"))) : o.appendChild($(t, "one"));
   const i = document.createElement("button");
   return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", o.appendChild(i), o;
 }
-function b(e) {
+function y(e) {
   const t = e.el;
   t.innerHTML = "";
   const n = document.createElement("div");
   n.className = "comfort-lora-header";
-  const o = zt(e), s = Ut(o !== !1, o === !1 ? "ALL OFF" : "ALL ON");
+  const o = Pt(e), s = zt(o !== !1, o === !1 ? "ALL OFF" : "ALL ON");
   s.className += " comfort-toggle-all", s.title = "Toggle all loras", n.appendChild(s);
   const r = document.createElement("span");
-  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild($("Model")), r.appendChild($("Clip"))) : r.appendChild($("Strength")), n.appendChild(r), t.appendChild(n), e.rows.forEach((u, a) => t.appendChild(re(e, u, a)));
+  r.className = "comfort-header-labels", e.showSeparate ? (r.appendChild(G("Model")), r.appendChild(G("Clip"))) : r.appendChild(G("Strength")), n.appendChild(r), t.appendChild(n), e.rows.forEach((l, a) => t.appendChild(re(e, l, a)));
   const i = document.createElement("div");
   i.className = "comfort-lora-footer";
   const c = document.createElement("button");
   c.type = "button", c.className = "comfort-add-btn", c.textContent = "➕ Add Lora", i.appendChild(c), t.appendChild(i);
 }
 function ie(e) {
-  const t = F.get(e);
-  t && (b(t), I(e, t));
+  const t = U.get(e);
+  t && (y(t), M(e, t));
 }
 async function ce() {
   try {
@@ -89,7 +89,7 @@ async function ce() {
     return [];
   }
 }
-async function lt(e, t, n, o) {
+async function ct(e, t, n, o) {
   const s = await ce() || ["(no loras found)"], r = s.length ? s : ["(no loras found)"];
   new LiteGraph.ContextMenu(r, {
     title: "Choose Lora",
@@ -102,18 +102,18 @@ async function lt(e, t, n, o) {
 function ae(e, t, n, o) {
   const s = t.rows[n];
   if (!s) return;
-  const r = n > 0, i = n < t.rows.length - 1, c = (u) => {
-    const a = n + u;
+  const r = n > 0, i = n < t.rows.length - 1, c = (l) => {
+    const a = n + l;
     if (a < 0 || a >= t.rows.length) return;
-    const l = t.rows[n];
-    t.rows[n] = t.rows[a], t.rows[a] = l, b(t);
+    const u = t.rows[n];
+    t.rows[n] = t.rows[a], t.rows[a] = u, y(t);
   };
   new LiteGraph.ContextMenu(
     [
       {
         content: `${s.on ? "⚫" : "◯"} Toggle ${s.on ? "Off" : "On"}`,
         callback: () => {
-          s.on = !s.on, b(t);
+          s.on = !s.on, y(t);
         }
       },
       null,
@@ -122,7 +122,7 @@ function ae(e, t, n, o) {
       {
         content: "🗑️ Remove",
         callback: () => {
-          t.rows.splice(n, 1), b(t), I(e, t);
+          t.rows.splice(n, 1), y(t), M(e, t);
         }
       }
     ],
@@ -134,12 +134,12 @@ function le(e, t) {
   n.addEventListener("click", (o) => {
     const s = o.target;
     if (s.closest(".comfort-toggle-all")) {
-      se(t), b(t);
+      se(t), y(t);
       return;
     }
     if (s.closest(".comfort-add-btn")) {
-      lt(t, e, o, (a) => {
-        t.rows.push(oe(a)), b(t), I(e, t);
+      ct(t, e, o, (a) => {
+        t.rows.push(oe(a)), y(t), M(e, t);
       });
       return;
     }
@@ -147,27 +147,27 @@ function le(e, t) {
     if (!r) return;
     const i = Number(r.dataset.idx), c = t.rows[i];
     if (!c) return;
-    const u = !!s.closest(".comfort-strength-clip");
+    const l = !!s.closest(".comfort-strength-clip");
     if (s.closest(".comfort-toggle")) {
-      c.on = !c.on, b(t);
+      c.on = !c.on, y(t);
       return;
     }
     if (s.closest(".comfort-name")) {
-      lt(t, e, o, (a) => {
-        c.lora = a, b(t);
+      ct(t, e, o, (a) => {
+        c.lora = a, y(t);
       });
       return;
     }
     if (s.closest(".comfort-dec")) {
-      at(c, -1, u), b(t);
+      it(c, -1, l), y(t);
       return;
     }
     if (s.closest(".comfort-inc")) {
-      at(c, 1, u), b(t);
+      it(c, 1, l), y(t);
       return;
     }
     if (s.closest(".comfort-remove")) {
-      t.rows.splice(i, 1), b(t), I(e, t);
+      t.rows.splice(i, 1), y(t), M(e, t);
       return;
     }
   }), n.addEventListener("change", (o) => {
@@ -183,22 +183,22 @@ function le(e, t) {
   });
 }
 function ue(e) {
-  if (F.has(e)) return;
+  if (U.has(e)) return;
   const t = {
     rows: [],
     showSeparate: !1,
     el: document.createElement("div")
   };
-  t.el.className = "comfort-lora-list", F.set(e, t), e.serialize_widgets = !0, typeof e.addDOMWidget == "function" && e.addDOMWidget("loras", "comfort_lora_list", t.el, {
+  t.el.className = "comfort-lora-list", U.set(e, t), e.serialize_widgets = !0, typeof e.addDOMWidget == "function" && e.addDOMWidget("loras", "comfort_lora_list", t.el, {
     serialize: !0,
     hideOnZoom: !0,
     getValue: () => t.rows,
     setValue: (n) => {
-      t.rows = Array.isArray(n) ? n : [], b(t), I(e, t);
+      t.rows = Array.isArray(n) ? n : [], y(t), M(e, t);
     },
-    getMinHeight: () => J(t),
-    getMaxHeight: () => J(t)
-  }), le(e, t), b(t), I(e, t);
+    getMinHeight: () => q(t),
+    getMaxHeight: () => q(t)
+  }), le(e, t), y(t), M(e, t);
 }
 function de(e, t) {
   let n = Object.getPrototypeOf(e);
@@ -208,15 +208,10 @@ function de(e, t) {
     n = Object.getPrototypeOf(n);
   }
 }
-class Q extends LGraphNode {
+class J extends LGraphNode {
   constructor(t) {
     super(t), this.configuring = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.isVirtualNode = !0, this.installModeInterceptor();
   }
-  /**
-   * Wrap `this.mode` so reads/writes go through us and `onModeChange` fires.
-   * Delegates to the prototype accessor (Nodes 2.0) when present, else to a
-   * private field (legacy LiteGraph).
-   */
   installModeInterceptor() {
     const t = de(this, "mode"), n = () => t != null && t.get ? t.get.call(this) : this.__comfort_mode;
     Object.defineProperty(this, "mode", {
@@ -232,13 +227,8 @@ class Q extends LGraphNode {
   configure(t) {
     this.configuring = !0, super.configure(t), this.configuring = !1;
   }
-  /**
-   * Fire when this node's own mode changes. Guard with `this.configuring`.
-   * Subclasses override to react (e.g. the Repeater propagates to its inputs).
-   */
   onModeChange(t, n) {
   }
-  /** Help HTML shown in the node's help dialog / menu. */
   getHelp() {
     return "";
   }
@@ -247,11 +237,11 @@ class Q extends LGraphNode {
     (t = super.onRemoved) == null || t.call(this), this.removed = !0;
   }
 }
-const v = 0, E = 2, k = 4;
-function C(e, t) {
+const w = 0, x = 2, N = 4;
+function v(e, t) {
   var o;
   if (Array.isArray(e)) {
-    for (const s of e) C(s, t);
+    for (const s of e) v(s, t);
     return;
   }
   if (!e) return;
@@ -261,48 +251,48 @@ function C(e, t) {
   }
   const n = (o = e.subgraph) == null ? void 0 : o.nodes;
   if (Array.isArray(n))
-    for (const s of n) C(s, t);
+    for (const s of n) v(s, t);
 }
-function ut(e) {
+function at(e) {
   var n;
   const t = (e == null ? void 0 : e.type) || ((n = e == null ? void 0 : e.constructor) == null ? void 0 : n.type) || "";
   return t.includes("Reroute") || t.includes("Node Collector") || t.includes("Node Combiner");
 }
-function Ft(e, t, n) {
-  var c, u, a, l;
+function Ut(e, t, n) {
+  var c, l, a, u;
   const o = e.graph;
   if (!o) return [];
   const s = [], r = /* @__PURE__ */ new Set(), i = (d) => {
     if (!d || r.has(d)) return;
     r.add(d);
-    let p;
-    t === "OUTPUT" ? p = (d.outputs || []).flatMap((f) => f.links || []) : p = (d.inputs || []).map((f) => f.link);
-    for (const f of p) {
-      if (f == null) continue;
-      const h = o.links[f];
+    let f;
+    t === "OUTPUT" ? f = (d.outputs || []).flatMap((p) => p.links || []) : f = (d.inputs || []).map((p) => p.link);
+    for (const p of f) {
+      if (p == null) continue;
+      const h = o.links[p];
       if (!h) continue;
       const m = t === "OUTPUT" ? h.target_id : h.origin_id, g = o.getNodeById(m);
-      !g || r.has(g) || (ut(g) ? i(g) : s.push(g));
+      !g || r.has(g) || (at(g) ? i(g) : s.push(g));
     }
   };
   if (n != null) {
-    const d = t === "OUTPUT" ? ((u = (c = e.outputs) == null ? void 0 : c[n]) == null ? void 0 : u.links) || [] : [(l = (a = e.inputs) == null ? void 0 : a[n]) == null ? void 0 : l.link];
-    for (const p of d) {
-      if (p == null) continue;
-      const f = o.links[p];
-      if (!f) continue;
-      const h = t === "OUTPUT" ? f.target_id : f.origin_id, m = o.getNodeById(h);
-      !m || r.has(m) || (ut(m) ? i(m) : s.push(m));
+    const d = t === "OUTPUT" ? ((l = (c = e.outputs) == null ? void 0 : c[n]) == null ? void 0 : l.links) || [] : [(u = (a = e.inputs) == null ? void 0 : a[n]) == null ? void 0 : u.link];
+    for (const f of d) {
+      if (f == null) continue;
+      const p = o.links[f];
+      if (!p) continue;
+      const h = t === "OUTPUT" ? p.target_id : p.origin_id, m = o.getNodeById(h);
+      !m || r.has(m) || (at(m) ? i(m) : s.push(m));
     }
   } else
     i(e);
   return s;
 }
-function M(e, t) {
-  return Ft(e, "INPUT", t);
+function S(e, t) {
+  return Ut(e, "INPUT", t);
 }
-function dt(e, t) {
-  return Ft(e, "OUTPUT", t);
+function lt(e, t) {
+  return Ut(e, "OUTPUT", t);
 }
 function B(e) {
   if (e != null && e.graph && typeof e.recomputeInsideNodes == "function")
@@ -316,33 +306,34 @@ function B(e) {
     return n && (n.isLGraphNode || ((o = n.constructor) == null ? void 0 : o.type));
   }) : [];
 }
-function pe(e) {
-  var c, u, a, l, d, p, f, h;
+function fe(e) {
+  var c, l, a, u, d, f, p, h;
   const t = e.graph;
   if (!t) return null;
-  const n = t._groups || t.groups || [], o = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((u = e.pos) == null ? void 0 : u[1]) ?? 0, r = ((a = e.size) == null ? void 0 : a[0]) ?? 0, i = ((l = e.size) == null ? void 0 : l[1]) ?? 0;
+  const n = t._groups || t.groups || [], o = ((c = e.pos) == null ? void 0 : c[0]) ?? 0, s = ((l = e.pos) == null ? void 0 : l[1]) ?? 0, r = ((a = e.size) == null ? void 0 : a[0]) ?? 0, i = ((u = e.size) == null ? void 0 : u[1]) ?? 0;
   for (const m of n) {
-    const g = ((d = m.pos) == null ? void 0 : d[0]) ?? 0, y = ((p = m.pos) == null ? void 0 : p[1]) ?? 0, w = ((f = m.size) == null ? void 0 : f[0]) ?? 0, G = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
-    if (o >= g && s >= y && o + r <= g + w && s + i <= y + G)
+    const g = ((d = m.pos) == null ? void 0 : d[0]) ?? 0, _ = ((f = m.pos) == null ? void 0 : f[1]) ?? 0, Jt = ((p = m.size) == null ? void 0 : p[0]) ?? 0, Zt = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
+    if (o >= g && s >= _ && o + r <= g + Jt && s + i <= _ + Zt)
       return m;
   }
   return null;
 }
-class T extends Q {
+class O extends J {
   constructor(t) {
     super(t), this.addInput("", "*");
   }
+  onConnectedNodesChanged(t) {
+  }
   onConnectionsChange(t, n, o, s, r) {
     var i;
-    (i = super.onConnectionsChange) == null || i.call(this, t, n, o, s, r), this.stabilizeFanIn(), this.onConnectedNodesChanged(M(this));
+    (i = super.onConnectionsChange) == null || i.call(this, t, n, o, s, r), this.stabilizeFanIn(), this.onConnectedNodesChanged(S(this));
   }
-  /** Keep a trailing free `*` input; rename connected inputs to node titles. */
   stabilizeFanIn() {
     if (!this.inputs) return;
     for (let n = 0; n < this.inputs.length; n++) {
       const o = this.inputs[n];
       if (o.link != null) {
-        const s = M(this, n)[0], r = (s == null ? void 0 : s.title) || "";
+        const s = S(this, n)[0], r = (s == null ? void 0 : s.title) || "";
         o.name !== r && (o.name = r);
       }
     }
@@ -350,8 +341,8 @@ class T extends Q {
     (!t || t.link != null) && this.addInput("", "*");
   }
 }
-const fe = 34, he = 10;
-function Dt(e, t, n) {
+const pe = 34, he = 10;
+function Ft(e, t, n) {
   if (e.innerHTML = "", !t.length) {
     const o = document.createElement("div");
     o.className = "comfort-node-empty", o.textContent = n, e.appendChild(o);
@@ -366,14 +357,14 @@ function Dt(e, t, n) {
     c.className = "comfort-node-title", c.textContent = o.title, c.title = o.title, r.appendChild(c), e.appendChild(r);
   });
 }
-function Ht(e, t, n) {
+function Dt(e, t, n) {
   var r;
   if (!e.size) return;
-  const o = he * 2 + t * fe, s = Math.max(e.size[0] || 0, n);
+  const o = he * 2 + t * pe, s = Math.max(e.size[0] || 0, n);
   (e.size[1] !== o || e.size[0] !== s) && ((r = e.setSize) == null || r.call(e, [s, o]));
 }
 const me = 260;
-class Bt extends T {
+class Bt extends O {
   constructor(t) {
     super(t), this.listEl = null, this.rows = [], this.setupListWidget();
   }
@@ -388,7 +379,7 @@ class Bt extends T {
   }
   renderList() {
     const t = this.listEl;
-    t && (Dt(t, this.rows, "Connect nodes to control them"), Ht(this, this.rows.length, me));
+    t && (Ft(t, this.rows, "Connect nodes to control them"), Dt(this, this.rows.length, me));
   }
   bindListEvents() {
     const t = this.listEl;
@@ -409,7 +400,7 @@ class Bt extends T {
   }
   /** Rebuild rows from live connections. Called on connect/disconnect/load. */
   syncRows() {
-    const t = M(this), n = [];
+    const t = S(this), n = [];
     for (const o of t) {
       const s = o.title || o.type || "node", r = this.rows.find((c) => c.node === o), i = r ? r.on : o.mode === this.modeOn;
       n.push({ node: o, title: s, on: i });
@@ -427,10 +418,10 @@ class Bt extends T {
     this.renderList();
   }
 }
-const X = "Fast Muter (comfort)", tt = "Fast Bypasser (comfort)";
+const Z = "Fast Muter (comfort)", Q = "Fast Bypasser (comfort)";
 class ge extends Bt {
   constructor() {
-    super(X), this.modeOn = v, this.modeOff = E;
+    super(Z), this.modeOn = w, this.modeOff = x;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
@@ -439,19 +430,17 @@ toggle it to mute or unmute that node without leaving the canvas.</p>`;
 }
 class ye extends Bt {
   constructor() {
-    super(tt), this.modeOn = v, this.modeOff = k;
+    super(Q), this.modeOn = w, this.modeOff = N;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
 toggle it to bypass or un-bypass that node without leaving the canvas.</p>`;
   }
 }
-const be = ge, xe = ye, Gt = "Node Collector (comfort)";
-class we extends T {
+const be = ge, we = ye, Ht = "Node Collector (comfort)";
+class xe extends O {
   constructor() {
-    super(Gt), this.addOutput("Output", "*");
-  }
-  onConnectedNodesChanged(t) {
+    super(Ht), this.addOutput("Output", "*");
   }
   getHelp() {
     return `<p>Bundle any number of nodes into a single output. Connect this
@@ -459,29 +448,29 @@ output to a Fast Muter or Fast Bypasser and it will list every node connected
 to this Collector, so one toggle can mute/bypass all of them at once.</p>`;
   }
 }
-const ve = we, et = "Mute / Bypass Repeater (comfort)";
-class Ee extends T {
+const ve = xe, X = "Mute / Bypass Repeater (comfort)";
+class Ee extends O {
   constructor() {
-    super(et), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
+    super(X), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
   }
   onConnectedNodesChanged(t) {
     if (this.configuring) return;
     const n = t;
     for (const o of n)
-      o.mode !== this.mode && C(o, this.mode);
+      o.mode !== this.mode && v(o, this.mode);
   }
   /** Propagate our mode to every connected input node (or our group). */
   onModeChange(t, n) {
     if (this.configuring) return;
-    const o = M(this);
+    const o = S(this);
     if (o.length) {
-      for (const r of o) C(r, n);
+      for (const r of o) v(r, n);
       return;
     }
-    const s = pe(this);
+    const s = fe(this);
     if (s)
       for (const r of B(s))
-        r !== this && C(r, n);
+        r !== this && v(r, n);
   }
   getHelp() {
     return `<p>When this node's mode (Always / Mute / Bypass) changes, it
@@ -491,15 +480,14 @@ output to a Fast Muter for a single toggle over all of them.</p>`;
   }
 }
 const Ce = Ee;
-function Y(e) {
-  return (e == null ? void 0 : e.type) === et;
+function W(e) {
+  return (e == null ? void 0 : e.type) === X;
 }
 const Ne = 500;
 class _e {
   constructor() {
     this.timer = null, this.counter = 0, this.jobs = /* @__PURE__ */ new Map();
   }
-  /** Run `job` every `cadenceTicks` ticks (1 = every 500ms). */
   schedule(t, n) {
     this.jobs.set(t, Math.max(1, n)), this.ensureTimer();
   }
@@ -522,64 +510,55 @@ class _e {
         }
   }
 }
-const _ = new _e(), Wt = "Mode Relay (comfort)", ke = {
-  ACTIVE: v,
-  MUTE: E,
-  BYPASS: k,
+const C = new _e(), Gt = "Mode Relay (comfort)", ke = {
+  ACTIVE: w,
+  MUTE: x,
+  BYPASS: N,
   NOTHING: -99
 }, Se = {
-  [E]: "on_muted_inputs",
-  [k]: "on_bypassed_inputs",
-  [v]: "on_any_active_inputs"
+  [x]: "on_muted_inputs",
+  [N]: "on_bypassed_inputs",
+  [w]: "on_any_active_inputs"
 };
-class Me extends T {
+class Me extends O {
   constructor() {
-    super(Wt), this.properties.on_muted_inputs = "MUTE", this.properties.on_bypassed_inputs = "BYPASS", this.properties.on_any_active_inputs = "ACTIVE", this.addOutput("REPEATER", "_NODE_REPEATER_", {
+    super(Gt), this.properties.on_muted_inputs = "MUTE", this.properties.on_bypassed_inputs = "BYPASS", this.properties.on_any_active_inputs = "ACTIVE", this.addOutput("REPEATER", "_NODE_REPEATER_", {
       color_on: "#Fc0",
       color_off: "#a80",
       shape: 5
-    }), ft.register(this);
+    }), dt.register(this);
   }
   onConnectedNodesChanged(t) {
     this.evaluate();
   }
-  /**
-   * With no inputs connected, the Relay acts as a plain mode forwarder: changing
-   * its own mode drives the connected Repeater.
-   */
   onModeChange(t, n) {
-    if (super.onModeChange(t, n), this.configuring || M(this).length) return;
-    const s = dt(this).filter(Y);
+    if (super.onModeChange(t, n), this.configuring || S(this).length) return;
+    const s = lt(this).filter(W);
     for (const r of s)
-      r.mode !== n && C(r, n);
+      r.mode !== n && v(r, n);
   }
-  /**
-   * Restrict the REPEATER output to Repeater nodes only.
-   * `inputNode` is the node whose input we are connecting to.
-   */
   onConnectOutput(t, n, o, s, r) {
-    return s ? Y(s) : !0;
+    return s ? W(s) : !0;
   }
-  /** Vote on the input modes and drive the connected Repeater. */
   evaluate() {
     var c;
     if (this.configuring) return;
-    const t = M(this);
+    const t = S(this);
     let n;
-    for (const u of t) {
-      const a = u.mode;
+    for (const l of t) {
+      const a = l.mode;
       if (n === void 0) n = a;
       else {
-        if (n === a && (a === E || a === k)) continue;
-        a === v || n === v ? n = v : n = void 0;
+        if (n === a && (a === x || a === N)) continue;
+        a === w || n === w ? n = w : n = void 0;
       }
     }
     if (n === void 0) return;
     const o = Se[n], s = o ? ke[String((c = this.properties) == null ? void 0 : c[o])] : n, r = s !== void 0 ? s : n;
     if (r === -99) return;
-    const i = dt(this).filter(Y);
-    for (const u of i)
-      u.mode !== r && C(u, r);
+    const i = lt(this).filter(W);
+    for (const l of i)
+      l.mode !== r && v(l, r);
   }
   getHelp() {
     return `<p>Watches the mode of the nodes connected to its inputs and drives
@@ -590,45 +569,37 @@ properties to remap or suppress (NOTHING) each signal.</p>`;
   }
   onRemoved() {
     var t;
-    ft.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    dt.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
-const L = /* @__PURE__ */ new Set(), pt = () => {
+const L = /* @__PURE__ */ new Set(), ut = () => {
   for (const e of L)
     try {
       e.evaluate();
     } catch {
     }
-}, ft = {
+}, dt = {
   register(e) {
-    L.add(e), _.schedule(pt, 1);
+    L.add(e), C.schedule(ut, 1);
   },
   unregister(e) {
-    L.delete(e), L.size || _.unschedule(pt);
+    L.delete(e), L.size || C.unschedule(ut);
   }
 }, Ie = Me, $t = "Random Unmuter (comfort)";
-class Re extends T {
+class Re extends O {
   constructor() {
-    super($t), this.tempEnabled = null, ht.register(this);
+    super($t), this.tempEnabled = null, ft.register(this);
   }
-  /** No-op: this node only acts on queue, not on connection changes. */
-  onConnectedNodesChanged(t) {
-  }
-  /**
-   * Called when a prompt build begins (inside queuePrompt). If all connected
-   * nodes are muted, pick one at random and unmute it for the build.
-   */
   onPromptStart() {
     if (this.configuring) return;
     this.tempEnabled = null;
-    const t = M(this);
-    if (!t.length || !t.every((s) => s.mode === E)) return;
+    const t = S(this);
+    if (!t.length || !t.every((s) => s.mode === x)) return;
     const o = t[Math.floor(Math.random() * t.length)];
-    o && (C(o, v), this.tempEnabled = o);
+    o && (v(o, w), this.tempEnabled = o);
   }
-  /** Called after the prompt build; mute the temporarily-enabled node back. */
   onPromptEnd() {
-    this.tempEnabled && (C(this.tempEnabled, E), this.tempEnabled = null);
+    this.tempEnabled && (v(this.tempEnabled, x), this.tempEnabled = null);
   }
   getHelp() {
     return `<p>Each time a prompt is queued, this node temporarily unmutes one
@@ -639,22 +610,22 @@ group.</p>`;
   }
   onRemoved() {
     var t;
-    ht.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    ft.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
-const D = /* @__PURE__ */ new Set(), ht = {
+const F = /* @__PURE__ */ new Set(), ft = {
   register(e) {
-    D.add(e), Ae();
+    F.add(e), Ae();
   },
   unregister(e) {
-    D.delete(e);
+    F.delete(e);
   }
 };
-let mt = !1;
+let pt = !1;
 function Ae() {
-  if (mt) return;
-  mt = !0;
-  const e = x, t = e.queuePrompt;
+  if (pt) return;
+  pt = !0;
+  const e = b, t = e.queuePrompt;
   let n = !1;
   e.queuePrompt = async function(...s) {
     n = !0;
@@ -667,13 +638,13 @@ function Ae() {
   const o = e.graphToPrompt;
   e.graphToPrompt = function(...s) {
     if (n)
-      for (const c of D)
+      for (const c of F)
         try {
           c.onPromptStart();
         } catch {
         }
     const r = o.apply(e, s), i = () => {
-      for (const c of D)
+      for (const c of F)
         try {
           c.onPromptEnd();
         } catch {
@@ -684,11 +655,9 @@ function Ae() {
     }) : (i(), r);
   };
 }
-const Oe = Re, jt = "NInfer Suspend Gate (comfort)", gt = 30, Te = 24, Le = 32, Pe = 30, ze = 10, Ue = 300, Fe = 6, De = 1, He = 2e3, Be = 1e3, yt = ["indefinite", "1", "5", "10", "15", "30", "60"], Ge = (e) => new Promise((t) => setTimeout(t, e));
-async function Yt(e, t, n) {
-  const o = t === void 0 ? await fetch("/comfort/ninfer/forward?url=" + encodeURIComponent(e), {
-    signal: n
-  }) : await fetch("/comfort/ninfer/forward", {
+const Oe = Re, Le = 1e3;
+async function Wt(e, t, n) {
+  const o = t === void 0 ? await fetch("/comfort/ninfer/forward?url=" + encodeURIComponent(e), { signal: n }) : await fetch("/comfort/ninfer/forward", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url: e, body: t }),
@@ -701,67 +670,89 @@ async function Yt(e, t, n) {
   }
   return { status: o.status, body: r };
 }
-const bt = /* @__PURE__ */ new Map(), V = /* @__PURE__ */ new Map();
-async function xt(e, t, n) {
+const ht = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
+async function mt(e, t, n) {
   const o = e + "/v1/models";
   if (t) {
-    const i = bt.get(o);
-    if (i && Date.now() - i.at < Be) return i.models;
+    const i = ht.get(o);
+    if (i && Date.now() - i.at < Le) return i.models;
   }
-  const s = V.get(o);
+  const s = j.get(o);
   if (s) return s;
   const r = (async () => {
     var a;
-    const c = (a = (await Yt(o, void 0, n)).body) == null ? void 0 : a.data, u = Array.isArray(c) ? c.map((l) => {
+    const c = (a = (await Wt(o, void 0, n)).body) == null ? void 0 : a.data, l = Array.isArray(c) ? c.map((u) => {
       var d;
-      return {
-        id: String(l.id),
-        value: String(((d = l.status) == null ? void 0 : d.value) ?? "")
-      };
+      return { id: String(u.id), value: String(((d = u.status) == null ? void 0 : d.value) ?? "") };
     }) : [];
-    return bt.set(o, { at: Date.now(), models: u }), u;
-  })().finally(() => V.delete(o));
-  return V.set(o, r), r;
+    return ht.set(o, { at: Date.now(), models: l }), l;
+  })().finally(() => j.delete(o));
+  return j.set(o, r), r;
 }
-function We(e, t, n) {
-  return Yt(
-    e + "/v1/models/" + encodeURIComponent(t) + "/suspend",
-    {},
-    n
-  );
+function Te(e, t, n) {
+  return Wt(e + "/v1/models/" + encodeURIComponent(t) + "/suspend", {}, n);
 }
-class $e extends Q {
+const Pe = (e) => new Promise((t) => setTimeout(t, e));
+let I = null;
+function ze() {
+  return document.querySelector('[data-testid="queue-button"]');
+}
+function Ue() {
+  var t;
+  const e = b;
+  return ((t = e.canvas) == null ? void 0 : t.graph) ?? e.graph ?? null;
+}
+function jt(e) {
+  const t = Ue();
+  if (!t) return null;
+  for (const n of e)
+    if (!n.removed && n.graph === t) return n;
+  return null;
+}
+function Fe(e) {
+  if (I && I.isConnected) return;
+  const t = ze();
+  if (!t || !t.parentElement) return;
+  const n = document.createElement("button");
+  n.type = "button", n.className = "comfort-topbar-focus", n.title = "Focus NInfer gate", n.textContent = "⚡ NInfer", n.addEventListener("click", () => {
+    const o = jt(e);
+    if (!o) return;
+    const s = o.graph;
+    if (s) {
+      for (const d of s._nodes || []) d.selected = !1;
+      o.selected = !0;
+    }
+    const r = b.canvas;
+    if (!r) return;
+    const i = o.size || [200, 150], c = r.canvas, l = c && c.clientWidth || window.innerWidth, a = c && c.clientHeight || window.innerHeight, u = Math.min(l * 0.5 / (i[0] || 200), a * 0.5 / (i[1] || 150));
+    r.ds.scale = Math.min(Math.max(u, 0.75), 2), r.centerOnNode(o), r.setDirty(!0);
+  }), t.parentElement.insertBefore(n, t.nextSibling), I = n;
+}
+function De(e) {
+  const t = () => {
+    Fe(e), I && (I.style.display = jt(e) ? "" : "none");
+  };
+  C.schedule(t, 1);
+}
+const Yt = "NInfer Suspend Gate (comfort)", gt = 30, Be = 24, He = 32, Ge = 30, $e = 10, We = 300, je = 6, Ye = 1, qe = 2e3, yt = ["indefinite", "1", "5", "10", "15", "30", "60"];
+class Ve extends J {
   constructor() {
-    super(jt), this.properties.url = "", this.properties.timeout = "indefinite", this.properties.selected = null, this.st = this.setupWidget(), Ct.register(this);
+    super(Yt), this.properties.url = "", this.properties.timeout = "indefinite", this.properties.selected = null, this.st = this.setupWidget(), vt.register(this);
   }
-  /**
-   * Workflow load. The load path runs `graph.add()` (→ `onAdded`) BEFORE
-   * `configure()`, so `onAdded` syncs the inputs from the constructor
-   * defaults. `configure()` then restores `this.properties` — re-sync the
-   * inputs to the restored values here, or the URL/timeout/selection set in
-   * the saved workflow would be lost.
-   */
   configure(t) {
     super.configure(t), this.syncFieldsFromProperties();
   }
-  /** Runs after the node is added to a graph (creation AND workflow load). */
   onAdded() {
     var t;
     (t = super.onAdded) == null || t.call(this), this.syncFieldsFromProperties(), this.refresh();
   }
   onRemoved() {
     var t;
-    Ct.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    vt.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
-  /**
-   * Called every tick by the shared scheduler. Advances the elapsed-time
-   * display while a suspend is in progress; a no-op otherwise (so idle nodes
-   * don't churn the DOM).
-   */
   updateLiveStatus() {
     (this.st.phase === "suspending" || this.st.phase === "busy") && this.renderStatus();
   }
-  // --- configuration accessors -------------------------------------------
   baseUrl() {
     return String(this.properties.url || "").trim().replace(/\/+$/, "");
   }
@@ -771,17 +762,10 @@ class $e extends Q {
     const n = parseInt(t, 10);
     return Number.isFinite(n) && n > 0 ? n * 60 * 1e3 : 1 / 0;
   }
-  /**
-   * Effective checked set. `null` (never explicitly set) means "all loaded";
-   * an explicit array (possibly empty) is used as-is.
-   */
   computeSelected(t) {
     const n = this.properties.selected;
-    return n == null ? new Set(
-      t.filter((o) => o.value === "loaded").map((o) => o.id)
-    ) : new Set(Array.isArray(n) ? n.map(String) : []);
+    return n == null ? new Set(t.filter((o) => o.value === "loaded").map((o) => o.id)) : new Set(Array.isArray(n) ? n.map(String) : []);
   }
-  // --- UI ----------------------------------------------------------------
   setupWidget() {
     const t = document.createElement("div");
     t.className = "comfort-ninfer";
@@ -789,9 +773,9 @@ class $e extends Q {
     n.type = "text", n.className = "comfort-ninfer-url", n.placeholder = "NInfer URL  (http://host:30001)", t.appendChild(n);
     const o = document.createElement("select");
     o.className = "comfort-ninfer-timeout";
-    for (const f of yt) {
+    for (const p of yt) {
       const h = document.createElement("option");
-      h.value = f, h.textContent = f === "indefinite" ? "Busy timeout: indefinite" : `Busy timeout: ${f} min`, o.appendChild(h);
+      h.value = p, h.textContent = p === "indefinite" ? "Busy timeout: indefinite" : `Busy timeout: ${p} min`, o.appendChild(h);
     }
     t.appendChild(o);
     const s = document.createElement("div");
@@ -802,15 +786,15 @@ class $e extends Q {
     i.type = "button", i.className = "comfort-ninfer-ctrl", i.textContent = "Cancel", i.hidden = !0;
     const c = document.createElement("button");
     c.type = "button", c.className = "comfort-ninfer-ctrl", c.textContent = "Skip", c.hidden = !0, s.appendChild(r), s.appendChild(i), s.appendChild(c), t.appendChild(s);
-    const u = document.createElement("div");
-    u.className = "comfort-ninfer-bulk";
+    const l = document.createElement("div");
+    l.className = "comfort-ninfer-bulk";
     const a = document.createElement("button");
     a.type = "button", a.className = "comfort-bulk", a.dataset.bulk = "all", a.textContent = "Select all";
-    const l = document.createElement("button");
-    l.type = "button", l.className = "comfort-bulk", l.dataset.bulk = "none", l.textContent = "Deselect all", u.appendChild(a), u.appendChild(l), t.appendChild(u);
+    const u = document.createElement("button");
+    u.type = "button", u.className = "comfort-bulk", u.dataset.bulk = "none", u.textContent = "Deselect all", l.appendChild(a), l.appendChild(u), t.appendChild(l);
     const d = document.createElement("div");
     d.className = "comfort-ninfer-rows", t.appendChild(d);
-    const p = {
+    const f = {
       el: t,
       urlInput: n,
       timeoutSel: o,
@@ -818,7 +802,7 @@ class $e extends Q {
       statusText: r,
       cancelBtn: i,
       skipBtn: c,
-      bulkEl: u,
+      bulkEl: l,
       rowsEl: d,
       models: [],
       selected: /* @__PURE__ */ new Set(),
@@ -833,39 +817,38 @@ class $e extends Q {
       abort: null
     };
     return i.addEventListener("click", () => {
-      var f;
-      p.cancel = !0, (f = p.abort) == null || f.abort();
+      var p;
+      f.cancel = !0, (p = f.abort) == null || p.abort();
     }), c.addEventListener("click", () => {
-      var f;
-      p.skip = !0, (f = p.abort) == null || f.abort();
-    }), d.addEventListener("change", (f) => {
-      const h = f.target;
+      var p;
+      f.skip = !0, (p = f.abort) == null || p.abort();
+    }), d.addEventListener("change", (p) => {
+      const h = p.target;
       if (h.type !== "checkbox" || !h.dataset.id) return;
-      const m = new Set(p.selected);
-      h.checked ? m.add(h.dataset.id) : m.delete(h.dataset.id), p.selected = m, this.properties.selected = Array.from(m);
-    }), u.addEventListener("click", (f) => {
+      const m = new Set(f.selected);
+      h.checked ? m.add(h.dataset.id) : m.delete(h.dataset.id), f.selected = m, this.properties.selected = Array.from(m);
+    }), l.addEventListener("click", (p) => {
       var m;
-      const h = (m = f.target.dataset) == null ? void 0 : m.bulk;
+      const h = (m = p.target.dataset) == null ? void 0 : m.bulk;
       if (h === "all") {
-        const g = p.models.filter((y) => y.value === "loaded").map((y) => y.id);
-        p.selected = new Set(g), this.properties.selected = g;
+        const g = f.models.filter((_) => _.value === "loaded").map((_) => _.id);
+        f.selected = new Set(g), this.properties.selected = g;
       } else if (h === "none")
-        p.selected = /* @__PURE__ */ new Set(), this.properties.selected = [];
+        f.selected = /* @__PURE__ */ new Set(), this.properties.selected = [];
       else
         return;
       this.renderRows();
     }), n.addEventListener("input", () => {
       this.properties.url = n.value.trim();
     }), n.addEventListener("change", () => {
-      this.properties.url = n.value.trim(), this.properties.selected = null, p.phase = "idle", p.resultText = "", p.models = [], p.selected = /* @__PURE__ */ new Set(), this.refresh();
+      this.properties.url = n.value.trim(), this.properties.selected = null, f.phase = "idle", f.resultText = "", f.models = [], f.selected = /* @__PURE__ */ new Set(), this.refresh();
     }), o.addEventListener("change", () => {
       this.properties.timeout = o.value;
     }), typeof this.addDOMWidget == "function" && this.addDOMWidget("ninfer", "comfort_ninfer_list", t, {
       serialize: !1,
       hideOnZoom: !0
-    }), p;
+    }), f;
   }
-  /** Push `this.properties` into the input controls (load path). */
   syncFieldsFromProperties() {
     const t = this.st;
     t.urlInput.value = String(this.properties.url || "");
@@ -886,8 +869,8 @@ class $e extends Q {
       i.type = "checkbox", i.checked = t.selected.has(o.id), i.dataset.id = o.id, r.appendChild(i);
       const c = document.createElement("span");
       c.className = "comfort-node-title", c.textContent = o.id, c.title = o.id, r.appendChild(c);
-      const u = o.value || "unknown", a = document.createElement("span");
-      a.className = "comfort-ninfer-badge " + (u === "loaded" ? "loaded" : u === "sleeping" ? "suspended" : "other"), a.textContent = u === "sleeping" ? "suspended" : u, r.appendChild(a), n.appendChild(r);
+      const l = o.value || "unknown", a = document.createElement("span");
+      a.className = "comfort-ninfer-badge " + (l === "loaded" ? "loaded" : l === "sleeping" ? "suspended" : "other"), a.textContent = l === "sleeping" ? "suspended" : l, r.appendChild(a), n.appendChild(r);
     }
   }
   idleSummary() {
@@ -922,15 +905,9 @@ class $e extends Q {
   }
   layout() {
     var r, i;
-    const t = this.st.models.length, n = ze * 2 + gt + gt + Te + Le + t * Pe, o = Math.max(((r = this.size) == null ? void 0 : r[0]) || 0, Ue), s = this.size;
+    const t = this.st.models.length, n = $e * 2 + gt + gt + Be + He + t * Ge, o = Math.max(((r = this.size) == null ? void 0 : r[0]) || 0, We), s = this.size;
     (!s || s[1] !== n || s[0] !== o) && ((i = this.setSize) == null || i.call(this, [o, n]));
   }
-  // --- polling -----------------------------------------------------------
-  /**
-   * Refresh the model list + status. Driven by the ambient scheduler job and
-   * on demand (load, URL change, post-suspend). `fresh` bypasses the shared
-   * result cache (used right after a suspend, to see the new state at once).
-   */
   async refresh(t = !1) {
     const n = this.st;
     if (n.polling || n.phase === "suspending" || n.phase === "busy") return;
@@ -941,7 +918,7 @@ class $e extends Q {
     }
     n.polling = !0;
     try {
-      const s = await xt(o, !t);
+      const s = await mt(o, !t);
       n.models = s, this.properties.selected == null && (this.properties.selected = s.filter((r) => r.value === "loaded").map((r) => r.id)), n.selected = this.computeSelected(s), this.renderRows(), this.layout(), (n.phase === "done" || n.phase === "error") && n.resultHold > 0 ? n.resultHold-- : n.phase !== "idle" && (n.phase = "idle", n.resultText = ""), this.renderStatus();
     } catch {
       n.phase === "idle" && (n.phase = "error", n.resultText = "NInfer unreachable"), this.renderStatus();
@@ -949,73 +926,60 @@ class $e extends Q {
       n.polling = !1;
     }
   }
-  // --- queue hook --------------------------------------------------------
-  /**
-   * Called from the queuePrompt wrapper, before the prompt is sent. Suspends
-   * each checked+loaded model, holding the queue until every suspend returns.
-   * Returns a verdict: `proceed: true` sends the prompt, `false` aborts the
-   * Run (unreachable / timed out / user Cancel). The user can also Skip — stop
-   * suspending and send the prompt with whatever is still loaded.
-   */
   async suspendChecked() {
     const t = this.st, n = this.baseUrl();
     if (!n) return { proceed: !0 };
     t.cancel = !1, t.skip = !1, t.abort = null;
     let o;
     try {
-      o = await xt(n, !1);
+      o = await mt(n, !1);
     } catch {
       return this.finish("NInfer unreachable", !0), { proceed: !1 };
     }
     t.models = o;
     const s = this.computeSelected(o);
     t.selected = s, this.renderRows();
-    const r = o.filter(
-      (u) => u.value === "loaded" && s.has(u.id)
-    );
+    const r = o.filter((l) => l.value === "loaded" && s.has(l.id));
     if (!r.length)
       return this.finish("Ready (nothing to suspend)", !1), { proceed: !0 };
     const i = Date.now(), c = this.timeoutMs();
     try {
       for (const a of r) {
         if (t.cancel || t.skip) break;
-        const l = Date.now();
-        for (this.beginSuspending(a.id, l); !(t.cancel || t.skip); ) {
+        const u = Date.now();
+        for (this.beginSuspending(a.id, u); !(t.cancel || t.skip); ) {
           const d = new AbortController();
           t.abort = d;
-          let p;
+          let f;
           try {
-            p = await We(n, a.id, d.signal);
+            f = await Te(n, a.id, d.signal);
           } catch {
             if (d.signal.aborted) break;
             throw new Error("suspend request failed");
           }
-          if (p.status === 200) break;
-          if (p.status === 409) {
-            if (this.setBusy(a.id, l), await Ge(He), t.cancel || t.skip) break;
+          if (f.status === 200) break;
+          if (f.status === 409) {
+            if (this.setBusy(a.id, u), await Pe(qe), t.cancel || t.skip) break;
             if (Date.now() - i > c)
               throw new Error("timed out waiting for NInfer to idle");
             continue;
           }
-          throw new Error(`suspend failed (HTTP ${p.status})`);
+          throw new Error(`suspend failed (HTTP ${f.status})`);
         }
       }
       if (t.abort = null, t.cancel)
         return this.finish("Cancelled", !1), { proceed: !1 };
       if (t.skip)
         return this.finish("Skipped — running now", !1), { proceed: !0 };
-      const u = Math.round((Date.now() - i) / 1e3);
-      this.finish(
-        `Suspended ${r.length} model${r.length === 1 ? "" : "s"} (${u}s)`,
-        !1
-      ), t.resultHold = 2;
+      const l = Math.round((Date.now() - i) / 1e3);
+      this.finish(`Suspended ${r.length} model${r.length === 1 ? "" : "s"} (${l}s)`, !1), t.resultHold = 2;
       try {
         await this.refresh(!0);
       } catch {
       }
       return { proceed: !0 };
-    } catch (u) {
-      return this.finish(u instanceof Error ? u.message : String(u), !0), { proceed: !1 };
+    } catch (l) {
+      return this.finish(l instanceof Error ? l.message : String(l), !0), { proceed: !1 };
     } finally {
       t.abort = null;
     }
@@ -1041,39 +1005,39 @@ Suspended models stay suspended.</p>
 <p>Set the NInfer URL above. "Select all" checks every loaded model.</p>`;
   }
 }
-const S = /* @__PURE__ */ new Set();
-let wt = !1;
-const vt = () => {
+const k = /* @__PURE__ */ new Set();
+let bt = !1;
+const wt = () => {
   if (!document.hidden) {
-    for (const e of Array.from(S))
+    for (const e of Array.from(k))
       if (!e.removed)
         try {
           e.refresh();
         } catch {
         }
   }
-}, Et = () => {
-  for (const e of Array.from(S))
+}, xt = () => {
+  for (const e of Array.from(k))
     if (!e.removed)
       try {
         e.updateLiveStatus();
       } catch {
       }
-}, Ct = {
+}, vt = {
   register(e) {
-    S.add(e), je(), _.schedule(vt, Fe), _.schedule(Et, De);
+    k.add(e), Ke(), C.schedule(wt, je), C.schedule(xt, Ye);
   },
   unregister(e) {
-    S.delete(e), S.size || (_.unschedule(vt), _.unschedule(Et));
+    k.delete(e), k.size || (C.unschedule(wt), C.unschedule(xt));
   }
 };
-function je() {
-  if (wt) return;
-  wt = !0;
-  const e = x, t = e.queuePrompt;
+function Ke() {
+  if (bt) return;
+  bt = !0;
+  const e = b, t = e.queuePrompt;
   e.queuePrompt = async function(...n) {
     let o = !0;
-    for (const s of Array.from(S)) {
+    for (const s of Array.from(k)) {
       if (s.removed) continue;
       if (!(await s.suspendChecked()).proceed) {
         o = !1;
@@ -1083,48 +1047,10 @@ function je() {
     return o ? await t.apply(e, n) : Promise.resolve();
   };
 }
-let R = null;
-function Ye() {
-  return document.querySelector('[data-testid="queue-button"]');
-}
-function Ve() {
-  var t;
-  const e = x;
-  return ((t = e.canvas) == null ? void 0 : t.graph) ?? e.graph ?? null;
-}
-function Vt() {
-  const e = Ve();
-  if (!e) return null;
-  for (const t of S)
-    if (!t.removed && t.graph === e) return t;
-  return null;
-}
-function qe() {
-  if (R && R.isConnected) return;
-  const e = Ye();
-  if (!e || !e.parentElement) return;
-  const t = document.createElement("button");
-  t.type = "button", t.className = "comfort-topbar-focus", t.title = "Focus NInfer gate", t.textContent = "⚡ NInfer", t.addEventListener("click", () => {
-    const n = Vt();
-    if (!n) return;
-    const o = n.graph;
-    if (o) {
-      for (const p of o._nodes || []) p.selected = !1;
-      n.selected = !0;
-    }
-    const s = x.canvas;
-    if (!s) return;
-    const r = n.size || [200, 150], i = r[0] || 200, c = r[1] || 150, u = s.canvas, a = u && u.clientWidth || window.innerWidth, l = u && u.clientHeight || window.innerHeight, d = Math.min(a * 0.5 / i, l * 0.5 / c);
-    s.ds.scale = Math.min(Math.max(d, 0.75), 2), s.centerOnNode(n), s.setDirty(!0);
-  }), e.parentElement.insertBefore(t, e.nextSibling), R = t;
-}
-const Ke = () => {
-  qe(), R && (R.style.display = Vt() ? "" : "none");
-};
 function Je() {
-  _.schedule(Ke, 1);
+  De(k);
 }
-const nt = "Fast Groups Muter (comfort)", ot = "Fast Groups Bypasser (comfort)", Ze = 280;
+const tt = "Fast Groups Muter (comfort)", et = "Fast Groups Bypasser (comfort)", Ze = 280;
 function Qe(e) {
   const t = e.graph;
   if (!t) return [];
@@ -1139,26 +1065,20 @@ function Qe(e) {
     }
   };
   return s(t), o.sort((r, i) => {
-    var d, p, f, h;
-    const c = ((d = r.pos) == null ? void 0 : d[1]) ?? 0, u = ((p = i.pos) == null ? void 0 : p[1]) ?? 0;
-    if (c !== u) return c - u;
-    const a = ((f = r.pos) == null ? void 0 : f[0]) ?? 0, l = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
-    return a !== l ? a - l : String(r.title || "").localeCompare(String(i.title || ""));
+    var d, f, p, h;
+    const c = ((d = r.pos) == null ? void 0 : d[1]) ?? 0, l = ((f = i.pos) == null ? void 0 : f[1]) ?? 0;
+    if (c !== l) return c - l;
+    const a = ((p = r.pos) == null ? void 0 : p[0]) ?? 0, u = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
+    return a !== u ? a - u : String(r.title || "").localeCompare(String(i.title || ""));
   }), o;
 }
 function Xe(e) {
-  return B(e).some((t) => t.mode === v);
+  return B(e).some((t) => t.mode === w);
 }
-class qt extends Q {
+class qt extends J {
   constructor(t) {
-    super(t), this.modeOn = v, this.listEl = null, this.rows = [], this.lastKey = "", this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), _t.register(this);
+    super(t), this.modeOn = w, this.listEl = null, this.rows = [], this.lastKey = "", this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), Ct.register(this);
   }
-  /**
-   * The constructor's refresh runs before we're attached to a graph (so
-   * `this.graph` is null and it finds no groups). Re-run now that we're in a
-   * graph so the group rows appear immediately instead of waiting for the 1s
-   * poll. Also covers the load path (nodes are re-added to the graph on load).
-   */
   onAdded() {
     var t;
     (t = super.onAdded) == null || t.call(this), this.refresh();
@@ -1179,9 +1099,8 @@ class qt extends Q {
   }
   applyGroupMode(t, n) {
     const o = B(t.group);
-    C(o, n ? this.modeOn : this.modeOff);
+    v(o, n ? this.modeOn : this.modeOff);
   }
-  /** Rebuild the group list. Called on a shared interval + on demand. */
   refresh() {
     var r;
     const t = Qe(this), n = String(((r = this.properties) == null ? void 0 : r.matchTitle) || "").trim();
@@ -1202,7 +1121,7 @@ class qt extends Q {
   }
   renderList() {
     const t = this.listEl;
-    t && (Dt(t, this.rows, "No groups in this workflow"), Ht(this, this.rows.length, Ze));
+    t && (Ft(t, this.rows, "No groups in this workflow"), Dt(this, this.rows.length, Ze));
   }
   setAllGroups(t) {
     for (const n of this.rows) {
@@ -1218,46 +1137,46 @@ right-click → Properties) to filter which groups appear.</p>`;
   }
   onRemoved() {
     var t;
-    _t.unregister(this), (t = super.onRemoved) == null || t.call(this);
+    Ct.unregister(this), (t = super.onRemoved) == null || t.call(this);
   }
 }
 class tn extends qt {
   constructor() {
-    super(nt), this.modeOff = E;
+    super(tt), this.modeOff = x;
   }
 }
 class en extends qt {
   constructor() {
-    super(ot), this.modeOff = k;
+    super(et), this.modeOff = N;
   }
 }
-const P = /* @__PURE__ */ new Set(), Nt = () => {
-  for (const e of P)
+const T = /* @__PURE__ */ new Set(), Et = () => {
+  for (const e of T)
     try {
       e.refresh();
     } catch {
     }
-}, _t = {
+}, Ct = {
   register(e) {
-    P.add(e), _.schedule(Nt, 2);
+    T.add(e), C.schedule(Et, 2);
   },
   unregister(e) {
-    P.delete(e), P.size || _.unschedule(Nt);
+    T.delete(e), T.size || C.unschedule(Et);
   }
-}, nn = tn, on = en, kt = /* @__PURE__ */ new Set();
-function N(e, t) {
-  kt.has(e) || (kt.add(e), t.category = "comfort", LiteGraph.registerNodeType(e, t));
+}, nn = tn, on = en, Nt = /* @__PURE__ */ new Set();
+function E(e, t) {
+  Nt.has(e) || (Nt.add(e), t.category = "comfort", LiteGraph.registerNodeType(e, t));
 }
 function sn() {
-  N(X, be), N(tt, xe), N(Gt, ve), N(et, Ce), N(Wt, Ie), N($t, Oe), N(nt, nn), N(ot, on), N(jt, $e);
+  E(Z, be), E(Q, we), E(Ht, ve), E(X, Ce), E(Gt, Ie), E($t, Oe), E(tt, nn), E(et, on), E(Yt, Ve);
 }
 function rn(e) {
-  return (e == null ? void 0 : e.type) === X || (e == null ? void 0 : e.type) === tt;
+  return (e == null ? void 0 : e.type) === Z || (e == null ? void 0 : e.type) === Q;
 }
 function cn(e) {
-  return (e == null ? void 0 : e.type) === nt || (e == null ? void 0 : e.type) === ot;
+  return (e == null ? void 0 : e.type) === tt || (e == null ? void 0 : e.type) === et;
 }
-const an = 10, ln = /[/\\]/, St = "__comfort_original";
+const an = 10, ln = /[/\\]/, _t = "__comfort_original";
 function un(e, t) {
   const n = t == null ? void 0 : t.callback, o = /* @__PURE__ */ new Map(), s = [];
   for (const a of e) {
@@ -1265,34 +1184,34 @@ function un(e, t) {
       s.push(a);
       continue;
     }
-    const l = String(a), d = l.indexOf("/") > -1 ? "/" : "\\", p = l.indexOf(d);
-    if (p > -1) {
-      const f = l.slice(0, p), h = l.slice(p + 1);
-      o.has(f) || o.set(f, []), o.get(f).push({ full: l, sub: h });
+    const u = String(a), d = u.indexOf("/") > -1 ? "/" : "\\", f = u.indexOf(d);
+    if (f > -1) {
+      const p = u.slice(0, f), h = u.slice(f + 1);
+      o.has(p) || o.set(p, []), o.get(p).push({ full: u, sub: h });
     } else
       s.push(a);
   }
-  const r = (a, l) => ({
-    content: l,
-    [St]: a,
-    callback: (d) => n == null ? void 0 : n(d[St])
-  }), i = [], c = [...o.keys()].sort((a, l) => a.localeCompare(l));
+  const r = (a, u) => ({
+    content: u,
+    [_t]: a,
+    callback: (d) => n == null ? void 0 : n(d[_t])
+  }), i = [], c = [...o.keys()].sort((a, u) => a.localeCompare(u));
   for (const a of c) {
-    const l = o.get(a).map((d) => r(d.full, d.sub));
+    const u = o.get(a).map((d) => r(d.full, d.sub));
     i.push({
       content: `📁 ${a}`,
       has_submenu: !0,
       callback: () => {
       },
-      submenu: { options: l }
+      submenu: { options: u }
     });
   }
   for (const a of s)
     typeof a == "string" ? i.push(r(a, a)) : i.push(a);
-  const u = Object.assign({}, t);
-  return u.callback = void 0, { values: i, options: u };
+  const l = Object.assign({}, t);
+  return l.callback = void 0, { values: i, options: l };
 }
-function Mt(e, t) {
+function kt(e, t) {
   return !Array.isArray(e) || e.length < an ? { values: e, options: t } : (t == null ? void 0 : t.className) !== "dark" ? { values: e, options: t } : e.every((n) => n == null || typeof n == "string") ? e.some((n) => typeof n == "string" && ln.test(n)) ? un(e, t) : { values: e, options: t } : { values: e, options: t };
 }
 function dn() {
@@ -1300,74 +1219,74 @@ function dn() {
   if (!e || e.__comfortAutoNest) return;
   const t = new Proxy(e, {
     construct(n, o, s) {
-      const [r, i] = o, c = Mt(r, i);
+      const [r, i] = o, c = kt(r, i);
       return Reflect.construct(n, [c.values, c.options], s);
     },
     apply(n, o, s) {
-      const [r, i] = s, c = Mt(r, i);
+      const [r, i] = s, c = kt(r, i);
       return n.call(o, c.values, c.options);
     }
   });
   t.__comfortAutoNest = !0, LiteGraph.ContextMenu = t;
 }
-const A = 20, It = 6, pn = 6;
-let H = /* @__PURE__ */ new Map();
-function Rt(e, t) {
+const R = 20, St = 6, fn = 6;
+let D = /* @__PURE__ */ new Map();
+function Mt(e, t) {
   const n = document.createElement("div");
   return n.className = "comfort-group-btn " + t, n.textContent = e, n.style.position = "fixed", n.style.display = "none", n.style.pointerEvents = "auto", n.style.zIndex = "100", n;
 }
-function fn(e) {
-  let t = H.get(e);
+function pn(e) {
+  let t = D.get(e);
   if (t) return t;
-  const n = Rt("M", "comfort-btn-mute"), o = Rt("B", "comfort-btn-byp");
+  const n = Mt("M", "comfort-btn-mute"), o = Mt("B", "comfort-btn-byp");
   return n.addEventListener("pointerdown", (s) => {
-    s.stopPropagation(), s.preventDefault(), Ot(e, "mute");
+    s.stopPropagation(), s.preventDefault(), Rt(e, "mute");
   }), o.addEventListener("pointerdown", (s) => {
-    s.stopPropagation(), s.preventDefault(), Ot(e, "bypass");
-  }), t = { group: e, mute: n, byp: o }, H.set(e, t), document.body.appendChild(n), document.body.appendChild(o), t;
+    s.stopPropagation(), s.preventDefault(), Rt(e, "bypass");
+  }), t = { group: e, mute: n, byp: o }, D.set(e, t), document.body.appendChild(n), document.body.appendChild(o), t;
 }
-function At(e, t, n, o) {
-  e.style.left = `${t}px`, e.style.top = `${n}px`, e.style.width = `${A * o}px`, e.style.height = `${A * o}px`, e.style.fontSize = `${Math.max(9, A * o * 0.5)}px`;
+function It(e, t, n, o) {
+  e.style.left = `${t}px`, e.style.top = `${n}px`, e.style.width = `${R * o}px`, e.style.height = `${R * o}px`, e.style.fontSize = `${Math.max(9, R * o * 0.5)}px`;
 }
 function hn(e, t) {
   return !t || t.length < 2 ? !1 : t[0] >= e.pos[0] && t[0] <= e.pos[0] + e.size[0] && t[1] >= e.pos[1] && t[1] <= e.pos[1] + e.size[1];
 }
 function mn() {
-  const e = x.canvas, t = e == null ? void 0 : e.graph;
+  const e = b.canvas, t = e == null ? void 0 : e.graph;
   if (!t) return;
-  const o = e.canvas.getBoundingClientRect(), s = e.ds.scale, r = e.ds.offset, i = (l) => o.left + (l + r[0]) * s, c = (l) => o.top + (l + r[1]) * s, u = t._groups || [], a = /* @__PURE__ */ new Set();
-  for (const l of u)
-    (e.selected_group === l || hn(l, e.mouse)) && a.add(l);
-  for (const l of a) {
-    const d = fn(l), p = l.pos[0] + l.size[0] - It - A, f = l.pos[1] + It;
-    At(d.mute, i(p - pn - A), c(f), s), At(d.byp, i(p), c(f), s), d.mute.style.display = "block", d.byp.style.display = "block";
+  const o = e.canvas.getBoundingClientRect(), s = e.ds.scale, r = e.ds.offset, i = (u) => o.left + (u + r[0]) * s, c = (u) => o.top + (u + r[1]) * s, l = t._groups || [], a = /* @__PURE__ */ new Set();
+  for (const u of l)
+    (e.selected_group === u || hn(u, e.mouse)) && a.add(u);
+  for (const u of a) {
+    const d = pn(u), f = u.pos[0] + u.size[0] - St - R, p = u.pos[1] + St;
+    It(d.mute, i(f - fn - R), c(p), s), It(d.byp, i(f), c(p), s), d.mute.style.display = "block", d.byp.style.display = "block";
   }
-  for (const [l, d] of H)
-    a.has(l) || (d.mute.style.display = "none", d.byp.style.display = "none"), u.includes(l) || (d.mute.remove(), d.byp.remove(), H.delete(l));
+  for (const [u, d] of D)
+    a.has(u) || (d.mute.style.display = "none", d.byp.style.display = "none"), l.includes(u) || (d.mute.remove(), d.byp.remove(), D.delete(u));
 }
-function Ot(e, t) {
-  var u;
+function Rt(e, t) {
+  var l;
   const n = B(e);
   if (!n.length) return;
-  const o = n.every((a) => a.mode === E), s = n.every((a) => a.mode === k), r = x.graph, i = r == null ? void 0 : r.version;
+  const o = n.every((a) => a.mode === x), s = n.every((a) => a.mode === N), r = b.graph, i = r == null ? void 0 : r.version;
   try {
     if (t === "mute") {
-      const a = o ? v : E;
-      n.forEach((l) => l.mode = a);
+      const a = o ? w : x;
+      n.forEach((u) => u.mode = a);
     } else {
-      const a = s ? v : k;
-      n.forEach((l) => l.mode = a);
+      const a = s ? w : N;
+      n.forEach((u) => u.mode = a);
     }
   } catch (a) {
     console.warn("[comfort] group toggle failed", a);
     return;
   }
   r && r.version === i && r.setVersion(r.version + 1);
-  const c = x.canvas;
-  (u = c == null ? void 0 : c.setDirty) == null || u.call(c, !0, !0);
+  const c = b.canvas;
+  (l = c == null ? void 0 : c.setDirty) == null || l.call(c, !0, !0);
 }
 function gn() {
-  const e = x.canvas;
+  const e = b.canvas;
   if (!e || e.__comfortGroupTogglesInstalled) return;
   e.__comfortGroupTogglesInstalled = !0;
   const t = e.onDrawForeground;
@@ -1380,35 +1299,35 @@ function gn() {
     }
   };
 }
-const z = "Any Router (comfort)", yn = 4, bn = 5;
-function O(e) {
+const P = "Any Router (comfort)", yn = 4, bn = 5;
+function A(e) {
   return (e.inputs || []).filter((t) => t && t.name && t.name.startsWith("any_"));
 }
-function Kt(e) {
+function Vt(e) {
   var t;
-  return (e == null ? void 0 : e.type) === z || (e == null ? void 0 : e.comfyClass) === z || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === z;
+  return (e == null ? void 0 : e.type) === P || (e == null ? void 0 : e.comfyClass) === P || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === P;
 }
-function st(e) {
-  const t = O(e).length + 1;
+function nt(e) {
+  const t = A(e).length + 1;
   return "any_" + String(t).padStart(2, "0");
 }
-function xn(e) {
+function wn(e) {
   const t = (e.widgets || []).find((n) => n.name === "selection");
   return t && t.value === "active_source" ? "active_source" : "non_empty";
 }
-function wn(e, t, n) {
-  var c, u;
-  const o = e.graph || x.graph;
+function xn(e, t, n) {
+  var c, l;
+  const o = e.graph || b.graph;
   if (!o) return null;
   let s = e, r = n, i = t;
   for (let a = 0; a < 12; a++) {
-    const l = i === "input" ? (c = s.inputs) == null ? void 0 : c[r] : (u = s.outputs) == null ? void 0 : u[r];
-    if (!l) return null;
-    if (l.type != null && l.type !== "*") return String(l.type);
-    const d = i === "input" ? l.link : l.links && l.links[0];
+    const u = i === "input" ? (c = s.inputs) == null ? void 0 : c[r] : (l = s.outputs) == null ? void 0 : l[r];
+    if (!u) return null;
+    if (u.type != null && u.type !== "*") return String(u.type);
+    const d = i === "input" ? u.link : u.links && u.links[0];
     if (d == null) return null;
-    const p = o.links && (o.links.get ? o.links.get(d) : o.links[d]) || null;
-    if (!p || (i === "input" ? (s = o.getNodeById(p.origin_id), r = p.origin_slot, i = "output") : (s = o.getNodeById(p.target_id), r = p.target_slot, i = "input"), !s)) return null;
+    const f = o.links && (o.links.get ? o.links.get(d) : o.links[d]) || null;
+    if (!f || (i === "input" ? (s = o.getNodeById(f.origin_id), r = f.origin_slot, i = "output") : (s = o.getNodeById(f.target_id), r = f.target_slot, i = "input"), !s)) return null;
   }
   return null;
 }
@@ -1416,14 +1335,14 @@ function vn(e) {
   const t = e.inputs || [];
   for (let n = 0; n < t.length; n++) {
     if (t[n].link == null) continue;
-    const o = wn(e, "input", n);
+    const o = xn(e, "input", n);
     if (o && o !== "*") return o;
   }
   return "*";
 }
-function Jt(e) {
+function Kt(e) {
   if (e.removed || !e.inputs) return;
-  let t = O(e).length;
+  let t = A(e).length;
   for (; t > yn; ) {
     const s = e.inputs[e.inputs.length - 1];
     if (s && s.name.startsWith("any_") && s.link == null)
@@ -1432,26 +1351,26 @@ function Jt(e) {
       break;
   }
   const n = e.inputs[e.inputs.length - 1];
-  (!n || !n.name.startsWith("any_") || n.link != null) && e.addInput(st(e), "*");
+  (!n || !n.name.startsWith("any_") || n.link != null) && e.addInput(nt(e), "*");
   const o = vn(e);
-  for (const s of O(e)) s.type = o;
+  for (const s of A(e)) s.type = o;
   for (const s of e.outputs || [])
     s.type = o, s.label = String(o);
 }
-const q = /* @__PURE__ */ new WeakMap();
+const Y = /* @__PURE__ */ new WeakMap();
 function En(e) {
-  const t = q.get(e);
-  t != null && window.clearTimeout(t), q.set(
+  const t = Y.get(e);
+  t != null && window.clearTimeout(t), Y.set(
     e,
     window.setTimeout(() => {
-      q.delete(e), e.removed || Jt(e);
+      Y.delete(e), e.removed || Kt(e);
     }, 64)
   );
 }
 function Cn(e) {
   if (!e || e.__comfortAnyRouter) return;
   e.__comfortAnyRouter = !0, e.prototype.stabilizeComfortAnyRouter = function() {
-    Jt(this);
+    Kt(this);
   }, e.prototype.getHelp = function() {
     return "<p>Routes one of several <b>Any</b> inputs to a single Any output.</p><p><b>Non-empty:</b> the first input that is not empty wins.</p><p><b>Active source:</b> the first input whose source node is active (not muted / not bypassed) wins. Mute or bypass a source to switch away from it.</p>";
   };
@@ -1461,8 +1380,8 @@ function Cn(e) {
       const r = (o && o.inputs || []).filter(
         (i) => i && i.name && i.name.startsWith("any_")
       ).length;
-      for (; O(this).length < r; )
-        this.addInput(st(this), "*");
+      for (; A(this).length < r; )
+        this.addInput(nt(this), "*");
     } catch {
     }
     const s = t ? t.call(this, o) : void 0;
@@ -1484,26 +1403,26 @@ function Cn(e) {
 }
 function Nn(e) {
   let t = 0;
-  for (; O(e).length < bn && t++ < 24; )
-    e.addInput(st(e), "*");
+  for (; A(e).length < bn && t++ < 24; )
+    e.addInput(nt(e), "*");
   kn();
 }
 function _n(e) {
-  return !!e && e.mode !== E && e.mode !== k;
+  return !!e && e.mode !== x && e.mode !== N;
 }
-function Tt(e) {
+function At(e) {
   if (!e || typeof e != "object") return;
-  const t = e.output, n = x.graph;
+  const t = e.output, n = b.graph;
   if (!(!t || !n || !n.nodes))
     for (const o of n.nodes) {
-      if (!Kt(o) || o.mode === E || o.mode === k || xn(o) !== "active_source") continue;
+      if (!Vt(o) || o.mode === x || o.mode === N || wn(o) !== "active_source") continue;
       const s = t[o.id];
       if (!s || !s.inputs) continue;
       const r = o.inputs || [];
       let i = null;
       for (let c = 0; c < r.length; c++) {
-        const u = o.getInputNode ? o.getInputNode(c) : null;
-        if (_n(u)) {
+        const l = o.getInputNode ? o.getInputNode(c) : null;
+        if (_n(l)) {
           i = r[c].name;
           break;
         }
@@ -1512,34 +1431,34 @@ function Tt(e) {
         c.startsWith("any_") && c !== i && delete s.inputs[c];
     }
 }
-let Lt = !1;
+let Ot = !1;
 function kn() {
-  if (Lt) return;
-  Lt = !0;
-  const e = x, t = e.graphToPrompt;
+  if (Ot) return;
+  Ot = !0;
+  const e = b, t = e.graphToPrompt;
   typeof t == "function" && (e.graphToPrompt = function(...n) {
     const o = t.apply(e, n);
     return o && typeof o.then == "function" ? o.then(
-      (s) => (Tt(s), s),
+      (s) => (At(s), s),
       (s) => {
         throw s;
       }
-    ) : (Tt(o), o);
+    ) : (At(o), o);
   });
 }
-const U = "Image Comparer (comfort)", K = 512;
-function Sn(e) {
+const z = "Image Comparer (comfort)", Sn = 512, Lt = 488;
+function Mn(e) {
   var t;
-  return (e == null ? void 0 : e.type) === U || (e == null ? void 0 : e.comfyClass) === U || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === U;
+  return (e == null ? void 0 : e.type) === z || (e == null ? void 0 : e.comfyClass) === z || ((t = e == null ? void 0 : e.constructor) == null ? void 0 : t.comfyClass) === z;
 }
-const Z = /* @__PURE__ */ new WeakMap();
-function Pt(e) {
+const V = /* @__PURE__ */ new WeakMap();
+function Tt(e) {
   var s, r;
   const t = new URLSearchParams({
     filename: e.filename,
     type: e.type,
     subfolder: e.subfolder
-  }), n = x;
+  }), n = b;
   let o;
   try {
     o = ((r = (s = n == null ? void 0 : n.api) == null ? void 0 : s.apiURL) == null ? void 0 : r.call(s, `/view?${t.toString()}`)) ?? `/view?${t.toString()}`;
@@ -1548,28 +1467,18 @@ function Pt(e) {
   }
   return typeof (n == null ? void 0 : n.getPreviewFormatParam) == "function" && (o += n.getPreviewFormatParam()), typeof (n == null ? void 0 : n.getRandParam) == "function" && (o += n.getRandParam()), o;
 }
-function Zt(e, t) {
+function K(e, t) {
   e.handle.style.left = `${t}%`, e.leftImg.style.clipPath = `inset(0 ${100 - t}% 0 0)`;
 }
-function Mn(e) {
+function In(e) {
   e.navEl.innerHTML = "";
   const t = [
-    {
-      label: "LEFT",
-      count: e.leftUrls.length,
-      idx: () => e.leftIdx,
-      set: (n) => {
-        e.leftIdx = n, e.leftImg.src = e.leftUrls[n] || "";
-      }
-    },
-    {
-      label: "RIGHT",
-      count: e.rightUrls.length,
-      idx: () => e.rightIdx,
-      set: (n) => {
-        e.rightIdx = n, e.rightImg.src = e.rightUrls[n] || "";
-      }
-    }
+    { label: "LEFT", count: e.leftUrls.length, idx: () => e.leftIdx, set: (n) => {
+      e.leftIdx = n, e.leftImg.src = e.leftUrls[n] || "";
+    } },
+    { label: "RIGHT", count: e.rightUrls.length, idx: () => e.rightIdx, set: (n) => {
+      e.rightIdx = n, e.rightImg.src = e.rightUrls[n] || "";
+    } }
   ];
   for (const n of t) {
     if (n.count <= 1) continue;
@@ -1583,22 +1492,20 @@ function Mn(e) {
     i.type = "button", i.textContent = "›", i.addEventListener("click", () => n.set(Math.min(n.count - 1, n.idx() + 1))), o.appendChild(s), o.appendChild(r), o.appendChild(i), e.navEl.appendChild(o);
   }
 }
-function In(e, t, n) {
+function Rn(e, t, n) {
   e.leftUrls = t, e.rightUrls = n, e.leftIdx >= e.leftUrls.length && (e.leftIdx = 0), e.rightIdx >= e.rightUrls.length && (e.rightIdx = 0);
   const o = e.leftUrls.length > 0, s = e.rightUrls.length > 0;
-  e.leftImg.src = o ? e.leftUrls[e.leftIdx] : "", e.rightImg.src = s ? e.rightUrls[e.rightIdx] : "", e.leftImg.style.display = o ? "" : "none", e.rightImg.style.display = s ? "" : "none";
-  const r = o && s;
-  e.handle.style.display = r ? "" : "none", e.leftImg.style.clipPath = r ? "" : "none", e.empty.style.display = o || s ? "none" : "", Zt(e, 50), Mn(e);
+  e.leftImg.src = o ? e.leftUrls[e.leftIdx] : "", e.rightImg.src = s ? e.rightUrls[e.rightIdx] : "", e.leftImg.style.display = o ? "" : "none", e.rightImg.style.display = s ? "" : "none", e.handle.style.display = "none", e.leftImg.style.clipPath = "none", e.empty.style.display = o || s ? "none" : "", K(e, 100), In(e);
 }
-function Rn(e, t) {
-  const n = Z.get(e);
+function An(e, t) {
+  const n = V.get(e);
   if (!n) return;
-  const o = t || {}, s = Array.isArray(o.left_images) ? o.left_images.map(Pt) : [], r = Array.isArray(o.right_images) ? o.right_images.map(Pt) : [];
-  In(n, s, r);
+  const o = t || {}, s = Array.isArray(o.left_images) ? o.left_images.map(Tt) : [], r = Array.isArray(o.right_images) ? o.right_images.map(Tt) : [];
+  Rn(n, s, r);
 }
-function An(e) {
-  var f, h, m;
-  if (Z.has(e)) return;
+function On(e) {
+  var d, f;
+  if (V.has(e)) return;
   const t = document.createElement("div");
   t.className = "comfort-image-comparer";
   const n = document.createElement("div");
@@ -1613,7 +1520,7 @@ function An(e) {
   i.className = "ci-handle";
   const c = document.createElement("div");
   c.className = "ci-empty", c.textContent = "Connect images and run", o.appendChild(s), o.appendChild(r), o.appendChild(i), o.appendChild(c), t.appendChild(o);
-  const u = {
+  const l = {
     el: t,
     stage: o,
     leftImg: r,
@@ -1624,74 +1531,77 @@ function An(e) {
     leftUrls: [],
     rightUrls: [],
     leftIdx: 0,
-    rightIdx: 0
+    rightIdx: 0,
+    rafId: null
   };
-  Z.set(e, u), o.addEventListener("mousemove", (g) => {
-    const y = o.getBoundingClientRect();
-    if (y.width <= 0) return;
-    const w = Math.max(0, Math.min(100, (g.clientX - y.left) / y.width * 100));
-    Zt(u, w);
-  });
-  const a = 488, l = 24, d = (g) => {
-    const y = t.parentElement;
-    y && (y.style.width = g + "px"), o && (o.style.width = Math.max(0, g - l) + "px");
-  };
-  (f = e.setSize) == null || f.call(e, [K, a]), typeof e.addDOMWidget == "function" && e.addDOMWidget("compare", "comfort_image_compare", t, {
+  V.set(e, l), o.addEventListener("mouseenter", () => {
+    l.leftUrls.length && l.rightUrls.length && (l.handle.style.display = "");
+  }), o.addEventListener("mouseleave", () => {
+    l.handle.style.display = "none", K(l, 100);
+  }), o.addEventListener("mousemove", (p) => {
+    const h = o.getBoundingClientRect();
+    if (h.width <= 0) return;
+    const m = Math.max(0, Math.min(100, (p.clientX - h.left) / h.width * 100));
+    K(l, m);
+  }), e.__comfortLoaded || (d = e.setSize) == null || d.call(e, [Sn, Lt]), typeof e.addDOMWidget == "function" && e.addDOMWidget("compare", "comfort_image_compare", t, {
     serialize: !1,
     hideOnZoom: !0,
-    getMinHeight: () => a,
-    getMaxHeight: () => a
-  }), e.minHeight = a;
-  const p = (h = e.setSize) == null ? void 0 : h.bind(e);
-  p && (e.setSize = (g, y) => {
-    let w;
-    Array.isArray(g) ? w = g[0] : w = g, typeof w == "number" && isFinite(w) && (w = Math.max(e.minWidth || 0, w));
-    const G = p([w, a]);
-    return d(w), G;
-  }), (m = e.setSize) == null || m.call(e, [K, a]), d(K), setTimeout(() => {
-    e.graph && e.size && d(e.size[0]);
-  }, 1500);
+    getMinHeight: () => 200,
+    getMaxHeight: () => 0
+  });
+  const a = () => {
+    var g;
+    if (!e.graph) {
+      l.rafId = null;
+      return;
+    }
+    const p = e.size ? e.size[1] : Lt, h = (g = e.widgets) == null ? void 0 : g.find((_) => _.name === "compare"), m = h && typeof h.y == "number" ? h.y : 20;
+    t.style.height = Math.max(60, p - m - 20) + "px", l.rafId = requestAnimationFrame(a);
+  };
+  l.rafId = requestAnimationFrame(a);
+  const u = (f = e.onRemoved) == null ? void 0 : f.bind(e);
+  e.onRemoved = (...p) => {
+    l.rafId !== null && cancelAnimationFrame(l.rafId), u == null || u(...p);
+  };
 }
-function On(e) {
+function Ln(e) {
   if (!e || e.__comfortImageComparer) return;
   const t = e.prototype.onExecuted;
-  e.prototype.onExecuted = function(n) {
-    t == null || t.call(this, n), Rn(this, n);
+  e.prototype.onExecuted = function(o) {
+    t == null || t.call(this, o), An(this, o);
+  };
+  const n = e.prototype.configure;
+  e.prototype.configure = function(o) {
+    n == null || n.call(this, o), this.__comfortLoaded = !0;
   }, e.__comfortImageComparer = !0;
 }
-const Tn = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.comfort-group-btn{display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:inherit;font-weight:600;line-height:1;-webkit-user-select:none;user-select:none;cursor:pointer;color:#e8e8e8;box-shadow:0 1px 3px #0006}.comfort-btn-mute{background:#7850c88c;border:1px solid rgba(120,80,200,.9)}.comfort-btn-byp{background:#c88c288c;border:1px solid rgba(200,140,40,.9)}.comfort-group-btn:hover{filter:brightness(1.3)}.comfort-ninfer{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:6px}.comfort-ninfer-url,.comfort-ninfer-timeout{width:100%;box-sizing:border-box;padding:4px 6px;font-size:12px;font-family:inherit;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-ninfer-status{display:flex;align-items:center;gap:6px;min-height:18px;padding:2px;font-size:11px;opacity:.9}.comfort-ninfer-status-text{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.comfort-ninfer-ctrl{flex:0 0 auto;padding:1px 8px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:11px;cursor:pointer}.comfort-ninfer-ctrl:hover{background:#7f7f7f33}.comfort-ninfer-bulk{display:flex;gap:6px}.comfort-bulk{flex:1 1 auto;padding:3px 8px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:11px;cursor:pointer}.comfort-bulk:hover{background:#7f7f7f33}.comfort-ninfer-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-ninfer-row.off .comfort-node-title{opacity:.5}.comfort-ninfer-row input[type=checkbox]{margin:0;cursor:pointer}.comfort-ninfer-badge{padding:1px 6px;border-radius:8px;font-size:10px;background:#7f7f7f40}.comfort-ninfer-badge.loaded{background:#7d2e2e;color:#fff}.comfort-ninfer-badge.suspended{background:#2e5d7d;color:#fff}.comfort-ninfer-badge.other{opacity:.7}.comfort-topbar-focus{padding:3px 8px;margin-left:6px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-topbar-focus:hover{background:#7f7f7f33}.comfort-image-comparer{display:flex;flex-direction:column;width:100%}.ci-nav{min-height:28px;display:flex;gap:12px;align-items:center;padding:2px 4px;font-size:12px;color:#bbb}.ci-nav-side{display:inline-flex;align-items:center;gap:4px}.ci-nav-side button{width:18px;height:18px;line-height:1;border:1px solid rgba(127,127,127,.5);border-radius:4px;background:transparent;color:inherit;cursor:pointer;padding:0}.ci-nav-side button:hover{background:#7f7f7f40}.ci-stage{position:relative;width:100%;height:440px;overflow:hidden;background:#161616;border-radius:6px}.ci-img{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:contain}.ci-handle{position:absolute;top:0;left:50%;width:2px;height:100%;background:#ffffffd9;box-shadow:0 0 4px #0009;pointer-events:none}.ci-empty{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;color:#888;font-size:13px;pointer-events:none}", rt = document.createElement("style");
-rt.setAttribute("data-comfort-plugin", "true");
-rt.textContent = Tn;
-document.head.appendChild(rt);
+const Tn = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;margin-right:24px}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{width:44px;min-width:44px;padding:2px 0;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.comfort-group-btn{display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:inherit;font-weight:600;line-height:1;-webkit-user-select:none;user-select:none;cursor:pointer;color:#e8e8e8;box-shadow:0 1px 3px #0006}.comfort-btn-mute{background:#7850c88c;border:1px solid rgba(120,80,200,.9)}.comfort-btn-byp{background:#c88c288c;border:1px solid rgba(200,140,40,.9)}.comfort-group-btn:hover{filter:brightness(1.3)}.comfort-ninfer{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:6px}.comfort-ninfer-url,.comfort-ninfer-timeout{width:100%;box-sizing:border-box;padding:4px 6px;font-size:12px;font-family:inherit;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-ninfer-status{display:flex;align-items:center;gap:6px;min-height:18px;padding:2px;font-size:11px;opacity:.9}.comfort-ninfer-status-text{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.comfort-ninfer-ctrl{flex:0 0 auto;padding:1px 8px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:11px;cursor:pointer}.comfort-ninfer-ctrl:hover{background:#7f7f7f33}.comfort-ninfer-bulk{display:flex;gap:6px}.comfort-bulk{flex:1 1 auto;padding:3px 8px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:11px;cursor:pointer}.comfort-bulk:hover{background:#7f7f7f33}.comfort-ninfer-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-ninfer-row.off .comfort-node-title{opacity:.5}.comfort-ninfer-row input[type=checkbox]{margin:0;cursor:pointer}.comfort-ninfer-badge{padding:1px 6px;border-radius:8px;font-size:10px;background:#7f7f7f40}.comfort-ninfer-badge.loaded{background:#7d2e2e;color:#fff}.comfort-ninfer-badge.suspended{background:#2e5d7d;color:#fff}.comfort-ninfer-badge.other{opacity:.7}.comfort-topbar-focus{padding:3px 8px;margin-left:6px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer}.comfort-topbar-focus:hover{background:#7f7f7f33}.comfort-image-comparer{display:flex;flex-direction:column;width:100%;min-width:0;min-height:0}.ci-nav{min-height:28px;flex-shrink:0;display:flex;gap:12px;align-items:center;padding:2px 4px;font-size:12px;color:#bbb;min-width:0}.ci-nav-side{display:inline-flex;align-items:center;gap:4px}.ci-nav-side button{width:18px;height:18px;line-height:1;border:1px solid rgba(127,127,127,.5);border-radius:4px;background:transparent;color:inherit;cursor:pointer;padding:0}.ci-nav-side button:hover{background:#7f7f7f40}.ci-stage{position:relative;width:100%;min-width:0;flex:1;min-height:100px;overflow:hidden;background:#161616;border-radius:6px}.ci-img{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:contain}.ci-handle{position:absolute;top:0;left:50%;width:2px;height:100%;background:#ffffffd9;box-shadow:0 0 4px #0009;pointer-events:none}.ci-empty{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;color:#888;font-size:13px;pointer-events:none}", ot = document.createElement("style");
+ot.setAttribute("data-comfort-plugin", "true");
+ot.textContent = Tn;
+document.head.appendChild(ot);
 sn();
 dn();
-x.registerExtension({
+b.registerExtension({
   name: "comfort.PowerLoraLoader",
-  // Canvas-dependent setup (group header toggles). Done in init() so
-  // app.canvas exists — ComfyUI's own selectionBorder extension does the same.
   async init() {
     gn(), Je();
   },
-  // ComfyUI auto-creates a class for every server-backed node def. For the Any
-  // Router we replace its behavior in place (it has no fixed connection inputs
-  // in the def; we add the dynamic `any_*` inputs and manage them).
   beforeRegisterNodeDef(e, t) {
-    t && t.name === z && Cn(e), t && t.name === U && On(e);
+    t && t.name === P && Cn(e), t && t.name === z && Ln(e);
   },
   nodeCreated(e) {
-    if (ct(e)) {
+    if (rt(e)) {
       ue(e);
       return;
     }
-    if (Kt(e)) {
+    if (Vt(e)) {
       Nn(e);
       return;
     }
-    Sn(e) && An(e);
+    Mn(e) && On(e);
   },
-  // Node right-click menu: Show Strengths mode.
   getNodeMenuItems(e) {
-    if (ct(e)) {
+    if (rt(e)) {
       const t = ne(e);
       if (t) {
         const n = (o) => {
@@ -1704,16 +1614,8 @@ x.registerExtension({
             has_submenu: !0,
             submenu: {
               options: [
-                {
-                  content: "Single Strength",
-                  checked: () => !t.showSeparate,
-                  callback: () => n(!1)
-                },
-                {
-                  content: "Separate Model & Clip",
-                  checked: () => t.showSeparate,
-                  callback: () => n(!0)
-                }
+                { content: "Single Strength", checked: () => !t.showSeparate, callback: () => n(!1) },
+                { content: "Separate Model & Clip", checked: () => t.showSeparate, callback: () => n(!0) }
               ]
             }
           }
@@ -1725,28 +1627,18 @@ x.registerExtension({
         var o;
         return (o = e.setAllRows) == null ? void 0 : o.call(e, n);
       };
-      return [
-        null,
-        { content: "Enable all", callback: () => t(!0) },
-        { content: "Disable all", callback: () => t(!1) },
-        { content: "Toggle all", callback: () => t(null) }
-      ];
+      return [null, { content: "Enable all", callback: () => t(!0) }, { content: "Disable all", callback: () => t(!1) }, { content: "Toggle all", callback: () => t(null) }];
     }
     if (cn(e)) {
       const t = (n) => {
         var o;
         return (o = e.setAllGroups) == null ? void 0 : o.call(e, n);
       };
-      return [
-        null,
-        { content: "Enable all", callback: () => t(!0) },
-        { content: "Disable all", callback: () => t(!1) },
-        { content: "Toggle all", callback: () => t(null) }
-      ];
+      return [null, { content: "Enable all", callback: () => t(!0) }, { content: "Disable all", callback: () => t(!1) }, { content: "Toggle all", callback: () => t(null) }];
     }
     return [];
   }
 });
 export {
-  W as NODE_NAME
+  H as NODE_NAME
 };

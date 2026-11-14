@@ -1,11 +1,4 @@
-// Power Lora Loader (comfort) — dual-renderer frontend.
-//
-// The whole lora list is one DOM widget (`loras`). DOM widgets render natively
-// in both the legacy LiteGraph renderer and the Nodes 2.0 Vue renderer
-// (Vue mounts the element via WidgetDOM), so no canvas drawing or prototype
-// patching is involved.
-//
-// Reworked from rgthree-comfy (MIT, https://github.com/rgthree/rgthree-comfy).
+// Power Lora Loader (comfort) — dual-renderer. Re-worked from rgthree-comfy (MIT).
 
 export const NODE_NAME = "Power Lora Loader (comfort)";
 
@@ -22,8 +15,7 @@ export type LoraNodeState = {
   el: HTMLElement;
 };
 
-// Per-node state, keyed by node instance. Node instances are recreated on tab
-// switch / subgraph navigation, so a WeakMap is safe.
+
 const states = new WeakMap<any, LoraNodeState>();
 
 const HEADER_H = 32;
@@ -89,9 +81,6 @@ function stepStrength(row: LoraRow, dir: -1 | 1, isTwo: boolean): void {
   row[key] = Math.round((cur + dir * 0.05) * 100) / 100;
 }
 
-// ---------------------------------------------------------------------------
-// Rendering
-// ---------------------------------------------------------------------------
 
 function makeToggle(on: boolean, text: string): HTMLButtonElement {
   const b = document.createElement("button");
@@ -218,9 +207,6 @@ export function renderLoraNode(node: any): void {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Menus
-// ---------------------------------------------------------------------------
 
 async function fetchLoras(): Promise<string[]> {
   try {
@@ -290,9 +276,6 @@ function showRowMenu(node: any, state: LoraNodeState, idx: number, e: MouseEvent
   );
 }
 
-// ---------------------------------------------------------------------------
-// Event handling (delegated on the container element)
-// ---------------------------------------------------------------------------
 
 function bindEvents(node: any, state: LoraNodeState): void {
   const el = state.el;
@@ -375,9 +358,6 @@ function bindEvents(node: any, state: LoraNodeState): void {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Setup
-// ---------------------------------------------------------------------------
 
 export function setupPowerLoraLoader(node: any): void {
   if (states.has(node)) return;
@@ -390,7 +370,7 @@ export function setupPowerLoraLoader(node: any): void {
   state.el.className = "comfort-lora-list";
   states.set(node, state);
 
-  // Widget values are sent to the backend as prompt inputs.
+
   node.serialize_widgets = true;
 
   if (typeof node.addDOMWidget === "function") {

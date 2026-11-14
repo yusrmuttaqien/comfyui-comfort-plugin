@@ -1,12 +1,5 @@
-// Auto-nest combo menus — when a combo widget's option list contains
-// subdirectory-style entries (e.g. "checkpoints/model.safetensors"), break the
-// flat list into folder submenus so long model pickers stay usable.
-//
-// Re-worked from rgthree-comfy's ContextMenuAutoNest (MIT). Works in both
-// renderers because combo widgets open their menu through LiteGraph.ContextMenu
-// in either case. We wrap the constructor (composing with ComfyUI's own menu
-// filter, which uses the same wrapping technique) and only touch "dark" combo
-// menus that exceed a threshold and actually contain subdirectories.
+// Auto-nest combo menus: break flat lists with subdirectory entries into folder submenus.
+// Re-worked from rgthree-comfy (MIT).
 
 const NEST_THRESHOLD = 10;
 const SEP = /[/\\]/;
@@ -43,7 +36,7 @@ function buildNested(values: any[], options: any): { values: any[]; options: any
   });
 
   const newValues: any[] = [];
-  // Folders first (alphabetical), then the entries that have no directory.
+
   const folderNames = [...folders.keys()].sort((a, b) => a.localeCompare(b));
   for (const name of folderNames) {
     const leaves = folders.get(name)!.map((e) => leaf(e.full, e.sub));
@@ -59,8 +52,7 @@ function buildNested(values: any[], options: any): { values: any[]; options: any
     else newValues.push(v);
   }
 
-  // The per-item callbacks now carry the selection; clear the top-level one so
-  // it doesn't fire twice.
+
   const newOptions = Object.assign({}, options);
   newOptions.callback = undefined;
   return { values: newValues, options: newOptions };
@@ -69,7 +61,7 @@ function buildNested(values: any[], options: any): { values: any[]; options: any
 function maybeNest(values: any, options: any): { values: any; options: any } {
   if (!Array.isArray(values) || values.length < NEST_THRESHOLD) return { values, options };
   if (options?.className !== "dark") return { values, options };
-  // Only flat string lists are eligible; already-nested menus are skipped.
+
   if (!values.every((v) => v == null || typeof v === "string")) return { values, options };
   if (!values.some((v) => typeof v === "string" && SEP.test(v))) return { values, options };
   return buildNested(values, options);

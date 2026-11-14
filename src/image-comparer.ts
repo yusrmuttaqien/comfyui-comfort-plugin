@@ -1,22 +1,11 @@
-// Image Comparer (comfort) — dual-renderer frontend.
-//
-// A server-backed node that compares two images with a wipe slider. Connect an
-// image to `image_left` and another to `image_right`; after a run the node
-// shows both and lets you wipe between them by moving the mouse (the left image
-// is revealed from the left over the right image, which is the base).
-//
-// The comparison UI is one DOM widget (renders natively in both the legacy
-// LiteGraph and Nodes 2.0 Vue renderers), so no canvas drawing or prototype
-// patching is involved. Re-worked from rgthree-comfy's Image Comparer (MIT)
-// and the native ComfyUI ImageCompare (whose widget is Vue-only).
+// Image Comparer (comfort) — wipe-slider image comparison, dual-renderer.
+// Re-worked from rgthree-comfy (MIT) and native ComfyUI ImageCompare (Vue-only).
 
 import { app } from "/scripts/app.js";
 
 export const IMAGE_COMPARER = "Image Comparer (comfort)";
-
-// Default node width (px). The stage keeps a fixed 11:10 aspect ratio and scales
-// with the node width; the node's height auto-computes to fit it.
 const NODE_W = 512;
+const NODE_H = 488;
 
 export function isComfortImageComparer(node: any): boolean {
   return (
@@ -38,11 +27,11 @@ type CiState = {
   rightUrls: string[];
   leftIdx: number;
   rightIdx: number;
+  rafId: number | null;
 };
 
 const stateMap = new WeakMap<any, CiState>();
 
-// Build a /view URL for a temp-saved image ({filename, subfolder, type}).
 function imageUrl(data: any): string {
   const params = new URLSearchParams({
     filename: data.filename,
@@ -63,38 +52,14 @@ function imageUrl(data: any): string {
 
 function setWipe(st: CiState, pos: number): void {
   st.handle.style.left = `${pos}%`;
-  // image_left is the "before" layer, revealed from the left; image_right is
-  // the base. At pos=50 the left half shows image_left, the right half
-  // image_right.
   st.leftImg.style.clipPath = `inset(0 ${100 - pos}% 0 0)`;
 }
 
 function renderNav(st: CiState): void {
   st.navEl.innerHTML = "";
-  const sides: Array<{
-    label: string;
-    count: number;
-    idx: () => number;
-    set: (i: number) => void;
-  }> = [
-    {
-      label: "LEFT",
-      count: st.leftUrls.length,
-      idx: () => st.leftIdx,
-      set: (i) => {
-        st.leftIdx = i;
-        st.leftImg.src = st.leftUrls[i] || "";
-      },
-    },
-    {
-      label: "RIGHT",
-      count: st.rightUrls.length,
-      idx: () => st.rightIdx,
-      set: (i) => {
-        st.rightIdx = i;
-        st.rightImg.src = st.rightUrls[i] || "";
-      },
-    },
+  const sides = [
+    { label: "LEFT", count: st.leftUrls.length, idx: () => st.leftIdx, set: (i: number) => { st.leftIdx = i; st.leftImg.src = st.leftUrls[i] || ""; } },
+    { label: "RIGHT", count: st.rightUrls.length, idx: () => st.rightIdx, set: (i: number) => { st.rightIdx = i; st.rightImg.src = st.rightUrls[i] || ""; } },
   ];
   for (const s of sides) {
     if (s.count <= 1) continue;
@@ -129,28 +94,19 @@ function applyImages(st: CiState, leftImages: string[], rightImages: string[]): 
   st.leftImg.style.display = hasLeft ? "" : "none";
   st.rightImg.style.display = hasRight ? "" : "none";
   const both = hasLeft && hasRight;
-  st.handle.style.display = both ? "" : "none";
-  st.leftImg.style.clipPath = both ? "" : "none";
+  st.handle.style.display = "none";
+  st.leftImg.style.clipPath = "none";
   st.empty.style.display = hasLeft || hasRight ? "none" : "";
-  // Reset the divider to the middle when the images change.
-  setWipe(st, 50);
+  setWipe(st, 100);
   renderNav(st);
 }
 
-/**
- * Update the widget from a node execution result. `output` is the node's `ui`
- * dict: { left_images: [{filename,subfolder,type}], right_images: [...] }.
- */
 function updateFromResult(node: any, output: any): void {
   const st = stateMap.get(node);
   if (!st) return;
   const out = output || {};
-  const left = Array.isArray(out.left_images)
-    ? out.left_images.map(imageUrl)
-    : [];
-  const right = Array.isArray(out.right_images)
-    ? out.right_images.map(imageUrl)
-    : [];
+  const left = Array.isArray(out.left_images) ? out.left_images.map(imageUrl) : [];
+  const right = Array.isArray(out.right_images) ? out.right_images.map(imageUrl) : [];
   applyImages(st, left, right);
 }
 
@@ -189,21 +145,18 @@ export function setupImageComparerNode(node: any): void {
   el.appendChild(stage);
 
   const st: CiState = {
-    el,
-    stage,
-    leftImg,
-    rightImg,
-    handle,
-    empty,
-    navEl,
-    leftUrls: [],
-    rightUrls: [],
-    leftIdx: 0,
-    rightIdx: 0,
+    el, stage, leftImg, rightImg, handle, empty, navEl,
+    leftUrls: [], rightUrls: [], leftIdx: 0, rightIdx: 0, rafId: null,
   };
   stateMap.set(node, st);
 
-  // Mouse-driven wipe (mirrors the native ComfyUI ImageCompare behavior).
+  stage.addEventListener("mouseenter", () => {
+    if (st.leftUrls.length && st.rightUrls.length) st.handle.style.display = "";
+  });
+  stage.addEventListener("mouseleave", () => {
+    st.handle.style.display = "none";
+    setWipe(st, 100);
+  });
   stage.addEventListener("mousemove", (e) => {
     const r = stage.getBoundingClientRect();
     if (r.width <= 0) return;
@@ -211,42 +164,46 @@ export function setupImageComparerNode(node: any): void {
     setWipe(st, pos);
   });
 
-  // The stage has a fixed height (440px). The node width is the source of
-  // truth for the stage width — the DOM element is width:100% / min-width:0
-  // so it fills the node without pushing it wider (mirrors ComfyUI's video
-  // DOM widget pattern). The node height is fixed (title + nav + stage).
-  const NODE_H = 440 + 28 + 20; // stage + nav row + title bar
-  node.setSize?.([NODE_W, NODE_H]);
-  // In legacy LiteGraph, setSize does not always adopt the requested width
-  // (the layout pass resets it), so set node.size[0] directly as well.
-  if (node.size) node.size[0] = NODE_W;
+  if (!node.__comfortLoaded) {
+    node.setSize?.([NODE_W, NODE_H]);
+  }
   if (typeof node.addDOMWidget === "function") {
     node.addDOMWidget("compare", "comfort_image_compare", el, {
       serialize: false,
       hideOnZoom: true,
-      getMinHeight: () => NODE_H,
-      getMaxHeight: () => NODE_H,
+      getMinHeight: () => 200,
+      getMaxHeight: () => 0,
     });
   }
-  node.minHeight = NODE_H;
-  // Re-assert the width once the node has settled (the legacy layout pass can
-  // reset it to the initial value).
-  setTimeout(() => {
-    if (node.graph && node.size) node.size[0] = NODE_W;
-  }, 1500);
+
+  const syncHeight = () => {
+    if (!node.graph) { st.rafId = null; return; }
+    const h = node.size ? node.size[1] : NODE_H;
+    const widget = node.widgets?.find((w: any) => w.name === "compare");
+    const yOff = widget && typeof widget.y === "number" ? widget.y : 20;
+    el.style.height = Math.max(60, h - yOff - 20) + "px";
+    st.rafId = requestAnimationFrame(syncHeight);
+  };
+  st.rafId = requestAnimationFrame(syncHeight);
+
+  const origOnRemoved = node.onRemoved?.bind(node);
+  node.onRemoved = (...args: any[]) => {
+    if (st.rafId !== null) cancelAnimationFrame(st.rafId);
+    origOnRemoved?.(...args);
+  };
 }
 
-/**
- * Augment ComfyUI's auto-generated class for this node in place: wrap
- * `onExecuted` so the execution result (the temp-saved image URLs) updates the
- * wipe widget. Called from beforeRegisterNodeDef.
- */
 export function augmentImageComparerClass(nodeType: any): void {
   if (!nodeType || nodeType.__comfortImageComparer) return;
   const base = nodeType.prototype.onExecuted;
   nodeType.prototype.onExecuted = function (output: any) {
     base?.call(this, output);
     updateFromResult(this, output);
+  };
+  const baseConfigure = nodeType.prototype.configure;
+  nodeType.prototype.configure = function (data: any) {
+    baseConfigure?.call(this, data);
+    this.__comfortLoaded = true;
   };
   nodeType.__comfortImageComparer = true;
 }

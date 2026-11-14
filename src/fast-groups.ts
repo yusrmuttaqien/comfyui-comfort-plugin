@@ -1,9 +1,5 @@
-// Fast Groups Muter / Bypasser — an input-less node that lists every group in
-// the workflow and lets you mute/bypass all nodes inside a group with one
-// click. The toggle reflects whether the group has any active (Always) nodes.
-//
-// Re-worked from rgthree-comfy's BaseFastGroupsModeChanger (MIT). Virtual node.
-// Uses the same DOM-widget pattern as the Fast Muter for dual-renderer support.
+// Fast Groups Muter / Bypasser — mute/bypass all nodes inside a group with one click.
+// Re-worked from rgthree-comfy (MIT). Virtual node.
 
 import { ComfortVirtualNode } from "./virtual-node.js";
 import {
@@ -27,7 +23,7 @@ type GroupRow = {
   on: boolean;
 };
 
-/** Enumerate groups in the given graph (or all subgraphs if includeAll). */
+
 function collectGroups(node: any): any[] {
   const graph = node.graph;
   if (!graph) return [];
@@ -56,7 +52,7 @@ function collectGroups(node: any): any[] {
   return out;
 }
 
-/** A group is "on" (active) if any node inside it is in Always mode. */
+
 function groupIsActive(group: any): boolean {
   return getGroupNodes(group).some((n) => n.mode === MODE_ALWAYS);
 }
@@ -75,12 +71,7 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     FastGroupsRegistry.register(this);
   }
 
-  /**
-   * The constructor's refresh runs before we're attached to a graph (so
-   * `this.graph` is null and it finds no groups). Re-run now that we're in a
-   * graph so the group rows appear immediately instead of waiting for the 1s
-   * poll. Also covers the load path (nodes are re-added to the graph on load).
-   */
+
   onAdded(): void {
     super.onAdded?.();
     this.refresh();
@@ -116,7 +107,7 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     changeModeOfNodes(nodes, on ? this.modeOn : this.modeOff);
   }
 
-  /** Rebuild the group list. Called on a shared interval + on demand. */
+
   refresh(): void {
     const groups = collectGroups(this);
     const titleFilter = String(this.properties?.["matchTitle"] || "").trim();
@@ -133,7 +124,7 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
         next = next.filter((r) => r.title.toLowerCase().includes(titleFilter.toLowerCase()));
       }
     }
-    // Only re-render if the set actually changed (avoid flicker).
+
     const key = next.map((r) => r.title + (r.on ? 1 : 0)).join("|");
     if (key === this.lastKey) return;
     this.lastKey = key;
@@ -181,10 +172,7 @@ class FastGroupsBypasser extends FastGroupsMuterNode {
   }
 }
 
-// Shared registry, driven by the shared scheduler (every 2 ticks = 1s). The
-// per-refresh cost is O(nodes x groups) cheap bounding-box checks, negligible
-// even for large workflows; the `lastKey` guard avoids re-rendering when the
-// set hasn't changed.
+
 const registry = new Set<any>();
 const groupsJob = () => {
   for (const n of registry) {

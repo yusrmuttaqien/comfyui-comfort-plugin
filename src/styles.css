@@ -353,10 +353,12 @@
   flex-direction: column;
   width: 100%;
   min-width: 0;
+  min-height: 0;
 }
 
 .ci-nav {
   min-height: 28px;
+  flex-shrink: 0;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -392,10 +394,8 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  /* Fixed height (the width still tracks the node width). A fixed aspect ratio
-   * made the node height track the width, which left empty space at the bottom
-   * on interaction; a fixed height keeps the node height constant. */
-  height: 440px;
+  flex: 1;
+  min-height: 100px;
   overflow: hidden;
   background: #161616;
   border-radius: 6px;

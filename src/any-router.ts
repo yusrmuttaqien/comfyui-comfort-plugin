@@ -1,34 +1,16 @@
-// Any Router (comfort) — a server-backed "any" node that routes one of several
-// any-type inputs to a single any output.
-//
-// Two selection modes (a combo widget, `selection`):
-//   - non_empty:    first `any_*` input that is not None wins (decided in Python).
-//   - active_source: first input whose direct source node is active (not muted,
-//     not bypassed) wins (decided here at prompt-build time).
-//
-// The node is backed by Python (py/any_router.py), so it is NOT a virtual node:
-// it appears in the prompt and actually routes data. Because the Python def has
-// no fixed connection inputs (the `any_*` inputs are dynamic), ComfyUI's
-// auto-generated class starts with none. We augment that class in place via the
-// official `beforeRegisterNodeDef` hook:
-//   - add the initial pool of `any_*` inputs on create,
-//   - top up the input slots for saved workflows before `configure` attaches
-//     links (LiteGraph attaches saved links by index to the slots that exist),
-//   - manage the input count + infer/retype ports on connection changes.
-//
-// Re-worked from rgthree-comfy's Any Switch (MIT).
+// Any Router (comfort) — server-backed "any" node that routes one of several
+// any-type inputs to a single any output. Re-worked from rgthree-comfy (MIT).
 
 import { app } from "/scripts/app.js";
 import { MODE_NEVER, MODE_BYPASS } from "./mode-utils.js";
 
 export const ANY_ROUTER = "Any Router (comfort)";
 
-// Pool sizing for the `any_*` connection inputs. (The `selection` combo is a
-// separate widget input and is NOT counted here.)
+
 const MIN_ANY = 4;
 const INITIAL_ANY = 5;
 
-/** The node's `any_*` connection inputs, in order. */
+
 function anyInputs(node: any): any[] {
   return (node.inputs || []).filter((i: any) => i && i.name && i.name.startsWith("any_"));
 }
@@ -41,22 +23,19 @@ export function isComfortAnyRouter(node: any): boolean {
   );
 }
 
-/** Next sequential `any_NN` name for a new input on this node. */
+
 function anyName(node: any): string {
   const n = anyInputs(node).length + 1;
   return "any_" + String(n).padStart(2, "0");
 }
 
-/** The current `selection` widget value ("non_empty" | "active_source"). */
+
 function getSelection(node: any): string {
   const w = (node.widgets || []).find((w: any) => w.name === "selection");
   return w && w.value === "active_source" ? "active_source" : "non_empty";
 }
 
-/**
- * Follow a slot's connection chain to find a concrete (non-`*`) type. Used to
- * retype this node's ports so downstream type-checking stays correct.
- */
+
 function followType(node: any, dir: "input" | "output", slotIndex: number): string | null {
   const graph = node.graph || app.graph;
   if (!graph) return null;
@@ -85,7 +64,7 @@ function followType(node: any, dir: "input" | "output", slotIndex: number): stri
   return null;
 }
 
-/** First concrete type found across the connected inputs, else `*`. */
+
 function inferType(node: any): string {
   const inputs = node.inputs || [];
   for (let i = 0; i < inputs.length; i++) {
@@ -96,11 +75,7 @@ function inferType(node: any): string {
   return "*";
 }
 
-/**
- * Manage the `any_*` input pool + retype ports. Called on connection changes
- * and after `configure` (so a loaded workflow ends up correct). The `selection`
- * combo input is always at index 0 and is never touched.
- */
+
 function stabilize(node: any): void {
   if (node.removed || !node.inputs) return;
   // Trim trailing unused `any_*` inputs, keeping at least MIN_ANY.
@@ -128,7 +103,7 @@ function stabilize(node: any): void {
   }
 }
 
-// Per-node debounce handle for connection-change stabilization.
+
 const pendingStabilize = new WeakMap<any, number>();
 function scheduleStabilize(node: any): void {
   const prev = pendingStabilize.get(node);
@@ -142,10 +117,7 @@ function scheduleStabilize(node: any): void {
   );
 }
 
-/**
- * Augment ComfyUI's auto-generated class in place. Called once per node def from
- * the `beforeRegisterNodeDef` extension hook.
- */
+
 export function augmentAnyRouterClass(nodeType: any): void {
   if (!nodeType || nodeType.__comfortAnyRouter) return;
   nodeType.__comfortAnyRouter = true;
@@ -164,14 +136,11 @@ export function augmentAnyRouterClass(nodeType: any): void {
     );
   };
 
-  // Top up input slots for saved workflows before the real configure attaches
-  // links by index, then stabilize (retype) once the links are in place.
+
   const origConfigure = nodeType.prototype.configure;
   nodeType.prototype.configure = function (data: any) {
     try {
-      // Top up the `any_*` slots to the saved count so the real configure can
-      // attach saved links by index. (The `selection` combo is index 0 in both
-      // the saved data and this node, so the any_* slots stay index-aligned.)
+
       const savedAny = ((data && data.inputs) || []).filter(
         (i: any) => i && i.name && i.name.startsWith("any_"),
       ).length;
@@ -204,7 +173,7 @@ export function augmentAnyRouterClass(nodeType: any): void {
   };
 }
 
-/** Called from the `nodeCreated` hook: seed the initial `any_*` pool. */
+
 export function setupAnyRouterNode(node: any): void {
   let guard = 0;
   while (anyInputs(node).length < INITIAL_ANY && guard++ < 24) {
@@ -213,10 +182,7 @@ export function setupAnyRouterNode(node: any): void {
   installAnyRouterHook();
 }
 
-// ---------------------------------------------------------------------------
-// Build-time hook: for "active_source" routers, strip all but the first input
-// whose direct source node is active, so the backend returns exactly that one.
-// ---------------------------------------------------------------------------
+// Build-time hook: strip non-active inputs for "active_source" routers.
 
 function isActiveSource(src: any): boolean {
   return !!src && src.mode !== MODE_NEVER && src.mode !== MODE_BYPASS;

@@ -15,9 +15,6 @@ class CollectorNode extends ComfortFanInNode {
     this.addOutput("Output", "*");
   }
 
-  protected onConnectedNodesChanged(_nodes: any[]): void {
-    // Pure fan-in: nothing to render beyond the renamed inputs.
-  }
 
   getHelp(): string {
     return `<p>Bundle any number of nodes into a single output. Connect this
