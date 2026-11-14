@@ -232,6 +232,7 @@ async function showLoraChooser(
   new LiteGraph.ContextMenu(items, {
     title: "Choose Lora",
     event: e,
+    className: "dark",
     callback: (v: string) => {
       if (v !== "(no loras found)") onChoose(v);
     },

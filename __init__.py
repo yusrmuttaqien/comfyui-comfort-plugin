@@ -4,7 +4,17 @@ ComfyUI Comfort Plugin
 Dual-renderer (Nodes 2.0 Vue + legacy LiteGraph) rework of select
 rgthree-comfy features.
 
-M1: Power Lora Loader (comfort)
+Nodes:
+  - Power Lora Loader (comfort)
+  - Fast Muter / Fast Bypasser (comfort)
+  - Node Collector (comfort)
+  - Mute / Bypass Repeater (comfort)
+  - Mode Relay (comfort)
+  - Random Unmuter (comfort)
+  - Fast Groups Muter / Bypasser (comfort)
+  - NInfer Suspend Gate (comfort)
+  - Any Router (comfort)
+  - Image Comparer (comfort)
 """
 
 import os

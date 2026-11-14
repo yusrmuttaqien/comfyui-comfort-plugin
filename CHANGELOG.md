@@ -1,20 +1,20 @@
 # Changelog
 
 Dual-renderer rework of select rgthree-comfy features for ComfyUI Nodes 2.0 (Vue renderer) with legacy LiteGraph support.
-All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
+All dates UTC. Status: in progress / done / blocked.
 
 ## Unreleased
 
-### M1 — Power Lora Loader (✅ core, verified on Nodes 2.0)
+### M1: Power Lora Loader (done, verified on Nodes 2.0)
 - [x] Repo scaffold: Vite+TS build, pyproject.toml, `__init__.py`, README
 - [x] Python backend (`py/power_lora_loader.py`) adapted from rgthree-comfy (MIT, credited)
-- [x] Frontend: lora rows as DOM widgets (dual renderer; no canvas-drawn widgets)
+- [x] Frontend: lora rows as DOM widgets (dual renderer, no canvas-drawn widgets)
 - [x] Right-click row menu: move up/down, toggle, remove
 - [x] "Add Lora" button + header, strengths (combined / model+clip)
 - [x] Build to `web/`, commit built output
-- [x] Browser-verified on Nodes 2.0 (2026-12-13): node creation, lora chooser (real `/api/models/loras` data), add multiple loras, per-row toggle + dimming, strength inc/dec, row right-click menu (toggle/move/remove), node menu "Show Strengths" → Single / Separate Model & Clip (re-renders with model+clip columns), save/reload persistence of rows + strengths + node size
+- [x] Browser-verified on Nodes 2.0 (2026-12-13): node creation, lora chooser (real `/api/models/loras` data), add multiple loras, per-row toggle + dimming, strength inc/dec, row right-click menu (toggle/move/remove), node menu "Show Strengths" > Single / Separate Model & Clip (re-renders with model+clip columns), save/reload persistence of rows + strengths + node size
 - [x] Tab switch survival: node instances recreated, widget re-mounts with full state (2026-12-13)
-- [x] Subgraph survival (rgthree #714 scenario): convert node to subgraph → enter → widget renders with full state inside → exit → unpack → node restored at root (2026-12-13)
+- [x] Subgraph survival (rgthree #714 scenario): convert node to subgraph, enter, widget renders with full state inside, exit, unpack, node restored at root (2026-12-13)
 - [x] Muted/bypassed mode serialization (rgthree #797): node bypassed (mode 4) survives save + reload with rows intact (2026-12-13)
 - [x] Legacy LiteGraph renderer verification (2026-12-13): widget renders, toggle + strength inc/dec work, row context menu works (emoji render), node menu "Show Strengths" present, submenu (Single / Separate) works, mode toggle re-renders + resizes node, save/reload round-trip preserves rows + strengths + toggle + mode
 
@@ -26,106 +26,116 @@ All dates UTC. Status: 🚧 in progress / ✅ done / ⏸️ blocked.
 #### Fixes found during browser verification (2026-12-13)
 1. **Extension module silently rejected**: the Nodes 2.0 frontend loads extension modules via dynamic `import(url)` without an import map, so the bare specifier `scripts/app.js` failed. Use absolute `/scripts/app.js` (and mark it external in Vite).
 2. **Extension CSS not auto-loaded**: the new frontend no longer auto-injects extension `web/*.css`. Styles are inlined via Vite `?inline` and injected as a `<style>` element at startup (with a `comfort-styles` id guard against double injection).
-3. **`app.api.getList("loras")` gone** in the new frontend; loras are fetched from `/api/models/loras` directly, handling both array and `{name: [...]}` response shapes.
+3. **`app.api.getList("loras")` gone** in the new frontend. Loras are fetched from `/api/models/loras` directly, handling both array and `{name: [...]}` response shapes.
 4. **Node context menu submenus**: Vue's `contextMenuConverter` only maps items with `has_submenu: true` + `submenu.options` (LiteGraph static-submenu shape). A bare `submenu` array produces a dead item in Nodes 2.0. The same shape works in legacy LiteGraph.
 
-### M2 — Mute/Bypass family (✅ verified on both renderers)
-- [x] `ComfortVirtualNode` base — dual-renderer `node.mode` interceptor (`Object.defineProperty` delegating to `_state.mode` in Nodes 2.0 / private field in legacy) firing `onModeChange`; `configuring` flag matches rgthree (false default, sync during `configure()`)
-- [x] `ComfortFanInNode` base — dynamic `*` inputs, trailing free slot, input renamed to node title, follows through Reroute / Collector / Combiner passthroughs (`getConnectedNodes`)
-- [x] Fast Muter / Fast Bypasser — DOM toggle row per connected node; right-click Enable/Disable/Toggle all
-- [x] Node Collector — passthrough fan-in behind a single `*` output
-- [x] Mute / Bypass Repeater — propagates its mode to connected inputs (or enclosing group); brings newly-connected nodes in line
-- [x] Mode Relay — votes on input modes, drives a connected Repeater (all-muted→MUTE, all-bypassed→BYPASS, any-active→ACTIVE); per-mode property remapping; plain forwarder with no inputs
-- [x] Random Unmuter — on queue, temporarily unmutes one random muted connected node for the prompt build, then re-mutes (wraps `app.queuePrompt` / `app.graphToPrompt`; ComfyUI has no official queue hook)
-- [x] Fast Groups Muter / Bypasser — lists workflow groups as toggle rows; clicking mutes/bypasses all nodes in the group; toggle tracks live group state; right-click bulk actions; `matchTitle` filter
+### M2: Mute/Bypass family (verified on both renderers)
+- [x] `ComfortVirtualNode` base: dual-renderer `node.mode` interceptor (`Object.defineProperty` delegating to `_state.mode` in Nodes 2.0 / private field in legacy) firing `onModeChange`. `configuring` flag matches rgthree (false default, sync during `configure()`)
+- [x] `ComfortFanInNode` base: dynamic `*` inputs, trailing free slot, input renamed to node title, follows through Reroute / Collector / Combiner passthroughs (`getConnectedNodes`)
+- [x] Fast Muter / Fast Bypasser: DOM toggle row per connected node. Right-click Enable/Disable/Toggle all
+- [x] Node Collector: passthrough fan-in behind a single `*` output
+- [x] Mute / Bypass Repeater: propagates its mode to connected inputs (or enclosing group). Brings newly-connected nodes in line
+- [x] Mode Relay: votes on input modes, drives a connected Repeater (all-muted: MUTE, all-bypassed: BYPASS, any-active: ACTIVE). Per-mode property remapping. Plain forwarder with no inputs
+- [x] Random Unmuter: on queue, temporarily unmutes one random muted connected node for the prompt build, then re-mutes (wraps `app.queuePrompt` / `app.graphToPrompt`. ComfyUI has no official queue hook)
+- [x] Fast Groups Muter / Bypasser: lists workflow groups as toggle rows. Clicking mutes/bypasses all nodes in the group. Toggle tracks live group state. Right-click bulk actions. `matchTitle` filter
 - [x] `changeModeOfNodes` accepts single node or array
-- [x] Browser-verified on Nodes 2.0 (2026-12-14): Fast Muter/Bypasser toggle + bulk menu + save/reload; Collector→Muter passthrough; Repeater propagation (0/2/4) + group fallback; Relay chain (monitored node → Relay → Repeater → target, both directions); Random Unmuter (random pick + re-mute + queue guard); Fast Groups (list, toggle both ways, bulk)
-- [x] Legacy LiteGraph spot-check (2026-12-14): Repeater mode propagation works via the interceptor's legacy path (0↔2)
+- [x] Browser-verified on Nodes 2.0 (2026-12-14): Fast Muter/Bypasser toggle + bulk menu + save/reload. Collector>Muter passthrough. Repeater propagation (0/2/4) + group fallback. Relay chain (monitored node > Relay > Repeater > target, both directions). Random Unmuter (random pick + re-mute + queue guard). Fast Groups (list, toggle both ways, bulk)
+- [x] Legacy LiteGraph spot-check (2026-12-14): Repeater mode propagation works via the interceptor's legacy path (0<->2)
 
 #### M2 design notes
-- Virtual nodes registered via `LiteGraph.registerNodeType` at module load (works in both renderers); `category = "comfort"`.
-- **All comfort virtual nodes set `isVirtualNode = true`** (on the `ComfortVirtualNode` base). This makes `graphToPrompt` skip them, so the backend never receives a `class_type` it doesn't know — fixing the "Missing node type" error when a comfort node is in the workflow. Their outputs are auto-passthrough: ComfyUI resolves a virtual node's output through its input at the same slot index, so a real node downstream of a Collector/Repeater/Relay output still references the correct upstream node. No `applyToGraph` needed (matches rgthree, which also uses `isVirtualNode` with no forwarding). Verified: Fast Muter (no output) is absent from the prompt; Node Collector (with output) is absent and its downstream resolves to the collector's upstream.
-- **`getGroupNodes` recomputes group membership before reading `_children`.** A group's `_children` set is derived spatially and is NOT populated on workflow load -- only when `recomputeInsideNodes` runs (node selection, drags, group ops). Right after a reload it's empty, so a Fast Groups toggle acted on nothing and looked broken. `getGroupNodes` now calls `group.recomputeInsideNodes()` first (idempotent). Verified: with `_children` empty, a row click repopulates it and mutes/unmutes the group's nodes correctly.
+- Virtual nodes registered via `LiteGraph.registerNodeType` at module load (works in both renderers). Category: `comfort`.
+- **All comfort virtual nodes set `isVirtualNode = true`** (on the `ComfortVirtualNode` base). This makes `graphToPrompt` skip them, so the backend never receives a `class_type` it doesn't know. Fixes the "Missing node type" error when a comfort node is in the workflow. Their outputs are auto-passthrough: ComfyUI resolves a virtual node's output through its input at the same slot index, so a real node downstream of a Collector/Repeater/Relay output still references the correct upstream node. No `applyToGraph` needed (matches rgthree, which also uses `isVirtualNode` with no forwarding). Verified: Fast Muter (no output) is absent from the prompt. Node Collector (with output) is absent and its downstream resolves to the collector's upstream.
+- **`getGroupNodes` recomputes group membership before reading `_children`.** A group's `_children` set is derived spatially and is NOT populated on workflow load. Only when `recomputeInsideNodes` runs (node selection, drags, group ops). Right after a reload it's empty, so a Fast Groups toggle acted on nothing and looked broken. `getGroupNodes` now calls `group.recomputeInsideNodes()` first (idempotent). Verified: with `_children` empty, a row click repopulates it and mutes/unmutes the group's nodes correctly.
 - Fast Groups refreshes its rows on `onAdded` (the constructor's refresh runs before the node is attached to a graph, so it found no groups).
-- Class hierarchy: `ComfortVirtualNode` → `ComfortFanInNode` → { `ComfortAnyInputNode` (Muter/Bypasser), `ModeRepeater`, `ModeRelay`, `RandomUnmuter`, `NodeCollector` }; `ComfortVirtualNode` → `FastGroupsMuterNode` (Muter/Bypasser).
-- Repeater / Relay / Fast Groups poll on a shared `setInterval` (per-node state is cheap to recompute; the timer is cleared when the last instance is removed). The Random Unmuter reacts to queue events instead.
+- Class hierarchy: `ComfortVirtualNode` > `ComfortFanInNode` > { `ComfortAnyInputNode` (Muter/Bypasser), `ModeRepeater`, `ModeRelay`, `RandomUnmuter`, `NodeCollector` }. `ComfortVirtualNode` > `FastGroupsMuterNode` (Muter/Bypasser).
+- Repeater / Relay / Fast Groups poll on a shared scheduler (per-node state is cheap to recompute. The timer is cleared when the last instance is removed). The Random Unmuter reacts to queue events instead.
 
-### M3 — Features (✅ verified on both renderers)
-- ~~Progress bar~~ — **removed** (ComfyUI already ships a native progress bar). Was a DOM bar for queue position + execution progress (nodes done, current node, step/max) with a red error state.
-- [x] Auto-nest subdirectories — wraps `LiteGraph.ContextMenu` and splits flat combo lists (>10 items) that contain subdirectory paths into folder submenus (📁 prefix). Verified: top-level shows folders + root files; clicking a folder opens the sub-path list; clicking a leaf passes the full path.
-- [x] Group header quick toggles — M / B buttons in a group's header on hover/selection; M mutes/unmutes, B bypasses/un-bypasses all nodes in the group. Implemented as a DOM overlay (positioned every frame from the canvas transform) so it stays on top of both the canvas and the DOM nodes of Nodes 2.0. Verified show/hide + both toggles on Nodes 2.0 and legacy LiteGraph.
+### M3: Features (verified on both renderers)
+- ~~Progress bar~~: **removed** (ComfyUI already ships a native progress bar). Was a DOM bar for queue position + execution progress (nodes done, current node, step/max) with a red error state.
+- [x] Auto-nest subdirectories: wraps `LiteGraph.ContextMenu` and splits flat combo lists (>10 items) that contain subdirectory paths into folder submenus (folder prefix). Verified: top-level shows folders + root files. Clicking a folder opens the sub-path list. Clicking a leaf passes the full path.
+- [x] Group header quick toggles: M / B buttons in a group's header on hover/selection. M mutes/unmutes, B bypasses/un-bypasses all nodes in the group. Implemented as a DOM overlay (positioned every frame from the canvas transform) so it stays on top of both the canvas and the DOM nodes of Nodes 2.0. Verified show/hide + both toggles on Nodes 2.0 and legacy LiteGraph.
 
 #### M3 design notes
 - Auto-nest and group toggles both hook `LiteGraph.ContextMenu` / `canvas.onDrawForeground` (the official foreground callback, called in both renderers). Setup runs in the extension `init()` because `app.canvas` is not available at module-load time.
 - Group toggle buttons are `position: fixed` DOM elements, one pair per active group, removed when the group is deleted.
 
-### NInfer Suspend Gate (✅ verified on Nodes 2.0)
+### NInfer Suspend Gate (verified on Nodes 2.0)
 - [x] Python proxy: `GET`/`POST /comfort/ninfer/forward` in `__init__.py` relays to a user-supplied NInfer URL (server-to-server, no CORS), passing through status codes incl. `409 model_busy`.
-- [x] Frontend node `NInfer Suspend Gate (comfort)` — a disconnected virtual node; one DOM widget (dual renderer) with: NInfer URL field, busy-timeout combo (indefinite / 1–60 min), live status line, Select all / Deselect all, and a per-model checkbox row (loaded models selectable; default = all loaded).
-- [x] Polls `/v1/models` every 3 s to list models + status; suspends checked loaded models on each queue via `POST /v1/models/{id}/suspend`, awaiting the synchronous suspend; retries on `409` until idle or the busy-timeout.
+- [x] Frontend node `NInfer Suspend Gate (comfort)`: a disconnected virtual node. One DOM widget (dual renderer) with: NInfer URL field, busy-timeout combo (indefinite / 1-60 min), live status line, Select all / Deselect all, and a per-model checkbox row (loaded models selectable. Default = all loaded).
+- [x] Polls `/v1/models` every 3 s to list models + status. Suspends checked loaded models on each queue via `POST /v1/models/{id}/suspend`, awaiting the synchronous suspend. Retries on `409` until idle or the busy-timeout.
 - [x] Wraps `app.queuePrompt` (same pattern as the Random Unmuter) so the gate runs before the prompt is sent, per queue.
 - [x] Config (url / timeout / selection) persists in `this.properties`, verified across save + reload.
-- [x] Status badge maps the NInfer registry state for display: `loaded` → red, `sleeping` → **"suspended"** (blue), others greyed. A checked row stays checked through its state transitions (loaded → unloading → sleeping); the selection is frozen on first poll and only changed by explicit toggle / Select all / Deselect all.
+- [x] Status badge maps the NInfer registry state for display: `loaded` > red, `sleeping` > **"suspended"** (blue), others greyed. A checked row stays checked through its state transitions (loaded > unloading > sleeping). The selection is frozen on first poll and only changed by explicit toggle / Select all / Deselect all.
 - [x] The model list re-fetches immediately after a suspend so the badges flip to "suspended" right away.
-- [x] **Cancel / Skip** buttons in the status line, shown only while a suspend is in progress (`suspending` / busy). *Cancel* aborts the wait and stops the Run from firing (the synchronous server-side suspend still finishes, so the model ends up suspended); *Skip* proceeds with the Run while the models stay loaded. Both abort the in-flight request so the node returns to the live state immediately. `suspendChecked()` now resolves to `{ proceed }`; the queue hook aborts the Run when any gate returns `proceed: false`.
-- [x] **Top-bar focus button** — a small `⚡ NInfer` button injected next to the Run button in the top bar (via the shared `data-testid="queue-button"` anchor, present in both renderers). It appears only while an NInfer gate is in the *current* graph (checked each tick against the live graph, so it follows tab/subgraph navigation and hides on workflows without the node). Clicking it selects the gate, **zooms to a comfortable reading level** (fitting the node to ~half the viewport, clamped to 0.75–2.0× so it's a clear zoom-in without going extreme), and centers the canvas on it. Verified on Nodes 2.0 **and** legacy LiteGraph.
+- [x] **Cancel / Skip** buttons in the status line, shown only while a suspend is in progress (`suspending` / busy). *Cancel* aborts the wait and stops the Run from firing (the synchronous server-side suspend still finishes, so the model ends up suspended). *Skip* proceeds with the Run while the models stay loaded. Both abort the in-flight request so the node returns to the live state immediately. `suspendChecked()` resolves to `{ proceed }`. The queue hook aborts the Run when any gate returns `proceed: false`.
+- [x] **Top-bar focus button**: a small `NInfer` button injected next to the Run button in the top bar (via the shared `data-testid="queue-button"` anchor, present in both renderers). It appears only while an NInfer gate is in the *current* graph (checked each tick against the live graph, so it follows tab/subgraph navigation and hides on workflows without the node). Clicking it selects the gate, **zooms to a comfortable reading level** (fitting the node to ~half the viewport, clamped to 0.75-2.0x so it's a clear zoom-in without going extreme), and centers the canvas on it. Verified on Nodes 2.0 **and** legacy LiteGraph.
 
 #### NInfer fixes
-- **Config didn't survive reload**: the load path runs `graph.add()` (→ `onAdded`) *before* `configure()`, so `onAdded`'s input sync ran against the constructor defaults, and the base `configure` never re-synced. Added a `configure` override that re-syncs the URL / timeout / selection after `super.configure` restores `this.properties`. Also commit the URL to `properties` on `input` (every keystroke), not just `change` (blur), so a Ctrl+S save before the field blurs still captures it. Verified: save + reload restores url, timeout, and selection.
+- **Config didn't survive reload**: the load path runs `graph.add()` (> `onAdded`) *before* `configure()`, so `onAdded`'s input sync ran against the constructor defaults, and the base `configure` never re-synced. Added a `configure` override that re-syncs the URL / timeout / selection after `super.configure` restores `this.properties`. Also commit the URL to `properties` on `input` (every keystroke), not just `change` (blur), so a Ctrl+S save before the field blurs still captures it. Verified: save + reload restores url, timeout, and selection.
 
 #### NInfer design notes
 - The suspend call is synchronous on the NInfer side (returns when the model is suspended), so "hold the queue" is just awaiting the proxy's POST.
-- Busy handling: a `409 model_busy` (NInfer mid-request) is retried every 2 s with a visible "NInfer busy — waiting…" status; the timeout defaults to *indefinite*.
-- Models stay suspended after the queue (no auto-resume); NInfer's own `auto_resume` re-loads them on the next NInfer request.
-- Composes with the Random Unmuter: both wrap `app.queuePrompt`; the gate suspends first, then the unmuter acts during the prompt build.
+- Busy handling: a `409 model_busy` (NInfer mid-request) is retried every 2 s with a visible "NInfer busy - waiting..." status. The timeout defaults to *indefinite*.
+- Models stay suspended after the queue (no auto-resume). NInfer's own `auto_resume` re-loads them on the next NInfer request.
+- Composes with the Random Unmuter: both wrap `app.queuePrompt`. The gate suspends first, then the unmuter acts during the prompt build.
 
-### Refactor & performance (✅ verified on Nodes 2.0)
+### Refactor and performance (verified on Nodes 2.0)
 - **Unified scheduler** (`src/scheduler.ts`): a single 500 ms clock that all periodic jobs register with at a tick cadence, replacing four independent `setInterval` timers (Relay 500 ms, Fast Groups 1 s, NInfer ambient 3 s, NInfer elapsed 500 ms). Relay, Fast Groups, and NInfer polling all run off this one timer now.
-- **NInfer: skip polling while the tab is hidden** — the ambient model refresh no longer fires network requests when `document.hidden`. Verified: 0 `/comfort/ninfer/forward` calls over a 4.5 s hidden window vs. 2 over an equal visible window.
-- **NInfer: shared `/v1/models` cache** — a short-TTL result cache plus in-flight coalescing means multiple gate nodes pointing at the same NInfer issue one request per poll instead of one each. Verified: 2 gates on one URL → 1 fetch per cycle. The suspend flow and the post-suspend refresh bypass the cache for a fresh read.
+- **NInfer: skip polling while the tab is hidden**: the ambient model refresh no longer fires network requests when `document.hidden`. Verified: 0 `/comfort/ninfer/forward` calls over a 4.5 s hidden window vs. 2 over an equal visible window.
+- **NInfer: shared `/v1/models` cache**: a short-TTL result cache plus in-flight coalescing means multiple gate nodes pointing at the same NInfer issue one request per poll instead of one each. Verified: 2 gates on one URL > 1 fetch per cycle. The suspend flow and the post-suspend refresh bypass the cache for a fresh read.
 - **Shared toggle-row helper** (`src/toggle-list.ts`): the Fast Muter/Bypasser and Fast Groups nodes draw an identical row, so the DOM building + sizing now live in one place (~40 lines of duplication removed).
-- **Bug fix — "Toggle all" was a no-op**: `setAllRows(null)` re-applied the current state instead of inverting. It now toggles each row (matching `setAllGroups`), so the Fast Muter/Bypasser "Toggle all" menu item actually flips every row. Verified end-to-end (row `on` + connected node mode both flip, both directions).
+- **Bug fix: "Toggle all" was a no-op**: `setAllRows(null)` re-applied the current state instead of inverting. It now toggles each row (matching `setAllGroups`), so the Fast Muter/Bypasser "Toggle all" menu item actually flips every row. Verified end-to-end (row `on` + connected node mode both flip, both directions).
 - **Dead code removed**: `ComfortVirtualNode.constructed()` (+ its 7 call sites), the unused `widget` fields, an unused `app` import in auto-nest, and the local `MODE_*` constants in group-toggles (now imported from `mode-utils`).
-- **Focus-button anchor**: the Run button's `data-testid="queue-button"` is present in both the Nodes 2.0 action bar and the legacy top bar, so one anchor covers both renderers — no renderer-specific lookup. Verified the button appears, hides (0 gates in graph), reappears (tab switch back), and centers + selects the gate in **both** Nodes 2.0 and legacy LiteGraph; the Cancel/Skip controls render in the legacy DOM widget too.
-- Type-checks clean (`tsc --noEmit`); build 51.28 kB (gzip 14.73 kB).
+- **Focus-button anchor**: the Run button's `data-testid="queue-button"` is present in both the Nodes 2.0 action bar and the legacy top bar, so one anchor covers both renderers. No renderer-specific lookup. Verified the button appears, hides (0 gates in graph), reappears (tab switch back), and centers + selects the gate in **both** Nodes 2.0 and legacy LiteGraph. The Cancel/Skip controls render in the legacy DOM widget too.
+- Type-checks clean (`tsc --noEmit`). Build 51.28 kB (gzip 14.73 kB).
 
-### Any Router (✅ verified on both renderers)
+### Any Router (verified on both renderers)
+
 A server-backed `Any Router (comfort)` node that routes one of several any-type inputs to a single any output. Re-worked from rgthree-comfy's Any Switch (MIT), with a selectable routing criterion:
-- [x] Python backend (`py/any_router.py`): `AnyType` + `FlexibleOptionalInputType` accept any number of `any_*` inputs of any type; `route()` returns the first non-empty `any_*`. Registered under the `comfort` category.
+- [x] Python backend (`py/any_router.py`): `AnyType` + `FlexibleOptionalInputType` accept any number of `any_*` inputs of any type. `route()` returns the first non-empty `any_*`. Registered under the `comfort` category.
 - [x] **Selection combo** (`non_empty` / `active_source`), default `non_empty`.
   - `non_empty`: all inputs are passed to the backend, which picks the first non-`None` value at execution time.
   - `active_source`: at prompt-build time the frontend keeps only the first input whose **direct source node is active** (not muted, not bypassed) and strips the rest, so the backend returns exactly that one.
-- [x] Frontend augments ComfyUI's auto-generated class in place via the official `beforeRegisterNodeDef` hook (the def has no fixed connection inputs; we add the dynamic `any_*` pool): seeds 5 `any_*` inputs on create, trims trailing unused down to 4, always keeps one trailing free slot, and follows connections to infer + retype all ports (so downstream type-checking stays correct).
+- [x] Frontend augments ComfyUI's auto-generated class in place via the official `beforeRegisterNodeDef` hook (the def has no fixed connection inputs. We add the dynamic `any_*` pool): seeds 5 `any_*` inputs on create, trims trailing unused down to 4, always keeps one trailing free slot, and follows connections to infer + retype all ports (so downstream type-checking stays correct).
 - [x] `configure` tops up the `any_*` slots to the saved count before ComfyUI attaches saved links by index, so a workflow saved with more than 5 inputs reloads with every link intact.
 - [x] The `active_source` strip runs as a post-process on `app.graphToPrompt` (chained with the Random Unmuter's wrapper), matching the live mute/bypass state at build time.
-- [x] Browser-verified on **Nodes 2.0 and legacy LiteGraph** (2026-12-14): node renders with 5 `any_*` inputs + the selection combo; connecting a typed source retypes the inputs + output; `active_source` keeps only the first active source (verified: both-active→first, mute-first→second, both-muted→none); `non_empty` passes all inputs to the backend; a saved node with 8 `any_*` inputs reloads with all 7 links intact.
+- [x] Browser-verified on **Nodes 2.0 and legacy LiteGraph** (2026-12-14): node renders with 5 `any_*` inputs + the selection combo. Connecting a typed source retypes the inputs + output. `active_source` keeps only the first active source (verified: both-active>first, mute-first>second, both-muted>none). `non_empty` passes all inputs to the backend. A saved node with 8 `any_*` inputs reloads with all 7 links intact.
 
 #### Any Router design notes
-- The `selection` combo is a `required` combo in the def, so ComfyUI serializes it as input index 0 (`type: "COMBO"`) plus a `widgets_values` entry. The pool logic therefore counts only `any_*` inputs (by name) and never touches the combo at index 0; the saved data and the live node both place `any_*` at the same indices, so link attachment stays aligned.
+- The `selection` combo is a `required` combo in the def, so ComfyUI serializes it as input index 0 (`type: "COMBO"`) plus a `widgets_values` entry. The pool logic therefore counts only `any_*` inputs (by name) and never touches the combo at index 0. The saved data and the live node both place `any_*` at the same indices, so link attachment stays aligned.
 - Registered via `beforeRegisterNodeDef` (not `registerNodeType`), because `registerNodeType` would be overwritten by ComfyUI's def processing. The `comfyClass` is set by ComfyUI to the node name, so `graphToPrompt` emits the correct `class_type`.
 - The `active_source` check uses `mode !== NEVER(2) && mode !== BYPASS(4)`, matching ComfyUI's own prompt-build skip rule (so `ON_EVENT` / `ON_TRIGGER` sources count as active, same as the rest of the graph).
-- Build 60.09 kB (gzip 17.25 kB); `tsc --noEmit` clean.
+- Build 60.09 kB (gzip 17.25 kB). `tsc --noEmit` clean.
 
-### Image Comparer (✅ verified on both renderers)
-A server-backed `Image Comparer (comfort)` node that compares two images with a draggable wipe slider (mirrors the native ComfyUI ImageCompare widget, whose Vue-only DOM widget breaks in legacy LiteGraph).
-- [x] Python backend (`py/image_comparer.py`): `ComfortImageComparer(PreviewImage)` with optional `image_left` / `image_right`; `compare_images()` saves each side to `output/` and returns both URL lists plus an `IMAGE` passthrough (the left image if connected, else the right) so downstream links keep working.
-- [x] Frontend augments ComfyUI's auto-generated class in place via the official `beforeRegisterNodeDef` hook (wrapping `onExecuted` to update the wipe from the result). One DOM widget (dual renderer) with a nav row (Left / Right / Both buttons + a percent readout) and a wipe stage (the left image revealed over the right via `clip-path`, mouse-driven).
-- [x] **Stage scales with the node width**: the stage keeps a fixed 11:10 aspect ratio and its width tracks the node width (CSS `width: 100%` of the widget container). The node height follows the stage (a `setSize` wrapper reports the stage height as a function of the width), so resizing the node scales the preview with no empty space. Verified on **Nodes 2.0 and legacy LiteGraph** (2026-12-14): the stage width tracks the node width at multiple sizes in both renderers, and the node height follows the stage.
-- Build 65.69 kB (gzip 18.66 kB); `tsc --noEmit` clean.
+### Image Comparer (verified on both renderers)
+
+A server-backed `Image Comparer (comfort)` node that compares two images with a wipe slider (mirrors the native ComfyUI ImageCompare widget, whose Vue-only DOM widget breaks in legacy LiteGraph).
+- [x] Python backend (`py/image_comparer.py`): `ComfortImageComparer(PreviewImage)` with optional `image_left` / `image_right`. `compare_images()` saves each side to `output/` and returns both URL lists plus an `IMAGE` passthrough (the left image if connected, else the right) so downstream links keep working.
+- [x] Frontend augments ComfyUI's auto-generated class in place via the official `beforeRegisterNodeDef` hook (wrapping `onExecuted` to update the wipe from the result). One DOM widget (dual renderer) with a nav row (Left / Right prev/next buttons + counter) and a wipe stage (the left image revealed over the right via `clip-path`, mouse-driven).
+- [x] **Hover-based wipe**: the handle is hidden by default (left image fully visible). On hover the handle appears and follows the mouse X position, revealing the right image. On mouse leave the handle hides and the left image is fully visible again.
+- [x] **Stage scales with the node width**: the stage keeps a fixed 11:10 aspect ratio and its width tracks the node width (CSS `width: 100%` of the widget container). The node height follows the stage. Resizing the node scales the preview with no empty space. Verified on **Nodes 2.0 and legacy LiteGraph** (2026-12-14): the stage width tracks the node width at multiple sizes in both renderers, and the node height follows the stage.
+- Build 65.69 kB (gzip 18.66 kB). `tsc --noEmit` clean.
+
+### Code cleanup (verified)
+- Comment cleanup across all source files: removed redundant JSDoc, section dividers, and inline comments that restated the code. Kept only "why" comments (non-obvious workarounds, design decisions).
+- Split `ninfer-gate.ts` (834 lines) into `src/ninfer-gate/` folder: `api.ts` (HTTP layer), `focus-button.ts` (top-bar button), `node.ts` (node class + registry + queue hook + UI).
+- Removed no-op `onConnectedNodesChanged` overrides. Base class now provides a default empty implementation.
+- Removed dead code: `node.minHeight` no-op, `setTimeout` re-assert, `configure` size clamp, `el.style.width` in rAF loop.
+- Build 62.45 kB (gzip 17.27 kB).
 
 ## Known upstream issues being addressed
-- rgthree/rgthree-comfy#632 — Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
-- rgthree/rgthree-comfy#797 — muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload
-- rgthree/rgthree-comfy#714 — Power Lora Loader promoted lora widgets not visible in subgraphs
-- rgthree/rgthree-comfy#745 — setGroups crash in LGraph.ts (Node Library panel empty)
+- rgthree/rgthree-comfy#632: Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
+- rgthree/rgthree-comfy#797: muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload
+- rgthree/rgthree-comfy#714: Power Lora Loader promoted lora widgets not visible in subgraphs
+- rgthree/rgthree-comfy#745: setGroups crash in LGraph.ts (Node Library panel empty)
 
 ## Test matrix (per milestone)
 | Check | Legacy LiteGraph | Nodes 2.0 (Vue) |
 |---|---|---|
-| Widgets render | ✅ | ✅ |
-| Widget interactions (click/drag/value) | ✅ | ✅ |
-| Context menus (row + node + submenu) | ✅ | ✅ |
-| Save/load round-trip | ✅ | ✅ |
-| Tab switch survives | ✅ | ✅ |
-| Subgraph nav survives | ✅ | ✅ |
-| Live updates during execution | n/a (M1 has none) | n/a (M1 has none) |
+| Widgets render | done | done |
+| Widget interactions (click/drag/value) | done | done |
+| Context menus (row + node + submenu) | done | done |
+| Save/load round-trip | done | done |
+| Tab switch survives | done | done |
+| Subgraph nav survives | done | done |
+| Live updates during execution | n/a | n/a |

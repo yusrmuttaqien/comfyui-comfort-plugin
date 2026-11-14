@@ -94,6 +94,7 @@ async function ct(e, t, n, o) {
   new LiteGraph.ContextMenu(r, {
     title: "Choose Lora",
     event: n,
+    className: "dark",
     callback: (i) => {
       i !== "(no loras found)" && o(i);
     }
