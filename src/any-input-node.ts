@@ -12,6 +12,7 @@
 import { ComfortFanInNode } from "./fan-in-base.js";
 import { getConnectedInputNodes } from "./mode-utils.js";
 import { renderToggleRows } from "./toggle-list.js";
+import { trackTitleDep, untrackTitleDep, watchTitle } from "./title-watch.js";
 
 const MIN_W = 260;
 
@@ -34,6 +35,7 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     super(title);
     this.setSize([MIN_W, 150]);
     this.setupListWidget();
+    trackTitleDep(this);
   }
 
   private setupListWidget(): void {
@@ -91,6 +93,7 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     const connected = getConnectedInputNodes(this);
     const next: RowState[] = [];
     for (const node of connected) {
+      watchTitle(node);
       const title = node.title || node.type || "node";
       const existing = this.rows.find((r) => r.node === node);
       const on = existing ? existing.on : node.mode === this.modeOn;
@@ -98,6 +101,16 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     }
     this.rows = next;
     this.renderList();
+  }
+
+  /** Title-watch hook: rows show connected node titles; refresh on rename. */
+  refreshTitleRows(): void {
+    this.syncRows();
+  }
+
+  override onRemoved(): void {
+    untrackTitleDep(this);
+    super.onRemoved();
   }
 
   /** Called by the fan-in base whenever the connected-node set changes. */

@@ -11,6 +11,7 @@ import {
 } from "./mode-utils.js";
 import { renderToggleRows } from "./toggle-list.js";
 import { scheduler } from "./scheduler.js";
+import { trackTitleDep, untrackTitleDep, watchTitle } from "./title-watch.js";
 
 export const FAST_GROUPS_MUTER = "Fast Groups Muter (comfort)";
 export const FAST_GROUPS_BYPASSER = "Fast Groups Bypasser (comfort)";
@@ -70,6 +71,7 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
     this.setupListWidget();
     FastGroupsRegistry.register(this);
+    trackTitleDep(this);
   }
 
 
@@ -112,11 +114,14 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
   refresh(): void {
     const groups = collectGroups(this);
     const titleFilter = String(this.properties?.["matchTitle"] || "").trim();
-    let next: GroupRow[] = groups.map((group) => ({
-      group,
-      title: String(group.title || "group"),
-      on: groupIsActive(group),
-    }));
+    let next: GroupRow[] = groups.map((group) => {
+      watchTitle(group);
+      return {
+        group,
+        title: String(group.title || "group"),
+        on: groupIsActive(group),
+      };
+    });
     if (titleFilter) {
       try {
         const re = new RegExp(titleFilter, "i");
@@ -152,8 +157,14 @@ inside a group with one click. Set the <code>matchTitle</code> property (via
 right-click → Properties) to filter which groups appear.</p>`;
   }
 
+  /** Title-watch hook: rows show group titles; refresh on rename. */
+  refreshTitleRows(): void {
+    this.refresh();
+  }
+
   onRemoved(): void {
     FastGroupsRegistry.unregister(this);
+    untrackTitleDep(this);
     super.onRemoved?.();
   }
 }
