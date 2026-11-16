@@ -7,8 +7,8 @@ import { MODE_NEVER, MODE_BYPASS } from "./mode-utils.js";
 export const ANY_ROUTER = "Any Router (comfort)";
 
 
-const MIN_ANY = 4;
 const INITIAL_ANY = 5;
+const SPACER_H = 8;
 
 
 function anyInputs(node: any): any[] {
@@ -78,9 +78,17 @@ function inferType(node: any): string {
 
 function stabilize(node: any): void {
   if (node.removed || !node.inputs) return;
-  // Trim trailing unused `any_*` inputs, keeping at least MIN_ANY.
+  // Deterministic pool size: never below INITIAL_ANY, and always exactly one
+  // free trailing `any_*` input beyond the connected ones. Connecting the
+  // first source must not shrink the pool the user started with.
+  const connected = anyInputs(node).filter((i: any) => i.link != null).length;
+  const target = Math.max(INITIAL_ANY, connected + 1);
   let anyCount = anyInputs(node).length;
-  while (anyCount > MIN_ANY) {
+  while (anyCount < target) {
+    node.addInput(anyName(node), "*");
+    anyCount++;
+  }
+  while (anyCount > target) {
     const last = node.inputs[node.inputs.length - 1];
     if (last && last.name.startsWith("any_") && last.link == null) {
       node.removeInput(node.inputs.length - 1);
@@ -88,11 +96,6 @@ function stabilize(node: any): void {
     } else {
       break;
     }
-  }
-  // Ensure a trailing free `any_*` input (spare to connect the next source).
-  const last = node.inputs[node.inputs.length - 1];
-  if (!last || !last.name.startsWith("any_") || last.link != null) {
-    node.addInput(anyName(node), "*");
   }
   // Retype all `any_*` inputs + the output to the inferred concrete type.
   const type = inferType(node);
@@ -152,7 +155,14 @@ export function augmentAnyRouterClass(nodeType: any): void {
     }
     const result = origConfigure ? origConfigure.call(this, data) : undefined;
     try {
-      if (!this.removed) this.stabilizeComfortAnyRouter();
+      if (!this.removed) {
+        // Loaded from a saved workflow: the saved size is restored verbatim
+        // (even if shorter than the content) — only make sure the spacer
+        // exists. Sizing happens once, at initial add (see setup path).
+        this.__comfortLoaded = true;
+        this.stabilizeComfortAnyRouter();
+        ensureSpacer(this);
+      }
     } catch {
       /* ignore */
     }
@@ -174,11 +184,60 @@ export function augmentAnyRouterClass(nodeType: any): void {
 }
 
 
+// Invisible spacer leaving empty space between the input slots and the
+// widgets below them (the `selection` combo). Widgets render after the
+// input slots, in `node.widgets` array order, so the spacer must be first.
+function ensureSpacer(node: any): void {
+  if (node.__comfortSpacer) return;
+  if (typeof node.addDOMWidget !== "function") return;
+  const el = document.createElement("div");
+  el.className = "comfort-spacer";
+  el.style.height = SPACER_H + "px";
+  const widget = node.addDOMWidget("comfort_spacer", "comfort_spacer", el, {
+    serialize: false,
+    hideOnZoom: true,
+    getValue: () => null,
+    setValue: () => {
+      /* spacer */
+    },
+    getMinHeight: () => SPACER_H,
+    getMaxHeight: () => SPACER_H,
+  });
+  const widgets: any[] = node.widgets || [];
+  const idx = widgets.indexOf(widget);
+  if (idx > 0) {
+    widgets.splice(idx, 1);
+    widgets.unshift(widget);
+  }
+  node.__comfortSpacer = true;
+}
+
+// The node's initial height is computed before the spacer exists, leaving it
+// shorter than its own content — drag-resize then snaps back taller. Enforce
+// the content height as a floor. Called only at initial add (fresh nodes),
+// never on workflow load.
+function ensureMinHeight(node: any): void {
+  try {
+    if (typeof node.computeSize !== "function" || !node.size) return;
+    const min = node.computeSize();
+    if (min && node.size[1] < min[1]) {
+      node.setSize([node.size[0], min[1]]);
+      if (typeof node.setDirtyCanvas === "function") node.setDirtyCanvas(true, true);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 export function setupAnyRouterNode(node: any): void {
   let guard = 0;
   while (anyInputs(node).length < INITIAL_ANY && guard++ < 24) {
     node.addInput(anyName(node), "*");
   }
+  ensureSpacer(node);
+  // Initial add only: on load, configure() has already restored the saved
+  // size (which wins) or will run right after and overwrite this one.
+  if (!node.__comfortLoaded) ensureMinHeight(node);
   installAnyRouterHook();
 }
 
