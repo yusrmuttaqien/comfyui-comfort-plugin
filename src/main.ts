@@ -8,7 +8,6 @@ import {
 } from "./power-lora-loader.js";
 import { registerComfortNodes, isComfortMuter, isComfortGroupsNode } from "./register.js";
 import { installAutoNest } from "./auto-nest.js";
-import { setupGroupToggles } from "./group-toggles.js";
 import {
   ANY_ROUTER,
   isComfortAnyRouter,
@@ -33,10 +32,6 @@ installAutoNest();
 
 app.registerExtension({
   name: "comfort.PowerLoraLoader",
-
-  async init() {
-    setupGroupToggles();
-  },
 
   beforeRegisterNodeDef(nodeType: any, nodeData: any) {
     if (nodeData && nodeData.name === ANY_ROUTER) {

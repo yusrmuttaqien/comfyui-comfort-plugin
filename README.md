@@ -15,7 +15,8 @@ extension hooks, which render natively in both renderers.
 Condensed multi-LoRA loader:
 - Add unlimited lora rows (`Add Lora`), each with on/off toggle, lora chooser,
   and strength control (`-` / value / `+` or type directly).
-- Node right-click menu: **Show Strengths** > Single or Separate Model & Clip.
+- Node right-click menu: **Show Strengths** > Single Strength or Separate
+  Model & Clip.
 - Right-click a row: toggle, move up/down, remove.
 - Header **ALL ON / ALL OFF** toggle.
 - Muted/bypassed state persists across save/load (fixes rgthree #797).
@@ -26,6 +27,7 @@ Connect any nodes to its inputs. Each connected node appears as a toggle row.
 Click a row to mute (or bypass) that node. Right-click the node for **Enable all**
 / **Disable all** / **Toggle all**. Rows rebuild automatically as connections
 change, and follow through Reroute / Collector / Combiner passthrough nodes.
+Row labels follow source node renames live.
 
 ### Node Collector (comfort)
 
@@ -56,13 +58,16 @@ All connected nodes must be muted for it to act.
 Lists every group in the workflow as a toggle row. Clicking one mutes (or
 bypasses) all nodes inside that group. The toggle reflects whether the group has
 any active nodes. Right-click for **Enable all** / **Disable all** / **Toggle
-all**. Set the `matchTitle` property to filter which groups appear.
+all**. Set the `matchTitle` property to filter which groups appear. Row titles
+follow group renames live.
 
 ### Any Router (comfort)
 
-Routes one of several any-type inputs to a single any output. Inputs are dynamic
-(`any_01`, `any_02`, ... grow on connect, trimmed when unused) and are retyped
-to the connected type. The **selection** combo picks the routing rule:
+Routes one of several any-type inputs to a single any output. Inputs form a
+pool of `any_01`, `any_02`, ... that starts at five, grows as more sources
+connect, and always keeps one free slot (it never shrinks below five). All
+inputs are retyped to the connected type. The **selection** combo picks the
+routing rule:
 - **Non-empty** (default): the backend returns the first input that is not
   empty.
 - **Active source**: at build time only the first input whose source node is
@@ -86,10 +91,6 @@ These are always-on behaviors, not nodes:
   with subdirectory paths are split into folder submenus (folders show a folder
   prefix), so long flat lists become navigable trees. Files without a path are
   listed as-is.
-- **Group header quick toggles**: hovering or selecting a group shows **M**
-  and **B** buttons in its header. Clicking **M** mutes / unmutes every node in
-  the group. **B** bypasses / un-bypasses them. The buttons are a DOM overlay so
-  they stay on top in both renderers, and they track pan/zoom/group drags.
 
 ## Install
 
@@ -115,17 +116,24 @@ Built output is committed. Users clone-and-go.
 - All custom widgets are **DOM widgets** (`node.addDOMWidget`): legacy LiteGraph
   positions them directly. Nodes 2.0 mounts the same element via `WidgetDOM`.
 - No `LGraphNode`/`LGraphCanvas` prototype patching. Only official extension
-  hooks (`nodeCreated`, `getNodeMenuItems`). The exception is queue-time
+  hooks (`nodeCreated`, `getNodeMenuItems`). The exceptions are build-time
   behavior: the Random Unmuter wraps `app.queuePrompt` / `app.graphToPrompt`
-  (ComfyUI exposes no official queue/execute hook).
+  (ComfyUI exposes no official queue/execute hook), and Any Router wraps
+  `app.graphToPrompt` to apply its routing rule when the prompt is built.
 - Per-node state lives in a `WeakMap` keyed by node instance (node instances are
   destroyed/recreated on tab switch and subgraph navigation).
-- Node sizing: new nodes get a fixed initial size via `setSize`. No auto-resize
-  on content changes. User controls size by dragging. Content scrolls via
-  `overflow-y: auto` if the node is too small.
+- Node sizing: the initial size is set once at first add (fixed for most
+  nodes, computed from content for Any Router). Loading a workflow restores
+  the saved size verbatim; no node ever auto-resizes on content changes.
+  User controls size by dragging; content scrolls via `overflow-y: auto`
+  if the node is too small.
 - `node.mode` is intercepted per-instance (`Object.defineProperty`) so
   `onModeChange` fires: it delegates to the `_state.mode` accessor in Nodes 2.0
   and to a private field in legacy LiteGraph.
+- Live updates without polling: comfort nodes that display other nodes' or
+  groups' titles install a one-time `title` property interceptor on those
+  sources (`Object.defineProperty`); renames coalesce into a single
+  animation-frame refresh of the affected nodes.
 
 ## Roadmap
 
