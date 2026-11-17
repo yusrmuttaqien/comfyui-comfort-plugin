@@ -12,7 +12,7 @@
 import { ComfortFanInNode } from "./fan-in-base.js";
 import { getConnectedInputNodes } from "./mode-utils.js";
 import { renderToggleRows } from "./toggle-list.js";
-import { trackTitleDep, untrackTitleDep, watchTitle } from "./title-watch.js";
+import { trackDep, untrackDep, watchProp } from "./prop-watch.js";
 
 const MIN_W = 260;
 
@@ -35,7 +35,7 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     super(title);
     this.setSize([MIN_W, 150]);
     this.setupListWidget();
-    trackTitleDep(this);
+    trackDep(this);
   }
 
   private setupListWidget(): void {
@@ -93,10 +93,10 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     const connected = getConnectedInputNodes(this);
     const next: RowState[] = [];
     for (const node of connected) {
-      watchTitle(node);
+      watchProp(node, "title");
+      watchProp(node, "mode");
       const title = node.title || node.type || "node";
-      const existing = this.rows.find((r) => r.node === node);
-      const on = existing ? existing.on : node.mode === this.modeOn;
+      const on = node.mode === this.modeOn;
       next.push({ node, title, on });
     }
     this.rows = next;
@@ -109,7 +109,7 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
   }
 
   override onRemoved(): void {
-    untrackTitleDep(this);
+    untrackDep(this);
     super.onRemoved();
   }
 

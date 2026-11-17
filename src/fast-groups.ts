@@ -10,8 +10,12 @@ import {
   getGroupNodes,
 } from "./mode-utils.js";
 import { renderToggleRows } from "./toggle-list.js";
-import { scheduler } from "./scheduler.js";
-import { trackTitleDep, untrackTitleDep, watchTitle } from "./title-watch.js";
+import {
+  trackDep,
+  untrackDep,
+  watchProp,
+  notifyStructuralChange,
+} from "./prop-watch.js";
 
 export const FAST_GROUPS_MUTER = "Fast Groups Muter (comfort)";
 export const FAST_GROUPS_BYPASSER = "Fast Groups Bypasser (comfort)";
@@ -54,10 +58,6 @@ function collectGroups(node: any): any[] {
 }
 
 
-function groupIsActive(group: any): boolean {
-  return getGroupNodes(group).some((n) => n.mode === MODE_ALWAYS);
-}
-
 abstract class FastGroupsMuterNode extends ComfortVirtualNode {
   protected abstract readonly modeOff: number;
   protected readonly modeOn = MODE_ALWAYS;
@@ -70,8 +70,7 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
     this.setSize([MIN_W, 150]);
     this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
     this.setupListWidget();
-    FastGroupsRegistry.register(this);
-    trackTitleDep(this);
+    trackDep(this);
   }
 
 
@@ -112,14 +111,17 @@ abstract class FastGroupsMuterNode extends ComfortVirtualNode {
 
 
   refresh(): void {
+    this.ensureGraphHooks();
     const groups = collectGroups(this);
     const titleFilter = String(this.properties?.["matchTitle"] || "").trim();
     let next: GroupRow[] = groups.map((group) => {
-      watchTitle(group);
+      watchProp(group, "title");
+      const nodes = getGroupNodes(group);
+      for (const n of nodes) watchProp(n, "mode");
       return {
         group,
         title: String(group.title || "group"),
-        on: groupIsActive(group),
+        on: nodes.some((n) => n.mode === MODE_ALWAYS),
       };
     });
     if (titleFilter) {
@@ -157,14 +159,41 @@ inside a group with one click. Set the <code>matchTitle</code> property (via
 right-click → Properties) to filter which groups appear.</p>`;
   }
 
-  /** Title-watch hook: rows show group titles; refresh on rename. */
+  /** Title/mode-watch hook: rows show group titles and member state. */
   refreshTitleRows(): void {
     this.refresh();
   }
 
+  /**
+   * Structural changes (group/node add or remove, drags) fire no per-node
+   * signals, so hook the graph's change/add/remove callbacks once per graph.
+   * Each callback coalesces into a single animation-frame refresh.
+   */
+  private ensureGraphHooks(): void {
+    const graph = this.graph;
+    if (!graph || hookedGraphs.has(graph)) return;
+    hookedGraphs.add(graph);
+    const origOnChange = graph.on_change;
+    graph.on_change = function (g: any) {
+      origOnChange?.call(g, g);
+      notifyStructuralChange();
+    };
+    const origAdd = graph.add;
+    graph.add = function (...args: any[]) {
+      const r = origAdd.apply(this, args);
+      notifyStructuralChange();
+      return r;
+    };
+    const origRemove = graph.remove;
+    graph.remove = function (...args: any[]) {
+      const r = origRemove.apply(this, args);
+      notifyStructuralChange();
+      return r;
+    };
+  }
+
   onRemoved(): void {
-    FastGroupsRegistry.unregister(this);
-    untrackTitleDep(this);
+    untrackDep(this);
     super.onRemoved?.();
   }
 }
@@ -184,26 +213,7 @@ class FastGroupsBypasser extends FastGroupsMuterNode {
 }
 
 
-const registry = new Set<any>();
-const groupsJob = () => {
-  for (const n of registry) {
-    try {
-      n.refresh();
-    } catch {
-      /* ignore */
-    }
-  }
-};
-const FastGroupsRegistry = {
-  register(node: any) {
-    registry.add(node);
-    scheduler.schedule(groupsJob, 2); // every 2 ticks (1s)
-  },
-  unregister(node: any) {
-    registry.delete(node);
-    if (!registry.size) scheduler.unschedule(groupsJob);
-  },
-};
+const hookedGraphs = new WeakSet<any>();
 
 export const FastGroupsMuterClass = FastGroupsMuter;
 export const FastGroupsBypasserClass = FastGroupsBypasser;

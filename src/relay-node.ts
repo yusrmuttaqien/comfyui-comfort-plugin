@@ -11,7 +11,6 @@ import {
   getConnectedOutputNodes,
 } from "./mode-utils.js";
 import { isComfortRepeater } from "./mode-repeater.js";
-import { scheduler } from "./scheduler.js";
 
 export const MODE_RELAY = "Mode Relay (comfort)";
 
@@ -38,7 +37,6 @@ class ModeRelayNode extends ComfortFanInNode {
       color_off: "#a80",
       shape: 5,
     });
-    RelayRegistry.register(this);
   }
 
   protected onConnectedNodesChanged(_nodes: any[]): void {
@@ -103,32 +101,16 @@ bypassed → BYPASS, any active → ACTIVE. Set the <code>on_muted_inputs</code>
 properties to remap or suppress (NOTHING) each signal.</p>`;
   }
 
-  onRemoved(): void {
-    RelayRegistry.unregister(this);
-    super.onRemoved?.();
+  /**
+   * Title/mode-watch refresh hook: rename the inputs, then re-evaluate.
+   * Mode changes on connected nodes arrive here via the prop interceptor,
+   * so no polling is needed.
+   */
+  override refreshTitleRows(): void {
+    super.refreshTitleRows();
+    this.evaluate();
   }
 }
 
-
-const registry = new Set<any>();
-const relayJob = () => {
-  for (const n of registry) {
-    try {
-      n.evaluate();
-    } catch {
-      /* ignore */
-    }
-  }
-};
-const RelayRegistry = {
-  register(node: any) {
-    registry.add(node);
-    scheduler.schedule(relayJob, 1); // every tick (500ms)
-  },
-  unregister(node: any) {
-    registry.delete(node);
-    if (!registry.size) scheduler.unschedule(relayJob);
-  },
-};
 
 export const ModeRelay = ModeRelayNode;

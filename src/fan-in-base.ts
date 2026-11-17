@@ -4,13 +4,13 @@
 
 import { ComfortVirtualNode } from "./virtual-node.js";
 import { getConnectedInputNodes } from "./mode-utils.js";
-import { trackTitleDep, untrackTitleDep, watchTitle } from "./title-watch.js";
+import { trackDep, untrackDep, watchProp } from "./prop-watch.js";
 
 export abstract class ComfortFanInNode extends ComfortVirtualNode {
   constructor(title?: string) {
     super(title);
     this.addInput("", "*");
-    trackTitleDep(this);
+    trackDep(this);
   }
 
 
@@ -33,8 +33,8 @@ export abstract class ComfortFanInNode extends ComfortVirtualNode {
 
   /**
    * Rename connected inputs to their source node's current title. Also the
-   * title-watch refresh hook: fires when a connected node is renamed, without
-   * re-running connection logic (no mode re-application).
+   * prop-watch refresh hook: fires when a connected node is renamed or its
+   * mode changes, without re-running connection logic (no mode re-application).
    */
   refreshTitleRows(): void {
     if (!this.inputs) return;
@@ -44,7 +44,8 @@ export abstract class ComfortFanInNode extends ComfortVirtualNode {
       if (input.link == null) continue;
       const node = getConnectedInputNodes(this, i)[0];
       if (!node) continue;
-      watchTitle(node);
+      watchProp(node, "title");
+      watchProp(node, "mode");
       const name = node.title || "";
       if (input.name !== name) {
         input.name = name;
@@ -65,7 +66,7 @@ export abstract class ComfortFanInNode extends ComfortVirtualNode {
   }
 
   override onRemoved(): void {
-    untrackTitleDep(this);
+    untrackDep(this);
     super.onRemoved();
   }
 }

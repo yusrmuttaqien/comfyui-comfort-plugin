@@ -27,7 +27,7 @@ Connect any nodes to its inputs. Each connected node appears as a toggle row.
 Click a row to mute (or bypass) that node. Right-click the node for **Enable all**
 / **Disable all** / **Toggle all**. Rows rebuild automatically as connections
 change, and follow through Reroute / Collector / Combiner passthrough nodes.
-Row labels follow source node renames live.
+Row labels and states follow source renames and mode changes live.
 
 ### Node Collector (comfort)
 
@@ -59,7 +59,7 @@ Lists every group in the workflow as a toggle row. Clicking one mutes (or
 bypasses) all nodes inside that group. The toggle reflects whether the group has
 any active nodes. Right-click for **Enable all** / **Disable all** / **Toggle
 all**. Set the `matchTitle` property to filter which groups appear. Row titles
-follow group renames live.
+and states follow group renames and member mode changes live.
 
 ### Any Router (comfort)
 
@@ -131,9 +131,11 @@ Built output is committed. Users clone-and-go.
   `onModeChange` fires: it delegates to the `_state.mode` accessor in Nodes 2.0
   and to a private field in legacy LiteGraph.
 - Live updates without polling: comfort nodes that display other nodes' or
-  groups' titles install a one-time `title` property interceptor on those
-  sources (`Object.defineProperty`); renames coalesce into a single
-  animation-frame refresh of the affected nodes.
+  groups' titles or modes install one-time property interceptors on those
+  sources (`Object.defineProperty`); any change (UI rename/mute, workflow
+  load, scripts) coalesces into a single animation-frame refresh of the
+  affected nodes. Structural changes (group/node add or remove, drags) are
+  picked up via per-graph `on_change` / `add` / `remove` hooks. No timers.
 
 ## Roadmap
 
