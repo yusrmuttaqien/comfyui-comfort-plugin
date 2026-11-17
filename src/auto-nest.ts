@@ -58,6 +58,25 @@ function buildNested(values: any[], options: any): { values: any[]; options: any
   return { values: newValues, options: newOptions };
 }
 
+// Hide dotfiles (names starting with "." — e.g. `.DS_Store`, `._*.safetensors`)
+// from file-list menus. Applies to string lists only, before nesting.
+function stripDotFiles(values: any): any {
+  if (!Array.isArray(values)) return values;
+  if (!values.every((v) => v == null || typeof v === "string")) return values;
+  let removed = false;
+  const out = values.filter((v) => {
+    if (v == null) return true;
+    const segs = String(v).split(/[\/]/);
+    const name = segs[segs.length - 1];
+    if (name.startsWith(".")) {
+      removed = true;
+      return false;
+    }
+    return true;
+  });
+  return removed ? out : values;
+}
+
 function maybeNest(values: any, options: any): { values: any; options: any } {
   if (!Array.isArray(values) || values.length < NEST_THRESHOLD) return { values, options };
   if (options?.className !== "dark") return { values, options };
@@ -74,12 +93,12 @@ function installAutoNest(): void {
   const wrapped = new Proxy(target, {
     construct(t, args, newTarget) {
       const [values, options] = args as any[];
-      const next = maybeNest(values, options);
+      const next = maybeNest(stripDotFiles(values), options);
       return Reflect.construct(t, [next.values, next.options], newTarget);
     },
     apply(t, thisArg, args) {
       const [values, options] = args as any[];
-      const next = maybeNest(values, options);
+      const next = maybeNest(stripDotFiles(values), options);
       return t.call(thisArg, next.values, next.options);
     },
   });

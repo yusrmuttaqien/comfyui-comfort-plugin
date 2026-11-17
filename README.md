@@ -90,7 +90,8 @@ These are always-on behaviors, not nodes:
 - **Auto-nest combo menus**: model/VAE/clip combo dropdowns that list files
   with subdirectory paths are split into folder submenus (folders show a folder
   prefix), so long flat lists become navigable trees. Files without a path are
-  listed as-is.
+  listed as-is. Dotfiles (names starting with `.` — e.g. `.DS_Store`,
+  `._*.safetensors`) are excluded from file-list menus.
 
 ## Install
 

@@ -1,76 +1,76 @@
 import { app as k } from "/scripts/app.js";
-const R = "Power Lora Loader (comfort)", I = /* @__PURE__ */ new WeakMap(), Lt = 380;
+const R = "Power Lora Loader (comfort)", I = /* @__PURE__ */ new WeakMap(), Pt = 380;
 function et(t) {
   var e;
   return (t == null ? void 0 : t.type) === R || (t == null ? void 0 : t.comfyClass) === R || ((e = t == null ? void 0 : t.constructor) == null ? void 0 : e.comfyClass) === R;
 }
-function Pt(t) {
+function Tt(t) {
   return I.get(t);
 }
-function Tt(t) {
+function Ft(t) {
   return { lora: t ?? null, on: !0, strength: 1, strengthTwo: null };
 }
-function yt(t) {
-  let e = !0, o = !0;
-  for (const n of t.rows)
-    if (e = e && n.on === !0, o = o && n.on === !1, !e && !o) return null;
+function bt(t) {
+  let e = !0, n = !0;
+  for (const o of t.rows)
+    if (e = e && o.on === !0, n = n && o.on === !1, !e && !n) return null;
   return !!(e && t.rows.length > 0);
 }
 function Ut(t) {
-  const e = !yt(t);
-  for (const o of t.rows) o.on = e;
+  const e = !bt(t);
+  for (const n of t.rows) n.on = e;
 }
-function ot(t, e, o) {
-  const n = o ? "strengthTwo" : "strength", r = t[n] ?? 1;
-  t[n] = Math.round((r + e * 0.05) * 100) / 100;
+function ot(t, e, n) {
+  const o = n ? "strengthTwo" : "strength", r = t[o] ?? 1;
+  t[o] = Math.round((r + e * 0.05) * 100) / 100;
 }
-function bt(t, e) {
-  const o = document.createElement("button");
-  return o.type = "button", o.className = "comfort-toggle " + (t ? "on" : "off"), o.textContent = e, o;
+function wt(t, e) {
+  const n = document.createElement("button");
+  return n.type = "button", n.className = "comfort-toggle " + (t ? "on" : "off"), n.textContent = e, n;
 }
 function P(t) {
   const e = document.createElement("span");
   return e.className = "comfort-col-label", e.textContent = t, e;
 }
 function T(t, e) {
-  const o = document.createElement("div");
-  o.className = "comfort-strength" + (e === "two" ? " comfort-strength-clip" : "");
-  const n = document.createElement("button");
-  n.type = "button", n.className = "comfort-dec", n.textContent = "−", n.title = "Decrease strength";
+  const n = document.createElement("div");
+  n.className = "comfort-strength" + (e === "two" ? " comfort-strength-clip" : "");
+  const o = document.createElement("button");
+  o.type = "button", o.className = "comfort-dec", o.textContent = "−", o.title = "Decrease strength";
   const r = document.createElement("button");
   r.type = "button", r.className = "comfort-inc", r.textContent = "+", r.title = "Increase strength";
   const s = document.createElement("input");
-  return s.type = "number", s.step = "0.05", s.min = "-2", s.max = "3", s.value = String(e === "two" ? t.strengthTwo ?? 1 : t.strength), s.title = e === "two" ? "Clip strength" : "Strength", o.appendChild(n), o.appendChild(s), o.appendChild(r), o;
+  return s.type = "number", s.step = "0.05", s.min = "-2", s.max = "3", s.value = String(e === "two" ? t.strengthTwo ?? 1 : t.strength), s.title = e === "two" ? "Clip strength" : "Strength", n.appendChild(o), n.appendChild(s), n.appendChild(r), n;
 }
-function Ft(t, e, o) {
-  const n = document.createElement("div");
-  n.className = "comfort-lora-row" + (e.on ? "" : " off"), n.dataset.idx = String(o), n.appendChild(bt(e.on, e.on ? "ON" : "OFF"));
+function zt(t, e, n) {
+  const o = document.createElement("div");
+  o.className = "comfort-lora-row" + (e.on ? "" : " off"), o.dataset.idx = String(n), o.appendChild(wt(e.on, e.on ? "ON" : "OFF"));
   const r = document.createElement("span");
-  r.className = "comfort-name", r.textContent = e.lora || "None", r.title = e.lora || "No lora selected - click to choose", n.appendChild(r);
+  r.className = "comfort-name", r.textContent = e.lora || "None", r.title = e.lora || "No lora selected - click to choose", o.appendChild(r);
   const s = document.createElement("span");
-  s.className = "comfort-spacer", n.appendChild(s), t.showSeparate ? (n.appendChild(T(e, "one")), n.appendChild(T(e, "two"))) : n.appendChild(T(e, "one"));
+  s.className = "comfort-spacer", o.appendChild(s), t.showSeparate ? (o.appendChild(T(e, "one")), o.appendChild(T(e, "two"))) : o.appendChild(T(e, "one"));
   const i = document.createElement("button");
-  return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", n.appendChild(i), n;
+  return i.type = "button", i.className = "comfort-remove", i.textContent = "×", i.title = "Remove lora", o.appendChild(i), o;
 }
 function g(t) {
   const e = t.el;
   e.innerHTML = "";
-  const o = document.createElement("div");
-  o.className = "comfort-lora-header";
-  const n = yt(t), r = bt(n !== !1, n === !1 ? "ALL OFF" : "ALL ON");
-  r.className += " comfort-toggle-all", r.title = "Toggle all loras", o.appendChild(r);
+  const n = document.createElement("div");
+  n.className = "comfort-lora-header";
+  const o = bt(t), r = wt(o !== !1, o === !1 ? "ALL OFF" : "ALL ON");
+  r.className += " comfort-toggle-all", r.title = "Toggle all loras", n.appendChild(r);
   const s = document.createElement("span");
-  s.className = "comfort-header-labels", t.showSeparate ? (s.appendChild(P("Model")), s.appendChild(P("Clip"))) : s.appendChild(P("Strength")), o.appendChild(s), e.appendChild(o), t.rows.forEach((a, l) => e.appendChild(Ft(t, a, l)));
+  s.className = "comfort-header-labels", t.showSeparate ? (s.appendChild(P("Model")), s.appendChild(P("Clip"))) : s.appendChild(P("Strength")), n.appendChild(s), e.appendChild(n), t.rows.forEach((a, l) => e.appendChild(zt(t, a, l)));
   const i = document.createElement("div");
   i.className = "comfort-lora-footer";
   const c = document.createElement("button");
   c.type = "button", c.className = "comfort-add-btn", c.textContent = "➕ Add Lora", i.appendChild(c), e.appendChild(i);
 }
-function zt(t) {
+function Dt(t) {
   const e = I.get(t);
   e && g(e);
 }
-async function Dt() {
+async function Gt() {
   try {
     const t = await fetch("/api/models/loras");
     if (!t.ok) return [];
@@ -80,25 +80,25 @@ async function Dt() {
     return [];
   }
 }
-async function nt(t, e, o, n) {
-  const r = await Dt() || ["(no loras found)"], s = r.length ? r : ["(no loras found)"];
+async function nt(t, e, n, o) {
+  const r = await Gt() || ["(no loras found)"], s = r.length ? r : ["(no loras found)"];
   new LiteGraph.ContextMenu(s, {
     title: "Choose Lora",
-    event: o,
+    event: n,
     className: "dark",
     callback: (i) => {
-      i !== "(no loras found)" && n(i);
+      i !== "(no loras found)" && o(i);
     }
   });
 }
-function Gt(t, e, o, n) {
-  const r = e.rows[o];
+function Wt(t, e, n, o) {
+  const r = e.rows[n];
   if (!r) return;
-  const s = o > 0, i = o < e.rows.length - 1, c = (a) => {
-    const l = o + a;
+  const s = n > 0, i = n < e.rows.length - 1, c = (a) => {
+    const l = n + a;
     if (l < 0 || l >= e.rows.length) return;
-    const u = e.rows[o];
-    e.rows[o] = e.rows[l], e.rows[l] = u, g(e);
+    const u = e.rows[n];
+    e.rows[n] = e.rows[l], e.rows[l] = u, g(e);
   };
   new LiteGraph.ContextMenu(
     [
@@ -114,24 +114,24 @@ function Gt(t, e, o, n) {
       {
         content: "🗑️ Remove",
         callback: () => {
-          e.rows.splice(o, 1), g(e);
+          e.rows.splice(n, 1), g(e);
         }
       }
     ],
-    { title: "LORA", event: n }
+    { title: "LORA", event: o }
   );
 }
-function Wt(t, e) {
-  const o = e.el;
-  o.addEventListener("click", (n) => {
-    const r = n.target;
+function Ht(t, e) {
+  const n = e.el;
+  n.addEventListener("click", (o) => {
+    const r = o.target;
     if (r.closest(".comfort-toggle-all")) {
       Ut(e), g(e);
       return;
     }
     if (r.closest(".comfort-add-btn")) {
-      nt(e, t, n, (l) => {
-        e.rows.push(Tt(l)), g(e);
+      nt(e, t, o, (l) => {
+        e.rows.push(Ft(l)), g(e);
       });
       return;
     }
@@ -145,7 +145,7 @@ function Wt(t, e) {
       return;
     }
     if (r.closest(".comfort-name")) {
-      nt(e, t, n, (l) => {
+      nt(e, t, o, (l) => {
         c.lora = l, g(e);
       });
       return;
@@ -162,20 +162,20 @@ function Wt(t, e) {
       e.rows.splice(i, 1), g(e);
       return;
     }
-  }), o.addEventListener("change", (n) => {
-    const r = n.target, s = r.closest(".comfort-lora-row");
+  }), n.addEventListener("change", (o) => {
+    const r = o.target, s = r.closest(".comfort-lora-row");
     if (!s || !r.matches("input[type='number']")) return;
     const i = e.rows[Number(s.dataset.idx)];
     if (!i) return;
     const c = parseFloat(r.value);
     Number.isFinite(c) && (r.closest(".comfort-strength-clip") ? i.strengthTwo = c : i.strength = c);
-  }), o.addEventListener("contextmenu", (n) => {
-    const r = n.target.closest(".comfort-lora-row");
-    r && (n.preventDefault(), n.stopPropagation(), Gt(t, e, Number(r.dataset.idx), n));
+  }), n.addEventListener("contextmenu", (o) => {
+    const r = o.target.closest(".comfort-lora-row");
+    r && (o.preventDefault(), o.stopPropagation(), Wt(t, e, Number(r.dataset.idx), o));
   });
 }
-function Ht(t) {
-  var o, n;
+function Bt(t) {
+  var n, o;
   if (I.has(t)) return;
   const e = {
     rows: [],
@@ -189,36 +189,36 @@ function Ht(t) {
     setValue: (r) => {
       e.rows = Array.isArray(r) ? r : [], g(e);
     }
-  }), Wt(t, e), g(e), t.__comfortLoaded || (n = t.setSize) == null || n.call(t, [Math.max(((o = t.size) == null ? void 0 : o[0]) || 0, Lt), 150]);
+  }), Ht(t, e), g(e), t.__comfortLoaded || (o = t.setSize) == null || o.call(t, [Math.max(((n = t.size) == null ? void 0 : n[0]) || 0, Pt), 150]);
 }
-function Bt(t, e) {
-  let o = Object.getPrototypeOf(t);
-  for (; o; ) {
-    const n = Object.getOwnPropertyDescriptor(o, e);
-    if (n) return n;
-    o = Object.getPrototypeOf(o);
+function jt(t, e) {
+  let n = Object.getPrototypeOf(t);
+  for (; n; ) {
+    const o = Object.getOwnPropertyDescriptor(n, e);
+    if (o) return o;
+    n = Object.getPrototypeOf(n);
   }
 }
-class wt extends LGraphNode {
+class xt extends LGraphNode {
   constructor(e) {
     super(e), this.configuring = !1, this.removed = !1, this.widgets = this.widgets || [], this.properties = this.properties || {}, this.isVirtualNode = !0, this.installModeInterceptor();
   }
   installModeInterceptor() {
-    const e = Bt(this, "mode"), o = () => e != null && e.get ? e.get.call(this) : this.__comfort_mode;
+    const e = jt(this, "mode"), n = () => e != null && e.get ? e.get.call(this) : this.__comfort_mode;
     Object.defineProperty(this, "mode", {
       configurable: !0,
       enumerable: !0,
-      get: o,
-      set: (n) => {
-        const r = o();
-        e != null && e.set ? e.set.call(this, n) : this.__comfort_mode = n, r !== n && this.onModeChange(r, n);
+      get: n,
+      set: (o) => {
+        const r = n();
+        e != null && e.set ? e.set.call(this, o) : this.__comfort_mode = o, r !== o && this.onModeChange(r, o);
       }
     });
   }
   configure(e) {
     this.configuring = !0, super.configure(e), this.configuring = !1;
   }
-  onModeChange(e, o) {
+  onModeChange(e, n) {
   }
   getHelp() {
     return "";
@@ -228,9 +228,9 @@ class wt extends LGraphNode {
     (e = super.onRemoved) == null || e.call(this), this.removed = !0;
   }
 }
-const b = 0, x = 2, v = 4;
+const b = 0, x = 2, E = 4;
 function w(t, e) {
-  var n;
+  var o;
   if (Array.isArray(t)) {
     for (const r of t) w(r, e);
     return;
@@ -240,19 +240,19 @@ function w(t, e) {
     t.mode = e;
   } catch {
   }
-  const o = (n = t.subgraph) == null ? void 0 : n.nodes;
-  if (Array.isArray(o))
-    for (const r of o) w(r, e);
+  const n = (o = t.subgraph) == null ? void 0 : o.nodes;
+  if (Array.isArray(n))
+    for (const r of n) w(r, e);
 }
 function rt(t) {
-  var o;
-  const e = (t == null ? void 0 : t.type) || ((o = t == null ? void 0 : t.constructor) == null ? void 0 : o.type) || "";
+  var n;
+  const e = (t == null ? void 0 : t.type) || ((n = t == null ? void 0 : t.constructor) == null ? void 0 : n.type) || "";
   return e.includes("Reroute") || e.includes("Node Collector") || e.includes("Node Combiner");
 }
-function xt(t, e, o) {
+function _t(t, e, n) {
   var c, a, l, u;
-  const n = t.graph;
-  if (!n) return [];
+  const o = t.graph;
+  if (!o) return [];
   const r = [], s = /* @__PURE__ */ new Set(), i = (f) => {
     if (!f || s.has(f)) return;
     s.add(f);
@@ -260,19 +260,19 @@ function xt(t, e, o) {
     e === "OUTPUT" ? d = (f.outputs || []).flatMap((p) => p.links || []) : d = (f.inputs || []).map((p) => p.link);
     for (const p of d) {
       if (p == null) continue;
-      const h = n.links[p];
+      const h = o.links[p];
       if (!h) continue;
-      const m = e === "OUTPUT" ? h.target_id : h.origin_id, y = n.getNodeById(m);
+      const m = e === "OUTPUT" ? h.target_id : h.origin_id, y = o.getNodeById(m);
       !y || s.has(y) || (rt(y) ? i(y) : r.push(y));
     }
   };
-  if (o != null) {
-    const f = e === "OUTPUT" ? ((a = (c = t.outputs) == null ? void 0 : c[o]) == null ? void 0 : a.links) || [] : [(u = (l = t.inputs) == null ? void 0 : l[o]) == null ? void 0 : u.link];
+  if (n != null) {
+    const f = e === "OUTPUT" ? ((a = (c = t.outputs) == null ? void 0 : c[n]) == null ? void 0 : a.links) || [] : [(u = (l = t.inputs) == null ? void 0 : l[n]) == null ? void 0 : u.link];
     for (const d of f) {
       if (d == null) continue;
-      const p = n.links[d];
+      const p = o.links[d];
       if (!p) continue;
-      const h = e === "OUTPUT" ? p.target_id : p.origin_id, m = n.getNodeById(h);
+      const h = e === "OUTPUT" ? p.target_id : p.origin_id, m = o.getNodeById(h);
       !m || s.has(m) || (rt(m) ? i(m) : r.push(m));
     }
   } else
@@ -280,10 +280,10 @@ function xt(t, e, o) {
   return r;
 }
 function C(t, e) {
-  return xt(t, "INPUT", e);
+  return _t(t, "INPUT", e);
 }
 function st(t, e) {
-  return xt(t, "OUTPUT", e);
+  return _t(t, "OUTPUT", e);
 }
 function W(t) {
   if (t != null && t.graph && typeof t.recomputeInsideNodes == "function")
@@ -292,25 +292,25 @@ function W(t) {
     } catch {
     }
   const e = t == null ? void 0 : t._children;
-  return e ? Array.from(e).filter((o) => {
-    var n;
-    return o && (o.isLGraphNode || ((n = o.constructor) == null ? void 0 : n.type));
+  return e ? Array.from(e).filter((n) => {
+    var o;
+    return n && (n.isLGraphNode || ((o = n.constructor) == null ? void 0 : o.type));
   }) : [];
 }
-function jt(t) {
+function Vt(t) {
   var c, a, l, u, f, d, p, h;
   const e = t.graph;
   if (!e) return null;
-  const o = e._groups || e.groups || [], n = ((c = t.pos) == null ? void 0 : c[0]) ?? 0, r = ((a = t.pos) == null ? void 0 : a[1]) ?? 0, s = ((l = t.size) == null ? void 0 : l[0]) ?? 0, i = ((u = t.size) == null ? void 0 : u[1]) ?? 0;
-  for (const m of o) {
-    const y = ((f = m.pos) == null ? void 0 : f[0]) ?? 0, M = ((d = m.pos) == null ? void 0 : d[1]) ?? 0, St = ((p = m.size) == null ? void 0 : p[0]) ?? 0, It = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
-    if (n >= y && r >= M && n + s <= y + St && r + i <= M + It)
+  const n = e._groups || e.groups || [], o = ((c = t.pos) == null ? void 0 : c[0]) ?? 0, r = ((a = t.pos) == null ? void 0 : a[1]) ?? 0, s = ((l = t.size) == null ? void 0 : l[0]) ?? 0, i = ((u = t.size) == null ? void 0 : u[1]) ?? 0;
+  for (const m of n) {
+    const y = ((f = m.pos) == null ? void 0 : f[0]) ?? 0, M = ((d = m.pos) == null ? void 0 : d[1]) ?? 0, It = ((p = m.size) == null ? void 0 : p[0]) ?? 0, Lt = ((h = m.size) == null ? void 0 : h[1]) ?? 0;
+    if (o >= y && r >= M && o + s <= y + It && r + i <= M + Lt)
       return m;
   }
   return null;
 }
 const V = /* @__PURE__ */ new Set(), it = /* @__PURE__ */ new WeakMap();
-let U = !1;
+let F = !1;
 function $(t) {
   V.add(t);
 }
@@ -319,42 +319,42 @@ function Y(t) {
 }
 function N(t, e) {
   if (!t) return;
-  let o = it.get(t);
-  if (!(o != null && o.has(e))) {
-    o || (o = /* @__PURE__ */ new Set(), it.set(t, o)), o.add(e);
+  let n = it.get(t);
+  if (!(n != null && n.has(e))) {
+    n || (n = /* @__PURE__ */ new Set(), it.set(t, n)), n.add(e);
     try {
-      $t(t, e);
+      Yt(t, e);
     } catch {
     }
   }
 }
-function F() {
+function U() {
   H();
 }
-function Vt(t, e) {
-  let o = Object.getPrototypeOf(t);
-  for (; o; ) {
-    const n = Object.getOwnPropertyDescriptor(o, e);
-    if (n) return n;
-    o = Object.getPrototypeOf(o);
+function $t(t, e) {
+  let n = Object.getPrototypeOf(t);
+  for (; n; ) {
+    const o = Object.getOwnPropertyDescriptor(n, e);
+    if (o) return o;
+    n = Object.getPrototypeOf(n);
   }
 }
-function $t(t, e) {
-  const o = Object.getOwnPropertyDescriptor(t, e);
-  let n, r, s = !1;
-  if (o)
-    o.get || o.set ? (n = o.get, r = o.set) : s = !0;
+function Yt(t, e) {
+  const n = Object.getOwnPropertyDescriptor(t, e);
+  let o, r, s = !1;
+  if (n)
+    n.get || n.set ? (o = n.get, r = n.set) : s = !0;
   else {
-    const i = Vt(t, e);
-    i && (i.get || i.set) ? (n = i.get, r = i.set) : s = !0;
+    const i = $t(t, e);
+    i && (i.get || i.set) ? (o = i.get, r = i.set) : s = !0;
   }
   if (!s)
     Object.defineProperty(t, e, {
       configurable: !0,
       enumerable: !0,
-      get: () => n ? n.call(t) : void 0,
+      get: () => o ? o.call(t) : void 0,
       set: (i) => {
-        const c = n ? n.call(t) : void 0;
+        const c = o ? o.call(t) : void 0;
         i !== c && (r && r.call(t, i), H());
       }
     });
@@ -371,28 +371,28 @@ function $t(t, e) {
   }
 }
 function H() {
-  if (U) return;
-  U = !0;
+  if (F) return;
+  F = !0;
   const t = () => {
     var e;
-    U = !1;
-    for (const o of [...V])
+    F = !1;
+    for (const n of [...V])
       try {
-        (e = o.refreshTitleRows) == null || e.call(o);
+        (e = n.refreshTitleRows) == null || e.call(n);
       } catch {
       }
   };
   typeof requestAnimationFrame == "function" ? requestAnimationFrame(t) : setTimeout(t, 16);
 }
-class O extends wt {
+class O extends xt {
   constructor(e) {
     super(e), this.addInput("", "*"), $(this);
   }
   onConnectedNodesChanged(e) {
   }
-  onConnectionsChange(e, o, n, r, s) {
+  onConnectionsChange(e, n, o, r, s) {
     var i;
-    (i = super.onConnectionsChange) == null || i.call(this, e, o, n, r, s), this.stabilizeFanIn(), this.onConnectedNodesChanged(C(this));
+    (i = super.onConnectionsChange) == null || i.call(this, e, n, o, r, s), this.stabilizeFanIn(), this.onConnectedNodesChanged(C(this));
   }
   /**
    * Rename connected inputs to their source node's current title. Also the
@@ -402,14 +402,14 @@ class O extends wt {
   refreshTitleRows() {
     if (!this.inputs) return;
     let e = !1;
-    for (let o = 0; o < this.inputs.length; o++) {
-      const n = this.inputs[o];
-      if (n.link == null) continue;
-      const r = C(this, o)[0];
+    for (let n = 0; n < this.inputs.length; n++) {
+      const o = this.inputs[n];
+      if (o.link == null) continue;
+      const r = C(this, n)[0];
       if (!r) continue;
       N(r, "title"), N(r, "mode");
       const s = r.title || "";
-      n.name !== s && (n.name = s, e = !0);
+      o.name !== s && (o.name = s, e = !0);
     }
     e && typeof this.setDirtyCanvas == "function" && this.setDirtyCanvas(!0, !1);
   }
@@ -423,25 +423,25 @@ class O extends wt {
     Y(this), super.onRemoved();
   }
 }
-function _t(t, e, o) {
+function Ct(t, e, n) {
   if (t.innerHTML = "", !e.length) {
-    const n = document.createElement("div");
-    n.className = "comfort-node-empty", n.textContent = o, t.appendChild(n);
+    const o = document.createElement("div");
+    o.className = "comfort-node-empty", o.textContent = n, t.appendChild(o);
     return;
   }
-  e.forEach((n, r) => {
+  e.forEach((o, r) => {
     const s = document.createElement("div");
-    s.className = "comfort-node-row" + (n.on ? "" : " off"), s.dataset.idx = String(r);
+    s.className = "comfort-node-row" + (o.on ? "" : " off"), s.dataset.idx = String(r);
     const i = document.createElement("button");
-    i.type = "button", i.className = "comfort-toggle " + (n.on ? "on" : "off"), i.textContent = n.on ? "ON" : "OFF", s.appendChild(i);
+    i.type = "button", i.className = "comfort-toggle " + (o.on ? "on" : "off"), i.textContent = o.on ? "ON" : "OFF", s.appendChild(i);
     const c = document.createElement("span");
-    c.className = "comfort-node-title", c.textContent = n.title, c.title = n.title, s.appendChild(c), t.appendChild(s);
+    c.className = "comfort-node-title", c.textContent = o.title, c.title = o.title, s.appendChild(c), t.appendChild(s);
   });
 }
-const Yt = 260;
-class Ct extends O {
+const qt = 260;
+class Et extends O {
   constructor(e) {
-    super(e), this.listEl = null, this.rows = [], this.setSize([Yt, 150]), this.setupListWidget(), $(this);
+    super(e), this.listEl = null, this.rows = [], this.setSize([qt, 150]), this.setupListWidget(), $(this);
   }
   setupListWidget() {
     this.listEl = document.createElement("div"), this.listEl.className = "comfort-node-list", typeof this.addDOMWidget == "function" && this.addDOMWidget("nodes", "comfort_node_list", this.listEl, {
@@ -454,12 +454,12 @@ class Ct extends O {
   }
   renderList() {
     const e = this.listEl;
-    e && _t(e, this.rows, "Connect nodes to control them");
+    e && Ct(e, this.rows, "Connect nodes to control them");
   }
   bindListEvents() {
     const e = this.listEl;
-    e && e.addEventListener("click", (o) => {
-      const r = o.target.closest(".comfort-node-row");
+    e && e.addEventListener("click", (n) => {
+      const r = n.target.closest(".comfort-node-row");
       if (!r) return;
       const s = Number(r.dataset.idx), i = this.rows[s];
       i && (i.on = !i.on, this.applyRowMode(i), this.renderList());
@@ -475,15 +475,15 @@ class Ct extends O {
   }
   /** Rebuild rows from live connections. Called on connect/disconnect/load. */
   syncRows() {
-    const e = C(this), o = [];
-    for (const n of e) {
-      N(n, "title"), N(n, "mode");
-      const r = n.title || n.type || "node", s = n.mode === this.modeOn;
-      o.push({ node: n, title: r, on: s });
+    const e = C(this), n = [];
+    for (const o of e) {
+      N(o, "title"), N(o, "mode");
+      const r = o.title || o.type || "node", s = o.mode === this.modeOn;
+      n.push({ node: o, title: r, on: s });
     }
-    this.rows = o, this.renderList();
+    this.rows = n, this.renderList();
   }
-  /** Title-watch hook: rows show connected node titles; refresh on rename. */
+  /** Prop-watch hook: rows show connected node titles and states. */
   refreshTitleRows() {
     this.syncRows();
   }
@@ -496,13 +496,13 @@ class Ct extends O {
   }
   /** Bulk actions: set every row on, off, or toggle each one. */
   setAllRows(e) {
-    for (const o of this.rows)
-      o.on = e === null ? !o.on : e, this.applyRowMode(o);
+    for (const n of this.rows)
+      n.on = e === null ? !n.on : e, this.applyRowMode(n);
     this.renderList();
   }
 }
 const q = "Fast Muter (comfort)", K = "Fast Bypasser (comfort)";
-class qt extends Ct {
+class Kt extends Et {
   constructor() {
     super(q), this.modeOn = b, this.modeOff = x;
   }
@@ -511,17 +511,17 @@ class qt extends Ct {
 toggle it to mute or unmute that node without leaving the canvas.</p>`;
   }
 }
-class Kt extends Ct {
+class Zt extends Et {
   constructor() {
-    super(K), this.modeOn = b, this.modeOff = v;
+    super(K), this.modeOn = b, this.modeOff = E;
   }
   getHelp() {
     return `<p>Connect any nodes to this node. Each connected node gets a row;
 toggle it to bypass or un-bypass that node without leaving the canvas.</p>`;
   }
 }
-const Zt = qt, Qt = Kt, vt = "Node Collector (comfort)";
-class Xt extends O {
+const Qt = Kt, Xt = Zt, vt = "Node Collector (comfort)";
+class Jt extends O {
   constructor() {
     super(vt), this.addOutput("Output", "*");
   }
@@ -531,29 +531,29 @@ output to a Fast Muter or Fast Bypasser and it will list every node connected
 to this Collector, so one toggle can mute/bypass all of them at once.</p>`;
   }
 }
-const Jt = Xt, Z = "Mute / Bypass Repeater (comfort)";
-class te extends O {
+const te = Jt, Z = "Mute / Bypass Repeater (comfort)";
+class ee extends O {
   constructor() {
     super(Z), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" });
   }
   onConnectedNodesChanged(e) {
     if (this.configuring) return;
-    const o = e;
-    for (const n of o)
-      n.mode !== this.mode && w(n, this.mode);
+    const n = e;
+    for (const o of n)
+      o.mode !== this.mode && w(o, this.mode);
   }
   /** Propagate our mode to every connected input node (or our group). */
-  onModeChange(e, o) {
+  onModeChange(e, n) {
     if (this.configuring) return;
-    const n = C(this);
-    if (n.length) {
-      for (const s of n) w(s, o);
+    const o = C(this);
+    if (o.length) {
+      for (const s of o) w(s, n);
       return;
     }
-    const r = jt(this);
+    const r = Vt(this);
     if (r)
       for (const s of W(r))
-        s !== this && w(s, o);
+        s !== this && w(s, n);
   }
   getHelp() {
     return `<p>When this node's mode (Always / Mute / Bypass) changes, it
@@ -562,23 +562,23 @@ connected but it is inside a group, it applies to the whole group. Connect its
 output to a Fast Muter for a single toggle over all of them.</p>`;
   }
 }
-const ee = te;
+const oe = ee;
 function z(t) {
   return (t == null ? void 0 : t.type) === Z;
 }
-const Et = "Mode Relay (comfort)", oe = {
+const Nt = "Mode Relay (comfort)", ne = {
   ACTIVE: b,
   MUTE: x,
-  BYPASS: v,
+  BYPASS: E,
   NOTHING: -99
-}, ne = {
+}, re = {
   [x]: "on_muted_inputs",
-  [v]: "on_bypassed_inputs",
+  [E]: "on_bypassed_inputs",
   [b]: "on_any_active_inputs"
 };
-class re extends O {
+class se extends O {
   constructor() {
-    super(Et), this.properties.on_muted_inputs = "MUTE", this.properties.on_bypassed_inputs = "BYPASS", this.properties.on_any_active_inputs = "ACTIVE", this.addOutput("REPEATER", "_NODE_REPEATER_", {
+    super(Nt), this.properties.on_muted_inputs = "MUTE", this.properties.on_bypassed_inputs = "BYPASS", this.properties.on_any_active_inputs = "ACTIVE", this.addOutput("REPEATER", "_NODE_REPEATER_", {
       color_on: "#Fc0",
       color_off: "#a80",
       shape: 5
@@ -587,30 +587,30 @@ class re extends O {
   onConnectedNodesChanged(e) {
     this.evaluate();
   }
-  onModeChange(e, o) {
-    if (super.onModeChange(e, o), this.configuring || C(this).length) return;
+  onModeChange(e, n) {
+    if (super.onModeChange(e, n), this.configuring || C(this).length) return;
     const r = st(this).filter(z);
     for (const s of r)
-      s.mode !== o && w(s, o);
+      s.mode !== n && w(s, n);
   }
-  onConnectOutput(e, o, n, r, s) {
+  onConnectOutput(e, n, o, r, s) {
     return r ? z(r) : !0;
   }
   evaluate() {
     var c;
     if (this.configuring) return;
     const e = C(this);
-    let o;
+    let n;
     for (const a of e) {
       const l = a.mode;
-      if (o === void 0) o = l;
+      if (n === void 0) n = l;
       else {
-        if (o === l && (l === x || l === v)) continue;
-        l === b || o === b ? o = b : o = void 0;
+        if (n === l && (l === x || l === E)) continue;
+        l === b || n === b ? n = b : n = void 0;
       }
     }
-    if (o === void 0) return;
-    const n = ne[o], r = n ? oe[String((c = this.properties) == null ? void 0 : c[n])] : o, s = r !== void 0 ? r : o;
+    if (n === void 0) return;
+    const o = re[n], r = o ? ne[String((c = this.properties) == null ? void 0 : c[o])] : n, s = r !== void 0 ? r : n;
     if (s === -99) return;
     const i = st(this).filter(z);
     for (const a of i)
@@ -632,18 +632,18 @@ properties to remap or suppress (NOTHING) each signal.</p>`;
     super.refreshTitleRows(), this.evaluate();
   }
 }
-const se = re, Nt = "Random Unmuter (comfort)";
-class ie extends O {
+const ie = se, kt = "Random Unmuter (comfort)";
+class ce extends O {
   constructor() {
-    super(Nt), this.tempEnabled = null, ct.register(this);
+    super(kt), this.tempEnabled = null, ct.register(this);
   }
   onPromptStart() {
     if (this.configuring) return;
     this.tempEnabled = null;
     const e = C(this);
     if (!e.length || !e.every((r) => r.mode === x)) return;
-    const n = e[Math.floor(Math.random() * e.length)];
-    n && (w(n, b), this.tempEnabled = n);
+    const o = e[Math.floor(Math.random() * e.length)];
+    o && (w(o, b), this.tempEnabled = o);
   }
   onPromptEnd() {
     this.tempEnabled && (w(this.tempEnabled, x), this.tempEnabled = null);
@@ -662,35 +662,35 @@ group.</p>`;
 }
 const L = /* @__PURE__ */ new Set(), ct = {
   register(t) {
-    L.add(t), ce();
+    L.add(t), le();
   },
   unregister(t) {
     L.delete(t);
   }
 };
 let lt = !1;
-function ce() {
+function le() {
   if (lt) return;
   lt = !0;
   const t = k, e = t.queuePrompt;
-  let o = !1;
+  let n = !1;
   t.queuePrompt = async function(...r) {
-    o = !0;
+    n = !0;
     try {
       return await e.apply(t, r);
     } finally {
-      o = !1;
+      n = !1;
     }
   };
-  const n = t.graphToPrompt;
+  const o = t.graphToPrompt;
   t.graphToPrompt = function(...r) {
-    if (o)
+    if (n)
       for (const c of L)
         try {
           c.onPromptStart();
         } catch {
         }
-    const s = n.apply(t, r), i = () => {
+    const s = o.apply(t, r), i = () => {
       for (const c of L)
         try {
           c.onPromptEnd();
@@ -702,31 +702,31 @@ function ce() {
     }) : (i(), s);
   };
 }
-const le = ie, Q = "Fast Groups Muter (comfort)", X = "Fast Groups Bypasser (comfort)", ae = 280;
-function ue(t) {
+const ae = ce, Q = "Fast Groups Muter (comfort)", X = "Fast Groups Bypasser (comfort)", ue = 280;
+function fe(t) {
   const e = t.graph;
   if (!e) return [];
-  const o = /* @__PURE__ */ new Set(), n = [], r = (s) => {
+  const n = /* @__PURE__ */ new Set(), o = [], r = (s) => {
     var i;
-    if (!(!s || o.has(s))) {
-      o.add(s);
-      for (const c of s._groups || s.groups || []) n.push(c);
+    if (!(!s || n.has(s))) {
+      n.add(s);
+      for (const c of s._groups || s.groups || []) o.push(c);
       for (const c of s._subgraphs || []) r(c);
       for (const c of s._nodes || [])
         (i = c.subgraph) != null && i._groups && r(c.subgraph);
     }
   };
-  return r(e), n.sort((s, i) => {
+  return r(e), o.sort((s, i) => {
     var f, d, p, h;
     const c = ((f = s.pos) == null ? void 0 : f[1]) ?? 0, a = ((d = i.pos) == null ? void 0 : d[1]) ?? 0;
     if (c !== a) return c - a;
     const l = ((p = s.pos) == null ? void 0 : p[0]) ?? 0, u = ((h = i.pos) == null ? void 0 : h[0]) ?? 0;
     return l !== u ? l - u : String(s.title || "").localeCompare(String(i.title || ""));
-  }), n;
+  }), o;
 }
-class kt extends wt {
+class Ot extends xt {
   constructor(e) {
-    super(e), this.modeOn = b, this.listEl = null, this.rows = [], this.lastKey = "", this.setSize([ae, 150]), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), $(this);
+    super(e), this.modeOn = b, this.listEl = null, this.rows = [], this.lastKey = "", this.setSize([ue, 150]), this.addOutput("OPT", "*", { color_on: "#Fc0", color_off: "#a80" }), this.setupListWidget(), $(this);
   }
   onAdded() {
     var e;
@@ -740,21 +740,21 @@ class kt extends wt {
       setValue: () => {
       }
     }), this.listEl.addEventListener("click", (e) => {
-      const n = e.target.closest(".comfort-node-row");
-      if (!n) return;
-      const r = this.rows[Number(n.dataset.idx)];
+      const o = e.target.closest(".comfort-node-row");
+      if (!o) return;
+      const r = this.rows[Number(o.dataset.idx)];
       r && (this.applyGroupMode(r, !r.on), this.refresh());
     }), this.refresh();
   }
-  applyGroupMode(e, o) {
-    const n = W(e.group);
-    w(n, o ? this.modeOn : this.modeOff);
+  applyGroupMode(e, n) {
+    const o = W(e.group);
+    w(o, n ? this.modeOn : this.modeOff);
   }
   refresh() {
     var s;
     this.ensureGraphHooks();
-    const e = ue(this), o = String(((s = this.properties) == null ? void 0 : s.matchTitle) || "").trim();
-    let n = e.map((i) => {
+    const e = fe(this), n = String(((s = this.properties) == null ? void 0 : s.matchTitle) || "").trim();
+    let o = e.map((i) => {
       N(i, "title");
       const c = W(i);
       for (const a of c) N(a, "mode");
@@ -764,24 +764,24 @@ class kt extends wt {
         on: c.some((a) => a.mode === b)
       };
     });
-    if (o)
+    if (n)
       try {
-        const i = new RegExp(o, "i");
-        n = n.filter((c) => i.test(c.title));
+        const i = new RegExp(n, "i");
+        o = o.filter((c) => i.test(c.title));
       } catch {
-        n = n.filter((i) => i.title.toLowerCase().includes(o.toLowerCase()));
+        o = o.filter((i) => i.title.toLowerCase().includes(n.toLowerCase()));
       }
-    const r = n.map((i) => i.title + (i.on ? 1 : 0)).join("|");
-    r !== this.lastKey && (this.lastKey = r, this.rows = n, this.renderList());
+    const r = o.map((i) => i.title + (i.on ? 1 : 0)).join("|");
+    r !== this.lastKey && (this.lastKey = r, this.rows = o, this.renderList());
   }
   renderList() {
     const e = this.listEl;
-    e && _t(e, this.rows, "No groups in this workflow");
+    e && Ct(e, this.rows, "No groups in this workflow");
   }
   setAllGroups(e) {
-    for (const o of this.rows) {
-      const n = e === null ? !o.on : e;
-      this.applyGroupMode(o, n);
+    for (const n of this.rows) {
+      const o = e === null ? !n.on : e;
+      this.applyGroupMode(n, o);
     }
     this.refresh();
   }
@@ -803,19 +803,19 @@ right-click → Properties) to filter which groups appear.</p>`;
     const e = this.graph;
     if (!e || at.has(e)) return;
     at.add(e);
-    const o = e.on_change;
+    const n = e.on_change;
     e.on_change = function(s) {
-      o == null || o.call(s, s), F();
+      n == null || n.call(s, s), U();
     };
-    const n = e.add;
+    const o = e.add;
     e.add = function(...s) {
-      const i = n.apply(this, s);
-      return F(), i;
+      const i = o.apply(this, s);
+      return U(), i;
     };
     const r = e.remove;
     e.remove = function(...s) {
       const i = r.apply(this, s);
-      return F(), i;
+      return U(), i;
     };
   }
   onRemoved() {
@@ -823,32 +823,32 @@ right-click → Properties) to filter which groups appear.</p>`;
     Y(this), (e = super.onRemoved) == null || e.call(this);
   }
 }
-class fe extends kt {
+class pe extends Ot {
   constructor() {
     super(Q), this.modeOff = x;
   }
 }
-class pe extends kt {
+class de extends Ot {
   constructor() {
-    super(X), this.modeOff = v;
+    super(X), this.modeOff = E;
   }
 }
-const at = /* @__PURE__ */ new WeakSet(), de = fe, he = pe, ut = /* @__PURE__ */ new Set();
+const at = /* @__PURE__ */ new WeakSet(), he = pe, me = de, ut = /* @__PURE__ */ new Set();
 function _(t, e) {
   ut.has(t) || (ut.add(t), e.category = "comfort", LiteGraph.registerNodeType(t, e));
 }
-function me() {
-  _(q, Zt), _(K, Qt), _(vt, Jt), _(Z, ee), _(Et, se), _(Nt, le), _(Q, de), _(X, he);
-}
-function ge(t) {
-  return (t == null ? void 0 : t.type) === q || (t == null ? void 0 : t.type) === K;
+function ge() {
+  _(q, Qt), _(K, Xt), _(vt, te), _(Z, oe), _(Nt, ie), _(kt, ae), _(Q, he), _(X, me);
 }
 function ye(t) {
+  return (t == null ? void 0 : t.type) === q || (t == null ? void 0 : t.type) === K;
+}
+function be(t) {
   return (t == null ? void 0 : t.type) === Q || (t == null ? void 0 : t.type) === X;
 }
-const be = 10, we = /[/\\]/, ft = "__comfort_original";
-function xe(t, e) {
-  const o = e == null ? void 0 : e.callback, n = /* @__PURE__ */ new Map(), r = [];
+const we = 10, xe = /[/\\]/, ft = "__comfort_original";
+function _e(t, e) {
+  const n = e == null ? void 0 : e.callback, o = /* @__PURE__ */ new Map(), r = [];
   for (const l of t) {
     if (l == null) {
       r.push(l);
@@ -857,17 +857,17 @@ function xe(t, e) {
     const u = String(l), f = u.indexOf("/") > -1 ? "/" : "\\", d = u.indexOf(f);
     if (d > -1) {
       const p = u.slice(0, d), h = u.slice(d + 1);
-      n.has(p) || n.set(p, []), n.get(p).push({ full: u, sub: h });
+      o.has(p) || o.set(p, []), o.get(p).push({ full: u, sub: h });
     } else
       r.push(l);
   }
   const s = (l, u) => ({
     content: u,
     [ft]: l,
-    callback: (f) => o == null ? void 0 : o(f[ft])
-  }), i = [], c = [...n.keys()].sort((l, u) => l.localeCompare(u));
+    callback: (f) => n == null ? void 0 : n(f[ft])
+  }), i = [], c = [...o.keys()].sort((l, u) => l.localeCompare(u));
   for (const l of c) {
-    const u = n.get(l).map((f) => s(f.full, f.sub));
+    const u = o.get(l).map((f) => s(f.full, f.sub));
     i.push({
       content: `📁 ${l}`,
       has_submenu: !0,
@@ -881,132 +881,142 @@ function xe(t, e) {
   const a = Object.assign({}, e);
   return a.callback = void 0, { values: i, options: a };
 }
-function pt(t, e) {
-  return !Array.isArray(t) || t.length < be ? { values: t, options: e } : (e == null ? void 0 : e.className) !== "dark" ? { values: t, options: e } : t.every((o) => o == null || typeof o == "string") ? t.some((o) => typeof o == "string" && we.test(o)) ? xe(t, e) : { values: t, options: e } : { values: t, options: e };
+function pt(t) {
+  if (!Array.isArray(t) || !t.every((o) => o == null || typeof o == "string")) return t;
+  let e = !1;
+  const n = t.filter((o) => {
+    if (o == null) return !0;
+    const r = String(o).split(/[\/]/);
+    return r[r.length - 1].startsWith(".") ? (e = !0, !1) : !0;
+  });
+  return e ? n : t;
 }
-function _e() {
+function dt(t, e) {
+  return !Array.isArray(t) || t.length < we ? { values: t, options: e } : (e == null ? void 0 : e.className) !== "dark" ? { values: t, options: e } : t.every((n) => n == null || typeof n == "string") ? t.some((n) => typeof n == "string" && xe.test(n)) ? _e(t, e) : { values: t, options: e } : { values: t, options: e };
+}
+function Ce() {
   const t = LiteGraph.ContextMenu;
   if (!t || t.__comfortAutoNest) return;
   const e = new Proxy(t, {
-    construct(o, n, r) {
-      const [s, i] = n, c = pt(s, i);
-      return Reflect.construct(o, [c.values, c.options], r);
+    construct(n, o, r) {
+      const [s, i] = o, c = dt(pt(s), i);
+      return Reflect.construct(n, [c.values, c.options], r);
     },
-    apply(o, n, r) {
-      const [s, i] = r, c = pt(s, i);
-      return o.call(n, c.values, c.options);
+    apply(n, o, r) {
+      const [s, i] = r, c = dt(pt(s), i);
+      return n.call(o, c.values, c.options);
     }
   });
   e.__comfortAutoNest = !0, LiteGraph.ContextMenu = e;
 }
-const A = "Any Router (comfort)", Ot = 5, D = 8;
-function E(t) {
+const A = "Any Router (comfort)", Mt = 5, D = 8;
+function v(t) {
   return (t.inputs || []).filter((e) => e && e.name && e.name.startsWith("any_"));
 }
-function Mt(t) {
+function Rt(t) {
   var e;
   return (t == null ? void 0 : t.type) === A || (t == null ? void 0 : t.comfyClass) === A || ((e = t == null ? void 0 : t.constructor) == null ? void 0 : e.comfyClass) === A;
 }
 function J(t) {
-  const e = E(t).length + 1;
+  const e = v(t).length + 1;
   return "any_" + String(e).padStart(2, "0");
 }
-function Ce(t) {
-  const e = (t.widgets || []).find((o) => o.name === "selection");
+function Ee(t) {
+  const e = (t.widgets || []).find((n) => n.name === "selection");
   return e && e.value === "active_source" ? "active_source" : "non_empty";
 }
-function ve(t, e, o) {
+function ve(t, e, n) {
   var c, a;
-  const n = t.graph || k.graph;
-  if (!n) return null;
-  let r = t, s = o, i = e;
+  const o = t.graph || k.graph;
+  if (!o) return null;
+  let r = t, s = n, i = e;
   for (let l = 0; l < 12; l++) {
     const u = i === "input" ? (c = r.inputs) == null ? void 0 : c[s] : (a = r.outputs) == null ? void 0 : a[s];
     if (!u) return null;
     if (u.type != null && u.type !== "*") return String(u.type);
     const f = i === "input" ? u.link : u.links && u.links[0];
     if (f == null) return null;
-    const d = n.links && (n.links.get ? n.links.get(f) : n.links[f]) || null;
-    if (!d || (i === "input" ? (r = n.getNodeById(d.origin_id), s = d.origin_slot, i = "output") : (r = n.getNodeById(d.target_id), s = d.target_slot, i = "input"), !r)) return null;
+    const d = o.links && (o.links.get ? o.links.get(f) : o.links[f]) || null;
+    if (!d || (i === "input" ? (r = o.getNodeById(d.origin_id), s = d.origin_slot, i = "output") : (r = o.getNodeById(d.target_id), s = d.target_slot, i = "input"), !r)) return null;
   }
   return null;
 }
-function Ee(t) {
+function Ne(t) {
   const e = t.inputs || [];
-  for (let o = 0; o < e.length; o++) {
-    if (e[o].link == null) continue;
-    const n = ve(t, "input", o);
-    if (n && n !== "*") return n;
+  for (let n = 0; n < e.length; n++) {
+    if (e[n].link == null) continue;
+    const o = ve(t, "input", n);
+    if (o && o !== "*") return o;
   }
   return "*";
 }
-function Rt(t) {
+function At(t) {
   if (t.removed || !t.inputs) return;
-  const e = E(t).filter((s) => s.link != null).length, o = Math.max(Ot, e + 1);
-  let n = E(t).length;
-  for (; n < o; )
-    t.addInput(J(t), "*"), n++;
-  for (; n > o; ) {
+  const e = v(t).filter((s) => s.link != null).length, n = Math.max(Mt, e + 1);
+  let o = v(t).length;
+  for (; o < n; )
+    t.addInput(J(t), "*"), o++;
+  for (; o > n; ) {
     const s = t.inputs[t.inputs.length - 1];
     if (s && s.name.startsWith("any_") && s.link == null)
-      t.removeInput(t.inputs.length - 1), n--;
+      t.removeInput(t.inputs.length - 1), o--;
     else
       break;
   }
-  const r = Ee(t);
-  for (const s of E(t)) s.type = r;
+  const r = Ne(t);
+  for (const s of v(t)) s.type = r;
   for (const s of t.outputs || [])
     s.type = r, s.label = String(r);
 }
 const G = /* @__PURE__ */ new WeakMap();
-function Ne(t) {
+function ke(t) {
   const e = G.get(t);
   e != null && window.clearTimeout(e), G.set(
     t,
     window.setTimeout(() => {
-      G.delete(t), t.removed || Rt(t);
+      G.delete(t), t.removed || At(t);
     }, 64)
   );
 }
-function ke(t) {
+function Oe(t) {
   if (!t || t.__comfortAnyRouter) return;
   t.__comfortAnyRouter = !0, t.prototype.stabilizeComfortAnyRouter = function() {
-    Rt(this);
+    At(this);
   }, t.prototype.getHelp = function() {
     return "<p>Routes one of several <b>Any</b> inputs to a single Any output.</p><p><b>Non-empty:</b> the first input that is not empty wins.</p><p><b>Active source:</b> the first input whose source node is active (not muted / not bypassed) wins. Mute or bypass a source to switch away from it.</p>";
   };
   const e = t.prototype.configure;
-  t.prototype.configure = function(n) {
+  t.prototype.configure = function(o) {
     try {
-      const s = (n && n.inputs || []).filter(
+      const s = (o && o.inputs || []).filter(
         (i) => i && i.name && i.name.startsWith("any_")
       ).length;
-      for (; E(this).length < s; )
+      for (; v(this).length < s; )
         this.addInput(J(this), "*");
     } catch {
     }
-    const r = e ? e.call(this, n) : void 0;
+    const r = e ? e.call(this, o) : void 0;
     try {
-      this.removed || (this.__comfortLoaded = !0, this.stabilizeComfortAnyRouter(), At(this));
+      this.removed || (this.__comfortLoaded = !0, this.stabilizeComfortAnyRouter(), St(this));
     } catch {
     }
     return r;
   };
-  const o = t.prototype.onConnectionsChange;
-  t.prototype.onConnectionsChange = function(...n) {
-    const r = o ? o.apply(this, n) : void 0;
+  const n = t.prototype.onConnectionsChange;
+  t.prototype.onConnectionsChange = function(...o) {
+    const r = n ? n.apply(this, o) : void 0;
     try {
-      Ne(this);
+      ke(this);
     } catch {
     }
     return r;
   };
 }
-function At(t) {
+function St(t) {
   if (t.__comfortSpacer || typeof t.addDOMWidget != "function") return;
   const e = document.createElement("div");
   e.className = "comfort-spacer", e.style.height = D + "px";
-  const o = t.addDOMWidget("comfort_spacer", "comfort_spacer", e, {
+  const n = t.addDOMWidget("comfort_spacer", "comfort_spacer", e, {
     serialize: !1,
     hideOnZoom: !0,
     getValue: () => null,
@@ -1014,10 +1024,10 @@ function At(t) {
     },
     getMinHeight: () => D,
     getMaxHeight: () => D
-  }), n = t.widgets || [], r = n.indexOf(o);
-  r > 0 && (n.splice(r, 1), n.unshift(o)), t.__comfortSpacer = !0;
+  }), o = t.widgets || [], r = o.indexOf(n);
+  r > 0 && (o.splice(r, 1), o.unshift(n)), t.__comfortSpacer = !0;
 }
-function Oe(t) {
+function Me(t) {
   try {
     if (typeof t.computeSize != "function" || !t.size) return;
     const e = t.computeSize();
@@ -1025,28 +1035,28 @@ function Oe(t) {
   } catch {
   }
 }
-function Me(t) {
-  let e = 0;
-  for (; E(t).length < Ot && e++ < 24; )
-    t.addInput(J(t), "*");
-  At(t), t.__comfortLoaded || Oe(t), Ae();
-}
 function Re(t) {
-  return !!t && t.mode !== x && t.mode !== v;
+  let e = 0;
+  for (; v(t).length < Mt && e++ < 24; )
+    t.addInput(J(t), "*");
+  St(t), t.__comfortLoaded || Me(t), Se();
 }
-function dt(t) {
+function Ae(t) {
+  return !!t && t.mode !== x && t.mode !== E;
+}
+function ht(t) {
   if (!t || typeof t != "object") return;
-  const e = t.output, o = k.graph;
-  if (!(!e || !o || !o.nodes))
-    for (const n of o.nodes) {
-      if (!Mt(n) || n.mode === x || n.mode === v || Ce(n) !== "active_source") continue;
-      const r = e[n.id];
+  const e = t.output, n = k.graph;
+  if (!(!e || !n || !n.nodes))
+    for (const o of n.nodes) {
+      if (!Rt(o) || o.mode === x || o.mode === E || Ee(o) !== "active_source") continue;
+      const r = e[o.id];
       if (!r || !r.inputs) continue;
-      const s = n.inputs || [];
+      const s = o.inputs || [];
       let i = null;
       for (let c = 0; c < s.length; c++) {
-        const a = n.getInputNode ? n.getInputNode(c) : null;
-        if (Re(a)) {
+        const a = o.getInputNode ? o.getInputNode(c) : null;
+        if (Ae(a)) {
           i = s[c].name;
           break;
         }
@@ -1055,87 +1065,87 @@ function dt(t) {
         c.startsWith("any_") && c !== i && delete r.inputs[c];
     }
 }
-let ht = !1;
-function Ae() {
-  if (ht) return;
-  ht = !0;
+let mt = !1;
+function Se() {
+  if (mt) return;
+  mt = !0;
   const t = k, e = t.graphToPrompt;
-  typeof e == "function" && (t.graphToPrompt = function(...o) {
-    const n = e.apply(t, o);
-    return n && typeof n.then == "function" ? n.then(
-      (r) => (dt(r), r),
+  typeof e == "function" && (t.graphToPrompt = function(...n) {
+    const o = e.apply(t, n);
+    return o && typeof o.then == "function" ? o.then(
+      (r) => (ht(r), r),
       (r) => {
         throw r;
       }
-    ) : (dt(n), n);
+    ) : (ht(o), o);
   });
 }
-const S = "Image Comparer (comfort)", Se = 512, mt = 488;
-function Ie(t) {
+const S = "Image Comparer (comfort)", Ie = 512, gt = 488;
+function Le(t) {
   var e;
   return (t == null ? void 0 : t.type) === S || (t == null ? void 0 : t.comfyClass) === S || ((e = t == null ? void 0 : t.constructor) == null ? void 0 : e.comfyClass) === S;
 }
 const B = /* @__PURE__ */ new WeakMap();
-function gt(t) {
+function yt(t) {
   var r, s;
   const e = new URLSearchParams({
     filename: t.filename,
     type: t.type,
     subfolder: t.subfolder
-  }), o = k;
-  let n;
+  }), n = k;
+  let o;
   try {
-    n = ((s = (r = o == null ? void 0 : o.api) == null ? void 0 : r.apiURL) == null ? void 0 : s.call(r, `/view?${e.toString()}`)) ?? `/view?${e.toString()}`;
+    o = ((s = (r = n == null ? void 0 : n.api) == null ? void 0 : r.apiURL) == null ? void 0 : s.call(r, `/view?${e.toString()}`)) ?? `/view?${e.toString()}`;
   } catch {
-    n = `/view?${e.toString()}`;
+    o = `/view?${e.toString()}`;
   }
-  return typeof (o == null ? void 0 : o.getPreviewFormatParam) == "function" && (n += o.getPreviewFormatParam()), typeof (o == null ? void 0 : o.getRandParam) == "function" && (n += o.getRandParam()), n;
+  return typeof (n == null ? void 0 : n.getPreviewFormatParam) == "function" && (o += n.getPreviewFormatParam()), typeof (n == null ? void 0 : n.getRandParam) == "function" && (o += n.getRandParam()), o;
 }
 function j(t, e) {
   t.handle.style.left = `${e}%`, t.leftImg.style.clipPath = `inset(0 ${100 - e}% 0 0)`;
 }
-function Le(t) {
+function Pe(t) {
   t.navEl.innerHTML = "";
   const e = [
-    { label: "LEFT", count: t.leftUrls.length, idx: () => t.leftIdx, set: (o) => {
-      t.leftIdx = o, t.leftImg.src = t.leftUrls[o] || "";
+    { label: "LEFT", count: t.leftUrls.length, idx: () => t.leftIdx, set: (n) => {
+      t.leftIdx = n, t.leftImg.src = t.leftUrls[n] || "";
     } },
-    { label: "RIGHT", count: t.rightUrls.length, idx: () => t.rightIdx, set: (o) => {
-      t.rightIdx = o, t.rightImg.src = t.rightUrls[o] || "";
+    { label: "RIGHT", count: t.rightUrls.length, idx: () => t.rightIdx, set: (n) => {
+      t.rightIdx = n, t.rightImg.src = t.rightUrls[n] || "";
     } }
   ];
-  for (const o of e) {
-    if (o.count <= 1) continue;
-    const n = document.createElement("span");
-    n.className = "ci-nav-side";
+  for (const n of e) {
+    if (n.count <= 1) continue;
+    const o = document.createElement("span");
+    o.className = "ci-nav-side";
     const r = document.createElement("button");
-    r.type = "button", r.textContent = "‹", r.addEventListener("click", () => o.set(Math.max(0, o.idx() - 1)));
+    r.type = "button", r.textContent = "‹", r.addEventListener("click", () => n.set(Math.max(0, n.idx() - 1)));
     const s = document.createElement("span");
-    s.textContent = `${o.label} ${o.idx() + 1}/${o.count}`;
+    s.textContent = `${n.label} ${n.idx() + 1}/${n.count}`;
     const i = document.createElement("button");
-    i.type = "button", i.textContent = "›", i.addEventListener("click", () => o.set(Math.min(o.count - 1, o.idx() + 1))), n.appendChild(r), n.appendChild(s), n.appendChild(i), t.navEl.appendChild(n);
+    i.type = "button", i.textContent = "›", i.addEventListener("click", () => n.set(Math.min(n.count - 1, n.idx() + 1))), o.appendChild(r), o.appendChild(s), o.appendChild(i), t.navEl.appendChild(o);
   }
 }
-function Pe(t, e, o) {
-  t.leftUrls = e, t.rightUrls = o, t.leftIdx >= t.leftUrls.length && (t.leftIdx = 0), t.rightIdx >= t.rightUrls.length && (t.rightIdx = 0);
-  const n = t.leftUrls.length > 0, r = t.rightUrls.length > 0;
-  t.leftImg.src = n ? t.leftUrls[t.leftIdx] : "", t.rightImg.src = r ? t.rightUrls[t.rightIdx] : "", t.leftImg.style.display = n ? "" : "none", t.rightImg.style.display = r ? "" : "none", t.handle.style.display = "none", t.leftImg.style.clipPath = "none", t.empty.style.display = n || r ? "none" : "", j(t, 100), Le(t);
+function Te(t, e, n) {
+  t.leftUrls = e, t.rightUrls = n, t.leftIdx >= t.leftUrls.length && (t.leftIdx = 0), t.rightIdx >= t.rightUrls.length && (t.rightIdx = 0);
+  const o = t.leftUrls.length > 0, r = t.rightUrls.length > 0;
+  t.leftImg.src = o ? t.leftUrls[t.leftIdx] : "", t.rightImg.src = r ? t.rightUrls[t.rightIdx] : "", t.leftImg.style.display = o ? "" : "none", t.rightImg.style.display = r ? "" : "none", t.handle.style.display = "none", t.leftImg.style.clipPath = "none", t.empty.style.display = o || r ? "none" : "", j(t, 100), Pe(t);
 }
-function Te(t, e) {
-  const o = B.get(t);
-  if (!o) return;
-  const n = e || {}, r = Array.isArray(n.left_images) ? n.left_images.map(gt) : [], s = Array.isArray(n.right_images) ? n.right_images.map(gt) : [];
-  Pe(o, r, s);
+function Fe(t, e) {
+  const n = B.get(t);
+  if (!n) return;
+  const o = e || {}, r = Array.isArray(o.left_images) ? o.left_images.map(yt) : [], s = Array.isArray(o.right_images) ? o.right_images.map(yt) : [];
+  Te(n, r, s);
 }
 function Ue(t) {
   var f, d;
   if (B.has(t)) return;
   const e = document.createElement("div");
   e.className = "comfort-image-comparer";
-  const o = document.createElement("div");
-  o.className = "ci-nav", e.appendChild(o);
   const n = document.createElement("div");
-  n.className = "ci-stage";
+  n.className = "ci-nav", e.appendChild(n);
+  const o = document.createElement("div");
+  o.className = "ci-stage";
   const r = document.createElement("img");
   r.className = "ci-img ci-right", r.draggable = !1;
   const s = document.createElement("img");
@@ -1143,31 +1153,31 @@ function Ue(t) {
   const i = document.createElement("div");
   i.className = "ci-handle";
   const c = document.createElement("div");
-  c.className = "ci-empty", c.textContent = "Connect images and run", n.appendChild(r), n.appendChild(s), n.appendChild(i), n.appendChild(c), e.appendChild(n);
+  c.className = "ci-empty", c.textContent = "Connect images and run", o.appendChild(r), o.appendChild(s), o.appendChild(i), o.appendChild(c), e.appendChild(o);
   const a = {
     el: e,
-    stage: n,
+    stage: o,
     leftImg: s,
     rightImg: r,
     handle: i,
     empty: c,
-    navEl: o,
+    navEl: n,
     leftUrls: [],
     rightUrls: [],
     leftIdx: 0,
     rightIdx: 0,
     rafId: null
   };
-  B.set(t, a), n.addEventListener("mouseenter", () => {
+  B.set(t, a), o.addEventListener("mouseenter", () => {
     a.leftUrls.length && a.rightUrls.length && (a.handle.style.display = "");
-  }), n.addEventListener("mouseleave", () => {
+  }), o.addEventListener("mouseleave", () => {
     a.handle.style.display = "none", j(a, 100);
-  }), n.addEventListener("mousemove", (p) => {
-    const h = n.getBoundingClientRect();
+  }), o.addEventListener("mousemove", (p) => {
+    const h = o.getBoundingClientRect();
     if (h.width <= 0) return;
     const m = Math.max(0, Math.min(100, (p.clientX - h.left) / h.width * 100));
     j(a, m);
-  }), t.__comfortLoaded || (f = t.setSize) == null || f.call(t, [Se, mt]), typeof t.addDOMWidget == "function" && t.addDOMWidget("compare", "comfort_image_compare", e, {
+  }), t.__comfortLoaded || (f = t.setSize) == null || f.call(t, [Ie, gt]), typeof t.addDOMWidget == "function" && t.addDOMWidget("compare", "comfort_image_compare", e, {
     serialize: !1,
     hideOnZoom: !0
   });
@@ -1177,7 +1187,7 @@ function Ue(t) {
       a.rafId = null;
       return;
     }
-    const p = t.size ? t.size[1] : mt, h = (y = t.widgets) == null ? void 0 : y.find((M) => M.name === "compare"), m = h && typeof h.y == "number" ? h.y : 20;
+    const p = t.size ? t.size[1] : gt, h = (y = t.widgets) == null ? void 0 : y.find((M) => M.name === "compare"), m = h && typeof h.y == "number" ? h.y : 20;
     e.style.height = Math.max(60, p - m - 20) + "px", a.rafId = requestAnimationFrame(l);
   };
   a.rafId = requestAnimationFrame(l);
@@ -1186,50 +1196,50 @@ function Ue(t) {
     a.rafId !== null && cancelAnimationFrame(a.rafId), u == null || u(...p);
   };
 }
-function Fe(t) {
+function ze(t) {
   if (!t || t.__comfortImageComparer) return;
   const e = t.prototype.onExecuted;
-  t.prototype.onExecuted = function(n) {
-    e == null || e.call(this, n), Te(this, n);
+  t.prototype.onExecuted = function(o) {
+    e == null || e.call(this, o), Fe(this, o);
   };
-  const o = t.prototype.configure;
-  t.prototype.configure = function(n) {
-    o == null || o.call(this, n), this.__comfortLoaded = !0;
+  const n = t.prototype.configure;
+  t.prototype.configure = function(o) {
+    n == null || n.call(this, o), this.__comfortLoaded = !0;
   }, t.__comfortImageComparer = !0;
 }
-const ze = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;height:100%;overflow-y:auto;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;flex-shrink:0;min-width:118px;justify-content:center}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{min-width:44px;padding:3px 8px;border-radius:6px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer;flex-shrink:0;white-space:nowrap}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 0;min-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px;flex-shrink:0}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0;flex-shrink:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{width:100%;box-sizing:border-box;padding:4px 6px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer;white-space:nowrap;margin:0}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;height:100%;overflow-y:auto;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.comfort-group-btn{display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:inherit;font-weight:600;line-height:1;-webkit-user-select:none;user-select:none;cursor:pointer;color:#e8e8e8;box-shadow:0 1px 3px #0006}.comfort-btn-mute{background:#7850c88c;border:1px solid rgba(120,80,200,.9)}.comfort-btn-byp{background:#c88c288c;border:1px solid rgba(200,140,40,.9)}.comfort-group-btn:hover{filter:brightness(1.3)}.comfort-image-comparer{display:flex;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0}.ci-nav{min-height:28px;flex-shrink:0;display:flex;gap:12px;align-items:center;padding:2px 4px;font-size:12px;color:#bbb;min-width:0}.ci-nav-side{display:inline-flex;align-items:center;gap:4px}.ci-nav-side button{width:18px;height:18px;line-height:1;border:1px solid rgba(127,127,127,.5);border-radius:4px;background:transparent;color:inherit;cursor:pointer;padding:0}.ci-nav-side button:hover{background:#7f7f7f40}.ci-stage{position:relative;width:100%;min-width:0;flex:1;min-height:100px;overflow:hidden;background:#161616;border-radius:6px}.ci-img{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:contain}.ci-handle{position:absolute;top:0;left:50%;width:2px;height:100%;background:#ffffffd9;box-shadow:0 0 4px #0009;pointer-events:none}.ci-empty{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;color:#888;font-size:13px;pointer-events:none}", tt = document.createElement("style");
+const De = ".comfort-lora-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;height:100%;overflow-y:auto;box-sizing:border-box}.comfort-lora-header,.comfort-lora-footer{display:flex;align-items:center;gap:6px;padding:4px 6px}.comfort-lora-header{justify-content:space-between}.comfort-header-labels{display:inline-flex;gap:10px;flex-shrink:0;min-width:118px;justify-content:center}.comfort-col-label{opacity:.6;font-size:11px}.comfort-lora-row{display:flex;align-items:center;gap:6px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-lora-row.off .comfort-name{opacity:.5}.comfort-toggle{min-width:44px;padding:3px 8px;border-radius:6px;border:1px solid rgba(127,127,127,.5);background:transparent;color:inherit;font-size:10px;cursor:pointer;flex-shrink:0;white-space:nowrap}.comfort-toggle.on{background:#2e7d5b;border-color:#2e7d5b;color:#fff}.comfort-toggle.off{opacity:.85}.comfort-name{flex:1 1 0;min-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.comfort-spacer{flex:0 0 8px}.comfort-strength{display:flex;align-items:center;gap:2px;flex-shrink:0}.comfort-strength button{width:18px;height:18px;border:1px solid rgba(127,127,127,.4);border-radius:4px;background:transparent;color:inherit;font-size:11px;line-height:1;cursor:pointer;padding:0}.comfort-strength input{width:54px;padding:1px 2px;font-size:11px;text-align:center;background:#00000040;border:1px solid rgba(127,127,127,.35);border-radius:4px;color:inherit}.comfort-remove{width:18px;height:18px;border:none;background:transparent;color:inherit;font-size:13px;line-height:1;cursor:pointer;border-radius:4px;padding:0;flex-shrink:0}.comfort-remove:hover{background:#c8505066}.comfort-add-btn{width:100%;box-sizing:border-box;padding:4px 6px;border-radius:6px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font-size:12px;cursor:pointer;white-space:nowrap;margin:0}.comfort-add-btn:hover{background:#7f7f7f33}.comfort-node-list{font-family:inherit;font-size:12px;color:var(--text-color, #eeeeee);-webkit-user-select:none;user-select:none;width:100%;height:100%;overflow-y:auto;box-sizing:border-box}.comfort-node-empty{padding:6px;opacity:.55;font-style:italic}.comfort-node-row{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:3px 0;border-radius:6px;background:#7f7f7f1f}.comfort-node-row.off .comfort-node-title{opacity:.5}.comfort-node-title{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.comfort-group-btn{display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:inherit;font-weight:600;line-height:1;-webkit-user-select:none;user-select:none;cursor:pointer;color:#e8e8e8;box-shadow:0 1px 3px #0006}.comfort-btn-mute{background:#7850c88c;border:1px solid rgba(120,80,200,.9)}.comfort-btn-byp{background:#c88c288c;border:1px solid rgba(200,140,40,.9)}.comfort-group-btn:hover{filter:brightness(1.3)}.comfort-image-comparer{display:flex;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0}.ci-nav{min-height:28px;flex-shrink:0;display:flex;gap:12px;align-items:center;padding:2px 4px;font-size:12px;color:#bbb;min-width:0}.ci-nav-side{display:inline-flex;align-items:center;gap:4px}.ci-nav-side button{width:18px;height:18px;line-height:1;border:1px solid rgba(127,127,127,.5);border-radius:4px;background:transparent;color:inherit;cursor:pointer;padding:0}.ci-nav-side button:hover{background:#7f7f7f40}.ci-stage{position:relative;width:100%;min-width:0;flex:1;min-height:100px;overflow:hidden;background:#161616;border-radius:6px}.ci-img{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:contain}.ci-handle{position:absolute;top:0;left:50%;width:2px;height:100%;background:#ffffffd9;box-shadow:0 0 4px #0009;pointer-events:none}.ci-empty{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;color:#888;font-size:13px;pointer-events:none}", tt = document.createElement("style");
 tt.setAttribute("data-comfort-plugin", "true");
-tt.textContent = ze;
+tt.textContent = De;
 document.head.appendChild(tt);
-me();
-_e();
+ge();
+Ce();
 k.registerExtension({
   name: "comfort.PowerLoraLoader",
   beforeRegisterNodeDef(t, e) {
-    if (e && e.name === A && ke(t), e && e.name === S && Fe(t), e && e.name === R) {
-      const o = t.prototype.configure;
-      t.prototype.configure = function(n) {
-        return this.__comfortLoaded = !0, o.call(this, n);
+    if (e && e.name === A && Oe(t), e && e.name === S && ze(t), e && e.name === R) {
+      const n = t.prototype.configure;
+      t.prototype.configure = function(o) {
+        return this.__comfortLoaded = !0, n.call(this, o);
       };
     }
   },
   nodeCreated(t) {
     if (et(t)) {
-      Ht(t);
+      Bt(t);
       return;
     }
-    if (Mt(t)) {
-      Me(t);
+    if (Rt(t)) {
+      Re(t);
       return;
     }
-    Ie(t) && Ue(t);
+    Le(t) && Ue(t);
   },
   getNodeMenuItems(t) {
     if (et(t)) {
-      const e = Pt(t);
+      const e = Tt(t);
       if (e) {
-        const o = (n) => {
-          e.showSeparate = n, zt(t);
+        const n = (o) => {
+          e.showSeparate = o, Dt(t);
         };
         return [
           null,
@@ -1238,25 +1248,25 @@ k.registerExtension({
             has_submenu: !0,
             submenu: {
               options: [
-                { content: "Single Strength", checked: () => !e.showSeparate, callback: () => o(!1) },
-                { content: "Separate Model & Clip", checked: () => e.showSeparate, callback: () => o(!0) }
+                { content: "Single Strength", checked: () => !e.showSeparate, callback: () => n(!1) },
+                { content: "Separate Model & Clip", checked: () => e.showSeparate, callback: () => n(!0) }
               ]
             }
           }
         ];
       }
     }
-    if (ge(t)) {
-      const e = (o) => {
-        var n;
-        return (n = t.setAllRows) == null ? void 0 : n.call(t, o);
+    if (ye(t)) {
+      const e = (n) => {
+        var o;
+        return (o = t.setAllRows) == null ? void 0 : o.call(t, n);
       };
       return [null, { content: "Enable all", callback: () => e(!0) }, { content: "Disable all", callback: () => e(!1) }, { content: "Toggle all", callback: () => e(null) }];
     }
-    if (ye(t)) {
-      const e = (o) => {
-        var n;
-        return (n = t.setAllGroups) == null ? void 0 : n.call(t, o);
+    if (be(t)) {
+      const e = (n) => {
+        var o;
+        return (o = t.setAllGroups) == null ? void 0 : o.call(t, n);
       };
       return [null, { content: "Enable all", callback: () => e(!0) }, { content: "Disable all", callback: () => e(!1) }, { content: "Toggle all", callback: () => e(null) }];
     }

@@ -54,6 +54,7 @@ All dates UTC. Status: in progress / done / blocked.
 - ~~Progress bar~~: **removed** (ComfyUI already ships a native progress bar). Was a DOM bar for queue position + execution progress (nodes done, current node, step/max) with a red error state.
 - [x] Auto-nest subdirectories: wraps `LiteGraph.ContextMenu` and splits flat combo lists (>10 items) that contain subdirectory paths into folder submenus (folder prefix). Verified: top-level shows folders + root files. Clicking a folder opens the sub-path list. Clicking a leaf passes the full path.
 - [x] Group header quick toggles: M / B buttons in a group's header on hover/selection. M mutes/unmutes, B bypasses/un-bypasses all nodes in the group. Implemented as a DOM overlay (positioned every frame from the canvas transform) so it stays on top of both the canvas and the DOM nodes of Nodes 2.0. Verified show/hide + both toggles on Nodes 2.0 and legacy LiteGraph.
+- [x] Auto-nest: dotfiles excluded from file-list menus — entries whose file name starts with `.` (`.DS_Store`, `._*.safetensors`) are filtered by the ContextMenu wrapper before nesting, so they are hidden from all file pickers (model/VAE/CLIP combos, Power LoRA chooser).
 
 #### M3 design notes
 - Auto-nest and group toggles both hook `LiteGraph.ContextMenu` / `canvas.onDrawForeground` (the official foreground callback, called in both renderers). Setup runs in the extension `init()` because `app.canvas` is not available at module-load time.
