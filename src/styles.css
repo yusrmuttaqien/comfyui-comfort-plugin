@@ -309,3 +309,13 @@
   font-size: 13px;
   pointer-events: none;
 }
+
+/* Legacy renderer: restore hover highlight in dark context menus.
+   Core's `.litegraph.litecontextmenu.dark .litemenu-entry.submenu` rule
+   (specificity 0,5,0) outranks the base `:hover` rule (0,4,0), so dark
+   menus show no hover highlight at all. This rule (0,8,0) restores it,
+   using the same color the Vue renderer's menus use. */
+.litegraph.litecontextmenu.dark .litemenu-entry.submenu:hover:not(.disabled):not(.separator) {
+  background-color: var(--secondary, #2e3440);
+  color: var(--foreground, #fff);
+}

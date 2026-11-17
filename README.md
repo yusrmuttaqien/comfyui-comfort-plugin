@@ -91,7 +91,9 @@ These are always-on behaviors, not nodes:
   with subdirectory paths are split into folder submenus (folders show a folder
   prefix), so long flat lists become navigable trees. Files without a path are
   listed as-is. Dotfiles (names starting with `.` — e.g. `.DS_Store`,
-  `._*.safetensors`) are excluded from file-list menus.
+  `._*.safetensors`) are excluded from file-list menus. In the legacy renderer,
+  these dark menus also get a proper hover highlight (ComfyUI's dark menu CSS
+  suppresses it) and the first folder no longer stays highlighted after opening.
 
 ## Install
 

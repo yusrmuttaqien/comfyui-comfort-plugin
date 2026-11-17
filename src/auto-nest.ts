@@ -86,6 +86,28 @@ function maybeNest(values: any, options: any): { values: any; options: any } {
   return buildNested(values, options);
 }
 
+// The core "filter list" extension highlights the combo's current value with
+// an inline `#ccc !important`. In a nested menu the value lives inside a
+// submenu (never a top-level string), so the extension falls back to pinning
+// the first row — leaving a stuck highlight on the first folder. Its pin is
+// applied in a frame-1 rAF scheduled during construction (and its proxy may
+// wrap ours, so its rAF can register after ours). Clear on frame 2: after
+// its pin in either wrapper order.
+function clearStalePin(menu: any): void {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const root = menu?.root;
+      if (!root) return;
+      for (const row of root.querySelectorAll("div.litemenu-entry.has_submenu")) {
+        if (row.style.backgroundColor) {
+          row.style.setProperty("background-color", "");
+          row.style.setProperty("color", "");
+        }
+      }
+    });
+  });
+}
+
 function installAutoNest(): void {
   const target = LiteGraph.ContextMenu as any;
   if (!target || target.__comfortAutoNest) return;
@@ -93,13 +115,19 @@ function installAutoNest(): void {
   const wrapped = new Proxy(target, {
     construct(t, args, newTarget) {
       const [values, options] = args as any[];
-      const next = maybeNest(stripDotFiles(values), options);
-      return Reflect.construct(t, [next.values, next.options], newTarget);
+      const cleaned = stripDotFiles(values);
+      const next = maybeNest(cleaned, options);
+      const menu = Reflect.construct(t, [next.values, next.options], newTarget);
+      if (next.values !== cleaned) clearStalePin(menu);
+      return menu;
     },
     apply(t, thisArg, args) {
       const [values, options] = args as any[];
-      const next = maybeNest(stripDotFiles(values), options);
-      return t.call(thisArg, next.values, next.options);
+      const cleaned = stripDotFiles(values);
+      const next = maybeNest(cleaned, options);
+      const menu = t.call(thisArg, next.values, next.options);
+      if (next.values !== cleaned) clearStalePin(menu);
+      return menu;
     },
   });
   wrapped.__comfortAutoNest = true;
