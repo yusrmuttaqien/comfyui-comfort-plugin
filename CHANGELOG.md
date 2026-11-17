@@ -80,7 +80,7 @@ All dates UTC. Status: in progress / done / blocked.
 - Composes with the Random Unmuter: both wrap `app.queuePrompt`. The gate suspends first, then the unmuter acts during the prompt build.
 
 ### Refactor and performance (verified on Nodes 2.0)
-- **Unified scheduler** (`src/scheduler.ts`): a single 500 ms clock that all periodic jobs register with at a tick cadence, replacing four independent `setInterval` timers (Relay 500 ms, Fast Groups 1 s, NInfer ambient 3 s, NInfer elapsed 500 ms). Relay, Fast Groups, and NInfer polling all run off this one timer now.
+- **Unified scheduler** (`src/scheduler.ts`): a single 500 ms clock that all periodic jobs register with at a tick cadence, replacing four independent `setInterval` timers (Relay 500 ms, Fast Groups 1 s, NInfer ambient 3 s, NInfer elapsed 500 ms). Relay, Fast Groups, and NInfer polling all run off this one timer now. *(Superseded: Relay and Fast Groups are now event-driven and `scheduler.ts` is removed — see Event-driven updates; NInfer moved to the companion plugin.)*
 - **NInfer: skip polling while the tab is hidden**: the ambient model refresh no longer fires network requests when `document.hidden`. Verified: 0 `/comfort/ninfer/forward` calls over a 4.5 s hidden window vs. 2 over an equal visible window.
 - **NInfer: shared `/v1/models` cache**: a short-TTL result cache plus in-flight coalescing means multiple gate nodes pointing at the same NInfer issue one request per poll instead of one each. Verified: 2 gates on one URL > 1 fetch per cycle. The suspend flow and the post-suspend refresh bypass the cache for a fresh read.
 - **Shared toggle-row helper** (`src/toggle-list.ts`): the Fast Muter/Bypasser and Fast Groups nodes draw an identical row, so the DOM building + sizing now live in one place (~40 lines of duplication removed).
@@ -122,6 +122,16 @@ A server-backed `Image Comparer (comfort)` node that compares two images with a 
 - Removed no-op `onConnectedNodesChanged` overrides. Base class now provides a default empty implementation.
 - Removed dead code: `node.minHeight` no-op, `setTimeout` re-assert, `configure` size clamp, `el.style.width` in rAF loop.
 - Build 62.45 kB (gzip 17.27 kB).
+
+### Event-driven updates (verified on Nodes 2.0)
+- Replaced the unified scheduler with zero-timer, event-driven updates:
+  - `title-watch.ts` generalized to `prop-watch.ts`: one-time `title` + `mode` property interceptors per source object (delegates to existing accessors — Nodes 2.0 `_state`, comfort-node mode interceptor — or captures plain values), rAF-coalesced refresh of dependent nodes.
+  - Fast Muter/Bypasser: row state now derives from the connected node's live mode — an external mute/bypass (right-click menu, script) updates the row instantly (previously stale until reconnection).
+  - Mode Relay: re-evaluates from the prop-watch refresh hook; the 500 ms scheduler job is gone.
+  - Fast Groups: watches member modes; structural changes (group/node add or remove, drags) picked up via per-graph `on_change` / `add` / `remove` hooks; the 1 s scheduler job is gone.
+  - `scheduler.ts` deleted (no remaining users). Group-header quick toggles (M/B overlay buttons) removed: redrew every frame and duplicated Fast Groups.
+- Verified on Nodes 2.0 (2026-11-17): external `mode = 2` flips a Fast Muter row within one frame; rename propagates; Relay > Repeater propagates MUTE/ACTIVE instantly; Fast Groups row flips on member mute; group/node add/remove updates rows.
+- Build 45.62 kB (gzip 12.78 kB). `tsc --noEmit` clean.
 
 ## Known upstream issues being addressed
 - rgthree/rgthree-comfy#632: Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)

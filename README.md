@@ -140,11 +140,3 @@ Built output is committed. Users clone-and-go.
 ## Roadmap
 
 See [CHANGELOG.md](./CHANGELOG.md).
-
-- M1: Power Lora Loader
-- M2: Fast Muter/Bypasser, Fast Groups Muter/Bypasser, Repeater/Relay, Random
-  Unmuter, Node Collector
-- M3: auto-nest subdirectories, group-header quick toggles
-- Any Router (server-backed any-input router, non-empty / active-source)
-- Image Comparer (wipe-slider image comparison)
-- NInfer Suspend Gate: moved to [comfyui-vram-purge-plugin](https://github.com/yusrmuttaqien/comfyui-vram_purge-plugin)
