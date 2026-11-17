@@ -103,7 +103,7 @@ export abstract class ComfortAnyInputNode extends ComfortFanInNode {
     this.renderList();
   }
 
-  /** Title-watch hook: rows show connected node titles; refresh on rename. */
+  /** Prop-watch hook: rows show connected node titles and states. */
   refreshTitleRows(): void {
     this.syncRows();
   }
