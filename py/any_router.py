@@ -14,41 +14,11 @@ Re-worked from rgthree-comfy's Any Switch (MIT,
 https://github.com/rgthree/rgthree-comfy).
 """
 
-from typing import Union
+import os
+import sys as _sys
 
-
-class AnyType(str):
-    """A string that compares equal to every type. Credit to pythongosssss."""
-
-    def __ne__(self, __value: object) -> bool:
-        return False
-
-
-class FlexibleOptionalInputType(dict):
-    """Accepts any number of optional inputs of any type.
-
-    ComfyUI's execution asks this mapping for each connected input key. We
-    always claim the key and report the flexible type, so any ``any_*`` input
-    of any type is accepted.
-    """
-
-    def __init__(self, type, data: Union[dict, None] = None):
-        self.type = type
-        self.data = data
-        if data is not None:
-            for k, v in data.items():
-                self[k] = v
-
-    def __getitem__(self, key):
-        if self.data is not None and key in self.data:
-            return self.data[key]
-        return (self.type,)
-
-    def __contains__(self, key):
-        return True
-
-
-any_type = AnyType("*")
+_sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from py.common import FlexibleOptionalInputType, any_type
 
 
 def _is_none(value) -> bool:

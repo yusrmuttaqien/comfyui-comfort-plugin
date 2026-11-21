@@ -135,6 +135,15 @@ A server-backed `Image Comparer (comfort)` node that compares two images with a 
 - Verified on Nodes 2.0 (2026-11-17): external `mode = 2` flips a Fast Muter row within one frame; rename propagates; Relay > Repeater propagates MUTE/ACTIVE instantly; Fast Groups row flips on member mute; group/node add/remove updates rows.
 - Build 45.62 kB (gzip 12.78 kB). `tsc --noEmit` clean.
 
+### Power Lora Loader: no LoRA was applied (fixed, verified)
+Three backend defects stacked up, so the node returned the model untouched on every run.
+- **The `loras` input was dropped before execution.** `INPUT_TYPES` declared only `model` and `clip`, and ComfyUI's `get_input_data` forwards only inputs it can resolve through the node's input mapping, so the widget value never reached `load_loras`. The optional mapping is now a `FlexibleOptionalInputType`, moved to a new `py/common.py` and shared with Any Router.
+- **The row name was resolved twice.** `_get_lora_by_filename` returned an absolute path and passed it to `LoraLoader.load_lora`, which resolves its argument again through `folder_paths.get_full_path_or_raise("loras", ...)` and raised `FileNotFoundError`. It now returns the `folder_paths.get_filename_list("loras")` entry, matching rgthree's `get_lora_by_filename`, and logs a warning for an unknown name instead of skipping the row silently.
+- **The wrapped array was iterated as a dict.** The frontend serialises an array widget value as `{"__value__": [...]}`, because a bare array in a prompt means a node link, and ComfyUI unwraps that only for inputs declared as keys of the optional mapping. `load_loras` iterated the wrapper, produced the string `"__value__"`, and discarded it. The node now unwraps the wrapper itself.
+- rgthree is not exposed to the third defect: it sends one input per row (`lora_0`, `lora_1`), each a plain object, so no array is ever wrapped.
+- Verified at a fixed seed: the node and the native `LoraLoaderModelOnly` produce a byte-identical image (0.0000% of pixels differ, maximum channel delta 0). Both matched 252 patch groups with the same first key and the same strengths, and both attached `lora_metadata`.
+- Verified separately: a row switched off, and a row at zero model and clip strength, add no patches, and an unknown filename logs a warning without failing the run.
+
 ## Known upstream issues being addressed
 - rgthree/rgthree-comfy#632: Nodes 2.0: properties won't open, fields stack (Power Lora Loader, Fast Groups Bypasser)
 - rgthree/rgthree-comfy#797: muted/bypassed rgthree server nodes saved with mode 0, come back enabled after reload
